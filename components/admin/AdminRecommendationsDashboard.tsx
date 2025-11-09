@@ -3,11 +3,16 @@ import { Link } from 'react-router-dom';
 import { useRecommendations } from '../../hooks/useRecommendations';
 
 const AdminRecommendationsDashboard: React.FC = () => {
-  const { recommendations, deleteRecommendation } = useRecommendations();
+  const { recommendations, deleteRecommendation, loading, error } = useRecommendations();
 
-  const handleDelete = (recId: string, recTitle: string) => {
+  const handleDelete = async (recId: string, recTitle: string) => {
     if (window.confirm(`Are you sure you want to delete the recommendation "${recTitle}"?`)) {
-      deleteRecommendation(recId);
+      try {
+        await deleteRecommendation(recId);
+      } catch (err) {
+        console.error('Failed to delete recommendation:', err);
+        alert('Failed to delete recommendation. Please try again.');
+      }
     }
   };
 
@@ -15,6 +20,13 @@ const AdminRecommendationsDashboard: React.FC = () => {
 
   return (
     <div className="max-w-5xl mx-auto bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8">
+      {error && (
+        <div className="mb-6 bg-red-100 dark:bg-red-900 border-l-4 border-red-500 text-red-700 dark:text-red-200 p-4">
+          <p className="font-bold">Error</p>
+          <p>{error}</p>
+        </div>
+      )}
+      
       <div className="flex justify-between items-center mb-8 border-b border-gray-200 dark:border-gray-700 pb-6">
         <h1 className="text-3xl font-bold font-serif text-gray-900 dark:text-white">Manage Recommendations</h1>
         <Link
@@ -25,6 +37,11 @@ const AdminRecommendationsDashboard: React.FC = () => {
         </Link>
       </div>
 
+      {loading ? (
+        <div className="flex justify-center items-center py-12">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-accent"></div>
+        </div>
+      ) : (
       <div className="overflow-x-auto">
         <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
           <thead className="bg-gray-50 dark:bg-gray-700">
@@ -70,6 +87,7 @@ const AdminRecommendationsDashboard: React.FC = () => {
           </tbody>
         </table>
       </div>
+      )}
     </div>
   );
 };

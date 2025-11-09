@@ -6,11 +6,25 @@ import { Post } from '../../types';
 import DashboardAnalytics from './DashboardAnalytics';
 
 const AdminDashboard: React.FC = () => {
-  const { posts, deletePost, featuredPostId, setFeaturedPost } = usePosts();
+  const { posts, deletePost, featuredPostId, setFeaturedPost, loading, error } = usePosts();
 
-  const handleDelete = (postId: string, postTitle: string) => {
+  const handleDelete = async (postId: string, postTitle: string) => {
     if (window.confirm(`Are you sure you want to delete the post "${postTitle}"?`)) {
-      deletePost(postId);
+      try {
+        await deletePost(postId);
+      } catch (err) {
+        console.error('Failed to delete post:', err);
+        alert('Failed to delete post. Please try again.');
+      }
+    }
+  };
+
+  const handleToggleFeatured = async (postId: string) => {
+    try {
+      await setFeaturedPost(featuredPostId === postId ? null : postId);
+    } catch (err) {
+      console.error('Failed to update featured post:', err);
+      alert('Failed to update featured post. Please try again.');
     }
   };
 
@@ -19,6 +33,13 @@ const AdminDashboard: React.FC = () => {
   return (
     <div className="space-y-10">
       <h1 className="text-3xl font-bold font-serif text-gray-900 dark:text-white">Admin Dashboard</h1>
+      
+      {error && (
+        <div className="bg-red-100 dark:bg-red-900 border-l-4 border-red-500 text-red-700 dark:text-red-200 p-4">
+          <p className="font-bold">Error</p>
+          <p>{error}</p>
+        </div>
+      )}
       
       <DashboardAnalytics />
 
@@ -33,6 +54,11 @@ const AdminDashboard: React.FC = () => {
           </Link>
         </div>
 
+        {loading ? (
+          <div className="flex justify-center items-center py-12">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-accent"></div>
+          </div>
+        ) : (
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
             <thead className="bg-gray-50 dark:bg-gray-700">
@@ -66,7 +92,7 @@ const AdminDashboard: React.FC = () => {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2 md:space-x-4">
                     <button
-                      onClick={() => setFeaturedPost(featuredPostId === post.id ? null : post.id)}
+                      onClick={() => handleToggleFeatured(post.id)}
                       className={`text-sm ${
                         featuredPostId === post.id 
                           ? 'text-yellow-500 hover:text-yellow-700'
@@ -97,6 +123,7 @@ const AdminDashboard: React.FC = () => {
             </tbody>
           </table>
         </div>
+        )}
       </div>
     </div>
   );
