@@ -46,6 +46,16 @@ const CreatePost: React.FC = () => {
     }
   }, [postId, isEditMode, posts, categories]);
 
+  const isValidImageUrl = (url: string): boolean => {
+    try {
+      const parsed = new URL(url);
+      // Only allow http, https, and data URLs for images
+      return ['http:', 'https:', 'data:'].includes(parsed.protocol);
+    } catch {
+      return false;
+    }
+  };
+
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -184,17 +194,24 @@ const CreatePost: React.FC = () => {
                 </div>
               )}
               
-              {coverImage && (
+              {coverImage && isValidImageUrl(coverImage) && (
                 <div className="mt-3">
                   <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">Preview:</p>
                   <img 
-                    src={coverImage} 
+                    src={coverImage}
                     alt="Cover preview" 
                     className="max-w-full h-48 object-cover rounded-md"
                     onError={(e) => {
-                      e.currentTarget.style.display = 'none';
+                      const target = e.currentTarget;
+                      target.style.display = 'none';
                     }}
+                    referrerPolicy="no-referrer"
                   />
+                </div>
+              )}
+              {coverImage && !isValidImageUrl(coverImage) && (
+                <div className="mt-3 p-2 bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200 rounded text-sm">
+                  Invalid image URL. Please use http://, https://, or upload an image.
                 </div>
               )}
             </div>
