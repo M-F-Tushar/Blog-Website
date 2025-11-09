@@ -36,17 +36,28 @@ View your app in AI Studio: https://ai.studio/apps/drive/1lw5uk7but41mWQvO2doVKU
 
 4. Open [http://localhost:3000](http://localhost:3000) in your browser
 
-## Deploy to the Web
+## 🚀 Deploy to the Web
 
-Ready to share your blog with the world? Check out our comprehensive **[Deployment Guide](./DEPLOYMENT.md)** for step-by-step instructions.
+Ready to share your blog with the world?
 
-### Quick Deploy Options:
+### GitHub Pages (Recommended - Free & Easy!)
+
+**Deploy your website in just 3 steps:**
+
+1. Go to **Settings** → **Pages** in your repository
+2. Under "Source", select **"GitHub Actions"**
+3. Push to `main` branch or manually trigger the workflow
+
+Your website will be live at `https://<your-username>.github.io/Blog-Website/` in 1-3 minutes! 
+
+📖 **[Complete GitHub Pages Setup Guide](./GITHUB_PAGES_SETUP.md)** - Step-by-step instructions with screenshots
+
+### Other Deployment Options
 
 - **Vercel:** [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/M-F-Tushar/Blog-Website)
 - **Netlify:** [![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/M-F-Tushar/Blog-Website)
-- **GitHub Pages:** Automatic deployment configured via GitHub Actions
 
-See [DEPLOYMENT.md](./DEPLOYMENT.md) for detailed instructions on deploying to Vercel, Netlify, GitHub Pages, and other platforms.
+📚 See [DEPLOYMENT.md](./DEPLOYMENT.md) for detailed instructions on deploying to Vercel, Netlify, and other platforms.
 
 ## Build for Production
 
