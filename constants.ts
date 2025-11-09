@@ -1,6 +1,18 @@
 import React from 'react';
 import { Post, Recommendation, RecommendationType, PostStatus, Category } from './types';
 
+/**
+ * IMPORTANT: These constants are used for:
+ * 1. Initial data migration to Firebase (one-time operation via /admin/migrate)
+ * 2. Fallback data when Firebase is not configured (localStorage mode)
+ * 
+ * Once Firebase is configured and data is migrated, all content management
+ * happens through the admin dashboard and is stored in Firebase Firestore.
+ * 
+ * To add new content after Firebase setup, use the admin dashboard at /admin
+ * instead of modifying this file.
+ */
+
 export const POSTS: Post[] = [
   {
     id: 'my-first-semester-at-uni',

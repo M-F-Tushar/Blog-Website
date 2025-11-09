@@ -15,6 +15,9 @@ View your app in AI Studio: https://ai.studio/apps/drive/1lw5uk7but41mWQvO2doVKU
 - 🔍 Search functionality
 - 🏷️ Tag-based categorization
 - 💼 Admin dashboard for content management
+- 🔥 Firebase integration for dynamic content (optional)
+- 📤 Image upload to Firebase Storage
+- ⚡ Real-time content synchronization
 - 📱 Responsive design
 - ⚡ Fast and optimized with Vite
 
@@ -59,6 +62,33 @@ Your website will be live at `https://<your-username>.github.io/Blog-Website/` i
 
 📚 See [DEPLOYMENT.md](./DEPLOYMENT.md) for detailed instructions on deploying to Vercel, Netlify, and other platforms.
 
+## 🔥 Firebase Integration (Optional)
+
+This blog supports Firebase for dynamic content management! With Firebase enabled:
+
+- ✅ Manage posts and recommendations through the admin dashboard
+- ✅ Upload images directly to Firebase Storage
+- ✅ Real-time content updates across all clients
+- ✅ No code changes needed to add/edit/delete content
+
+### Setup Firebase
+
+**Quick Start:**
+
+1. **Create a Firebase project** at [console.firebase.google.com](https://console.firebase.google.com)
+2. **Copy `.env.example` to `.env`** and fill in your Firebase configuration
+3. **Run the migration** at `/admin/migrate` to transfer initial data to Firebase
+
+📖 **[Complete Firebase Setup Guide](./FIREBASE_SETUP.md)** - Detailed instructions with all steps
+
+### Without Firebase
+
+The blog works perfectly fine without Firebase! It will use:
+- **LocalStorage** for user-created posts and recommendations
+- **Initial data** from `constants.ts` (hardcoded posts)
+
+Admin features will work, but data is stored locally in your browser.
+
 ## Build for Production
 
 ```bash
@@ -66,3 +96,7 @@ npm run build
 ```
 
 The built files will be in the `dist` directory, ready to be deployed to any static hosting service.
+
+**Note:** If using Firebase, make sure to set environment variables in your hosting platform:
+- GitHub Pages: Add secrets in repository settings
+- Vercel/Netlify: Add environment variables in project settings
