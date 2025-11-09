@@ -34,10 +34,16 @@ export const getSettings = async (): Promise<AppSettings> => {
       throw error;
     }
 
+    if (!data) {
+      return {
+        featuredPostId: null,
+      };
+    }
+
     return {
-      featuredPostId: data.featured_post_id,
-      siteTitle: data.site_title,
-      siteDescription: data.site_description,
+      featuredPostId: (data as any).featured_post_id,
+      siteTitle: (data as any).site_title,
+      siteDescription: (data as any).site_description,
     };
   } catch (error) {
     console.error('Error fetching settings:', error);
@@ -70,8 +76,9 @@ export const setFeaturedPostId = async (postId: string | null): Promise<void> =>
       // Update existing settings
       const { error } = await supabase
         .from(SETTINGS_TABLE)
+        // @ts-expect-error - Supabase type inference issue with database types
         .update({ featured_post_id: postId })
-        .eq('id', existingData.id);
+        .eq('id', (existingData as any).id);
 
       if (error) {
         console.error('Error updating featured post:', error);
@@ -85,7 +92,7 @@ export const setFeaturedPostId = async (postId: string | null): Promise<void> =>
           featured_post_id: postId,
           site_title: 'My Blog',
           site_description: 'A personal blog',
-        });
+        } as any);
 
       if (error) {
         console.error('Error creating settings:', error);

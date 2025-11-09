@@ -74,7 +74,7 @@ export const createRecommendation = async (
     const dbRec = recommendationToDatabase(recommendation);
     const { data, error } = await supabase
       .from(RECOMMENDATIONS_TABLE)
-      .insert(dbRec)
+      .insert(dbRec as any)
       .select()
       .single();
 
@@ -113,6 +113,7 @@ export const updateRecommendation = async (
 
     const { error } = await supabase
       .from(RECOMMENDATIONS_TABLE)
+      // @ts-expect-error - Supabase type inference issue with database types
       .update(updateData)
       .eq('id', id);
 

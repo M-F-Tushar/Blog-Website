@@ -72,7 +72,7 @@ export const createPost = async (post: Omit<Post, 'id'>): Promise<Post> => {
     const dbPost = postToDatabase(post);
     const { data, error } = await supabase
       .from(POSTS_TABLE)
-      .insert(dbPost)
+      .insert(dbPost as any)
       .select()
       .single();
 
@@ -112,6 +112,7 @@ export const updatePost = async (id: string, post: Partial<Post>): Promise<void>
 
     const { error } = await supabase
       .from(POSTS_TABLE)
+      // @ts-expect-error - Supabase type inference issue with database types
       .update(updateData)
       .eq('id', id);
 

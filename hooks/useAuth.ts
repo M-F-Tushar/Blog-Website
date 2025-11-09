@@ -2,7 +2,7 @@ import React, { createContext, useContext, useState, useMemo, ReactNode } from '
 
 // This is a simple client-side password. In a real-world application,
 // this would be handled by a secure backend authentication system.
-const ADMIN_PASSWORD = import.meta.env.VITE_ADMIN_PASSWORD || 'password123';
+const ADMIN_PASSWORD = (import.meta as any).env.VITE_ADMIN_PASSWORD || 'password123';
 
 interface AuthContextType {
   isAuthenticated: boolean;

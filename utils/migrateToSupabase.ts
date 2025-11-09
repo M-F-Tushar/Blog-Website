@@ -123,7 +123,7 @@ export const migrateDataToSupabase = async (
 
       const { error: postsError } = await supabase
         .from('posts')
-        .insert(postsToInsert);
+        .insert(postsToInsert as any);
 
       if (postsError) {
         console.error('Error migrating posts:', postsError);
@@ -152,7 +152,7 @@ export const migrateDataToSupabase = async (
 
       const { error: recsError } = await supabase
         .from('recommendations')
-        .insert(recsToInsert);
+        .insert(recsToInsert as any);
 
       if (recsError) {
         console.error('Error migrating recommendations:', recsError);

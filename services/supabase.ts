@@ -1,21 +1,44 @@
-import { createClient } from '@supabase/supabase-js';
+import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { Post, Recommendation } from '../types';
 
 // Supabase configuration from environment variables
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+const supabaseUrl = (import.meta as any).env.VITE_SUPABASE_URL;
+const supabaseAnonKey = (import.meta as any).env.VITE_SUPABASE_ANON_KEY;
 
 // Check if Supabase is configured
 export const isSupabaseConfigured = () => {
   return Boolean(supabaseUrl && supabaseAnonKey);
 };
 
-// Initialize Supabase client
-let supabase: ReturnType<typeof createClient> | null = null;
+// Define database schema type
+export interface Database {
+  public: {
+    Tables: {
+      posts: {
+        Row: DatabasePost;
+        Insert: Omit<DatabasePost, 'id' | 'created_at' | 'updated_at'>;
+        Update: Partial<Omit<DatabasePost, 'id' | 'created_at' | 'updated_at'>>;
+      };
+      recommendations: {
+        Row: DatabaseRecommendation;
+        Insert: Omit<DatabaseRecommendation, 'id' | 'created_at' | 'updated_at'>;
+        Update: Partial<Omit<DatabaseRecommendation, 'id' | 'created_at' | 'updated_at'>>;
+      };
+      settings: {
+        Row: DatabaseSettings;
+        Insert: Partial<DatabaseSettings>;
+        Update: Partial<DatabaseSettings>;
+      };
+    };
+  };
+}
+
+// Initialize Supabase client with typed database
+let supabase: SupabaseClient<Database> | null = null;
 
 if (isSupabaseConfigured()) {
   try {
-    supabase = createClient(supabaseUrl!, supabaseAnonKey!);
+    supabase = createClient<Database>(supabaseUrl!, supabaseAnonKey!);
     console.log('Supabase initialized successfully');
   } catch (error) {
     console.error('Error initializing Supabase:', error);
