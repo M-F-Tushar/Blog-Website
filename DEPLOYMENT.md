@@ -143,14 +143,7 @@ The project includes a GitHub Actions workflow that automatically deploys to Git
    gh-pages -d dist
    ```
 
-**Note:** For GitHub Pages, you may need to configure the base path in `vite.config.ts` if deploying to a repository path (not a custom domain):
-
-```typescript
-export default defineConfig({
-  base: '/Blog-Website/', // Replace with your repository name
-  // ... other config
-});
-```
+**Note:** The base path for GitHub Pages is automatically configured in `vite.config.ts`. When the project is built in GitHub Actions, it uses `/Blog-Website/` as the base path. For local development, it uses `/`. If you fork this repository, update the base path in `vite.config.ts` to match your repository name.
 
 ---
 
@@ -263,6 +256,20 @@ If you're getting 404 errors on refresh:
 All platforms mentioned support automatic deployments:
 - Push to `main` branch → Automatic deployment
 - Pull request deployments for preview (Vercel, Netlify)
+
+### GitHub Actions Workflows
+
+This repository includes two GitHub Actions workflows:
+
+1. **Continuous Integration (CI)** - `.github/workflows/ci.yml`
+   - Runs on every push to `main` and all pull requests
+   - Validates that the project builds successfully
+   - Ensures code quality before deployment
+
+2. **GitHub Pages Deployment** - `.github/workflows/deploy-github-pages.yml`
+   - Runs automatically on push to `main` branch
+   - Can be manually triggered via workflow_dispatch
+   - Builds and deploys the site to GitHub Pages
 
 ---
 
