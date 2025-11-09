@@ -13,6 +13,7 @@ const RecommendationForm: React.FC = () => {
   const [url, setUrl] = useState('');
   const [description, setDescription] = useState('');
   const [type, setType] = useState<RecommendationType>(RecommendationType.ARTICLE);
+  const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
     if (isEditMode) {
@@ -26,7 +27,7 @@ const RecommendationForm: React.FC = () => {
     }
   }, [recId, isEditMode, recommendations]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!title || !url || !description || !type) {
         alert('Please fill in all fields.');
@@ -35,13 +36,20 @@ const RecommendationForm: React.FC = () => {
 
     const recData = { title, url, description, type };
     
-    if (isEditMode && recId) {
-      updateRecommendation(recId, recData);
-    } else {
-      addRecommendation(recData);
+    try {
+      setIsSaving(true);
+      if (isEditMode && recId) {
+        await updateRecommendation(recId, recData);
+      } else {
+        await addRecommendation(recData);
+      }
+      navigate('/admin/recommendations');
+    } catch (error) {
+      console.error('Error saving recommendation:', error);
+      alert('Failed to save recommendation. Please try again.');
+    } finally {
+      setIsSaving(false);
     }
-
-    navigate('/admin/recommendations');
   };
 
   const inputClasses = "w-full px-3 py-2 text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-accent transition-colors duration-200";
@@ -73,12 +81,27 @@ const RecommendationForm: React.FC = () => {
           <label htmlFor="description" className={labelClasses}>Description</label>
           <textarea id="description" value={description} onChange={(e) => setDescription(e.target.value)} className={`${inputClasses} h-32`} required />
         </div>
-        <div className="text-right">
+        <div className="flex justify-end space-x-4">
+          <button 
+            type="button" 
+            onClick={() => navigate('/admin/recommendations')} 
+            disabled={isSaving}
+            className="px-6 py-2 bg-gray-200 text-gray-800 font-semibold rounded-md hover:bg-gray-300 dark:bg-gray-600 dark:text-white dark:hover:bg-gray-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            Cancel
+          </button>
           <button
             type="submit"
-            className="px-6 py-2 bg-accent text-white font-semibold rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent dark:focus:ring-offset-dark-gray transition-colors"
+            disabled={isSaving}
+            className="px-6 py-2 bg-accent text-white font-semibold rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent dark:focus:ring-offset-dark-gray transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
           >
-            {isEditMode ? 'Update Recommendation' : 'Save Recommendation'}
+            {isSaving && (
+              <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+            )}
+            {isSaving ? 'Saving...' : (isEditMode ? 'Update Recommendation' : 'Save Recommendation')}
           </button>
         </div>
       </form>
