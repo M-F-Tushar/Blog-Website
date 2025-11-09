@@ -21,6 +21,7 @@ import AdminRecommendationsDashboard from './components/admin/AdminRecommendatio
 import RecommendationForm from './components/admin/RecommendationForm';
 import AdminSiteSettings from './components/admin/AdminSiteSettings';
 import AdminProfileSettings from './components/admin/AdminProfileSettings';
+import DataMigration from './components/admin/DataMigration';
 
 const MainLayout: React.FC = () => {
   return (
@@ -60,6 +61,7 @@ function App() {
             <Route path="recommendations/edit/:recId" element={<RecommendationForm />} />
             <Route path="settings/site" element={<AdminSiteSettings />} />
             <Route path="settings/profile" element={<AdminProfileSettings />} />
+            <Route path="migrate" element={<DataMigration />} />
           </Route>
         </Route>
       </Routes>
