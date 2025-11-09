@@ -1,17 +1,17 @@
 import React, { createContext, useContext, useState, useCallback, useMemo, useEffect } from 'react';
 import { Post, PostStatus } from '../types';
 import { POSTS as initialPostsData } from '../constants';
-import { isFirebaseConfigured } from '../services/firebase';
+import { isSupabaseConfigured } from '../services/supabase';
 import { 
-  createPost as createPostFirebase, 
-  updatePost as updatePostFirebase, 
-  deletePost as deletePostFirebase,
+  createPost as createPostSupabase, 
+  updatePost as updatePostSupabase, 
+  deletePost as deletePostSupabase,
   subscribeToPostsUpdates
-} from '../services/postsService';
+} from '../services/supabasePostsService';
 import { 
-  setFeaturedPostId as setFeaturedPostFirebase,
+  setFeaturedPostId as setFeaturedPostSupabase,
   subscribeToSettingsUpdates
-} from '../services/settingsService';
+} from '../services/supabaseSettingsService';
 
 // A "user post" is now identical to Post, but without methods.
 type UserPost = Post;
@@ -48,7 +48,7 @@ const saveUserPostsToStorage = (posts: UserPost[]) => {
 }
 
 export const PostsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const useFirebase = isFirebaseConfigured();
+  const useSupabase = isSupabaseConfigured();
   const [posts, setPosts] = useState<Post[]>(() => {
     // Initialize with localStorage data or initial data
     const userPosts = getUserPostsFromStorage();
@@ -63,9 +63,9 @@ export const PostsProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Subscribe to Firebase updates if Firebase is configured
+  // Subscribe to Supabase updates if Supabase is configured
   useEffect(() => {
-    if (!useFirebase) {
+    if (!useSupabase) {
       return;
     }
 
@@ -73,8 +73,8 @@ export const PostsProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     
     // Subscribe to posts
     const unsubscribePosts = subscribeToPostsUpdates(
-      (firebasePosts) => {
-        setPosts(firebasePosts);
+      (supabasePosts) => {
+        setPosts(supabasePosts);
         setLoading(false);
         setError(null);
       },
@@ -98,12 +98,12 @@ export const PostsProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       unsubscribePosts();
       unsubscribeSettings();
     };
-  }, [useFirebase]);
+  }, [useSupabase]);
 
   const setFeaturedPost = useCallback(async (postId: string | null) => {
-    if (useFirebase) {
+    if (useSupabase) {
       try {
-        await setFeaturedPostFirebase(postId);
+        await setFeaturedPostSupabase(postId);
         // The subscription will update the state
       } catch (err) {
         console.error('Error setting featured post:', err);
@@ -118,21 +118,21 @@ export const PostsProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       }
       setFeaturedPostIdState(postId);
     }
-  }, [useFirebase]);
+  }, [useSupabase]);
 
   const addPost = useCallback(async (postData: Omit<Post, 'id' | 'date' | 'isInitial'>): Promise<Post> => {
-    if (useFirebase) {
+    if (useSupabase) {
       try {
         const newPost: Post = {
           ...postData,
-          id: '', // Firebase will generate the ID
+          id: '', // Supabase will generate the ID
           date: new Date().toLocaleDateString('en-US', {
             year: 'numeric',
             month: 'long',
             day: 'numeric',
           }),
         };
-        const createdPost = await createPostFirebase(newPost);
+        const createdPost = await createPostSupabase(newPost);
         // The subscription will update the state
         return createdPost;
       } catch (err) {
@@ -160,12 +160,12 @@ export const PostsProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       
       return newPost;
     }
-  }, [useFirebase]);
+  }, [useSupabase]);
 
   const updatePost = useCallback(async (postId: string, postData: Omit<Post, 'id' | 'date' | 'isInitial'>): Promise<Post | undefined> => {
-    if (useFirebase) {
+    if (useSupabase) {
       try {
-        await updatePostFirebase(postId, postData);
+        await updatePostSupabase(postId, postData);
         // The subscription will update the state
         // Return the updated post from current state
         return posts.find(p => p.id === postId);
@@ -194,12 +194,12 @@ export const PostsProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       setPosts(prevPosts => prevPosts.map(p => p.id === postId ? updatedPost : p));
       return updatedPost;
     }
-  }, [useFirebase, posts]);
+  }, [useSupabase, posts]);
   
   const deletePost = useCallback(async (postId: string) => {
-    if (useFirebase) {
+    if (useSupabase) {
       try {
-        await deletePostFirebase(postId);
+        await deletePostSupabase(postId);
         // The subscription will update the state
         // Unfeature if needed
         if (featuredPostId === postId) {
@@ -221,7 +221,7 @@ export const PostsProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         await setFeaturedPost(null);
       }
     }
-  }, [useFirebase, featuredPostId, setFeaturedPost]);
+  }, [useSupabase, featuredPostId, setFeaturedPost]);
 
   const value = useMemo(() => ({
       posts,

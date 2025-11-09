@@ -3,8 +3,8 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { usePosts } from '../hooks/usePosts';
 import { PostStatus } from '../types';
 import { useSiteSettings } from '../hooks/useSiteSettings';
-import { isFirebaseConfigured } from '../services/firebase';
-import { uploadImage, generateUniqueFilename } from '../services/storageService';
+import { isSupabaseConfigured } from '../services/supabase';
+import { uploadImage, generateUniqueFilename } from '../services/supabaseStorageService';
 
 const CreatePost: React.FC = () => {
   const { postId } = useParams<{ postId?: string }>();
@@ -12,7 +12,7 @@ const CreatePost: React.FC = () => {
   const { posts, addPost, updatePost } = usePosts();
   const { categories } = useSiteSettings();
   const navigate = useNavigate();
-  const firebaseEnabled = isFirebaseConfigured();
+  const supabaseEnabled = isSupabaseConfigured();
 
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
@@ -60,8 +60,8 @@ const CreatePost: React.FC = () => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    if (!firebaseEnabled) {
-      alert('Firebase is not configured. Please use image URLs instead.');
+    if (!supabaseEnabled) {
+      alert('Supabase is not configured. Please use image URLs instead.');
       return;
     }
 
@@ -80,13 +80,13 @@ const CreatePost: React.FC = () => {
     try {
       setIsUploading(true);
       const filename = generateUniqueFilename(file.name);
-      const path = `images/posts/${filename}`;
+      const path = `posts/${filename}`;
       
-      const downloadURL = await uploadImage(file, path, (progress) => {
+      const publicURL = await uploadImage(file, path, (progress) => {
         setUploadProgress(progress.progress);
       });
 
-      setCoverImage(downloadURL);
+      setCoverImage(publicURL);
       setUploadProgress(0);
     } catch (error) {
       console.error('Error uploading image:', error);
