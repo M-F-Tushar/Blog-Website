@@ -158,7 +158,7 @@ const CreatePost: React.FC = () => {
                 placeholder="https://images.unsplash.com/..."
               />
               
-              {firebaseEnabled && (
+              {supabaseEnabled && (
                 <div>
                   <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
                     Or upload an image:

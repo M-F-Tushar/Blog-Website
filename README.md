@@ -15,8 +15,8 @@ View your app in AI Studio: https://ai.studio/apps/drive/1lw5uk7but41mWQvO2doVKU
 - 🔍 Search functionality
 - 🏷️ Tag-based categorization
 - 💼 Admin dashboard for content management
-- 🔥 Firebase integration for dynamic content (optional)
-- 📤 Image upload to Firebase Storage
+- 🗄️ Supabase integration for dynamic content (optional)
+- 📤 Image upload to Supabase Storage (1GB free!)
 - ⚡ Real-time content synchronization
 - 📱 Responsive design
 - ⚡ Fast and optimized with Vite
@@ -62,28 +62,31 @@ Your website will be live at `https://<your-username>.github.io/Blog-Website/` i
 
 📚 See [DEPLOYMENT.md](./DEPLOYMENT.md) for detailed instructions on deploying to Vercel, Netlify, and other platforms.
 
-## 🔥 Firebase Integration (Optional)
+## 🗄️ Supabase Integration (Optional, but Recommended!)
 
-This blog supports Firebase for dynamic content management! With Firebase enabled:
+This blog supports Supabase for dynamic content management! With Supabase enabled:
 
+- ✅ **Completely FREE** - No credit card required (includes 1GB storage!)
 - ✅ Manage posts and recommendations through the admin dashboard
-- ✅ Upload images directly to Firebase Storage
+- ✅ Upload images directly to Supabase Storage
 - ✅ Real-time content updates across all clients
 - ✅ No code changes needed to add/edit/delete content
+- ✅ **Simpler setup** - Only 2 environment variables vs 6 with Firebase!
 
-### Setup Firebase
+### Setup Supabase
 
-**Quick Start:**
+**Quick Start (10 minutes):**
 
-1. **Create a Firebase project** at [console.firebase.google.com](https://console.firebase.google.com)
-2. **Copy `.env.example` to `.env`** and fill in your Firebase configuration
-3. **Run the migration** at `/admin/migrate` to transfer initial data to Firebase
+1. **Create a free Supabase account** at [supabase.com](https://supabase.com)
+2. **Create a new project** and run the SQL schema (provided in setup guide)
+3. **Copy `.env.example` to `.env`** and add your Supabase URL and key
+4. **Run the migration** at `/admin/migrate` to transfer initial data to Supabase
 
-📖 **[Complete Firebase Setup Guide](./FIREBASE_SETUP.md)** - Detailed instructions with all steps
+📖 **[Complete Supabase Setup Guide](./SUPABASE_SETUP.md)** - Detailed step-by-step instructions with SQL schema
 
-### Without Firebase
+### Without Supabase
 
-The blog works perfectly fine without Firebase! It will use:
+The blog works perfectly fine without Supabase! It will use:
 - **LocalStorage** for user-created posts and recommendations
 - **Initial data** from `constants.ts` (hardcoded posts)
 
@@ -97,6 +100,6 @@ npm run build
 
 The built files will be in the `dist` directory, ready to be deployed to any static hosting service.
 
-**Note:** If using Firebase, make sure to set environment variables in your hosting platform:
-- GitHub Pages: Add secrets in repository settings
+**Note:** If using Supabase, make sure to set environment variables in your hosting platform:
+- GitHub Pages: Add secrets in repository settings (see [SUPABASE_SETUP.md](./SUPABASE_SETUP.md))
 - Vercel/Netlify: Add environment variables in project settings
