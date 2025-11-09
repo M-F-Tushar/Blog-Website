@@ -1,5 +1,4 @@
-import { collection, getDocs, writeBatch, doc } from 'firebase/firestore';
-import { db } from '../services/firebase';
+import { supabase } from '../services/supabase';
 import { POSTS, RECOMMENDATIONS } from '../constants';
 
 export interface MigrationProgress {
@@ -11,7 +10,7 @@ export interface MigrationProgress {
 }
 
 /**
- * Check if Firebase already has data
+ * Check if Supabase already has data
  */
 const checkIfDataExists = async (): Promise<{ 
   hasPosts: boolean; 
@@ -19,19 +18,27 @@ const checkIfDataExists = async (): Promise<{
   postsCount: number;
   recommendationsCount: number;
 }> => {
-  if (!db) {
-    throw new Error('Firebase is not initialized');
+  if (!supabase) {
+    throw new Error('Supabase is not initialized');
   }
 
   try {
-    const postsSnapshot = await getDocs(collection(db, 'posts'));
-    const recsSnapshot = await getDocs(collection(db, 'recommendations'));
+    const { count: postsCount, error: postsError } = await supabase
+      .from('posts')
+      .select('*', { count: 'exact', head: true });
+
+    const { count: recsCount, error: recsError } = await supabase
+      .from('recommendations')
+      .select('*', { count: 'exact', head: true });
+
+    if (postsError) throw postsError;
+    if (recsError) throw recsError;
     
     return {
-      hasPosts: !postsSnapshot.empty,
-      hasRecommendations: !recsSnapshot.empty,
-      postsCount: postsSnapshot.size,
-      recommendationsCount: recsSnapshot.size,
+      hasPosts: (postsCount || 0) > 0,
+      hasRecommendations: (recsCount || 0) > 0,
+      postsCount: postsCount || 0,
+      recommendationsCount: recsCount || 0,
     };
   } catch (error) {
     console.error('Error checking for existing data:', error);
@@ -40,14 +47,14 @@ const checkIfDataExists = async (): Promise<{
 };
 
 /**
- * Migrate data from constants.ts to Firebase
+ * Migrate data from constants.ts to Supabase
  * This should be a one-time operation
  */
-export const migrateDataToFirebase = async (
+export const migrateDataToSupabase = async (
   onProgress?: (progress: MigrationProgress) => void
 ): Promise<void> => {
-  if (!db) {
-    const error = 'Firebase is not initialized. Please configure Firebase environment variables.';
+  if (!supabase) {
+    const error = 'Supabase is not initialized. Please configure Supabase environment variables.';
     if (onProgress) {
       onProgress({
         status: 'error',
@@ -63,14 +70,14 @@ export const migrateDataToFirebase = async (
     if (onProgress) {
       onProgress({
         status: 'checking',
-        message: 'Checking for existing data in Firebase...',
+        message: 'Checking for existing data in Supabase...',
       });
     }
 
     const existingData = await checkIfDataExists();
 
     if (existingData.hasPosts && existingData.hasRecommendations) {
-      const message = `Data already exists in Firebase (${existingData.postsCount} posts, ${existingData.recommendationsCount} recommendations). Migration skipped.`;
+      const message = `Data already exists in Supabase (${existingData.postsCount} posts, ${existingData.recommendationsCount} recommendations). Migration skipped.`;
       if (onProgress) {
         onProgress({
           status: 'success',
@@ -90,7 +97,8 @@ export const migrateDataToFirebase = async (
       });
     }
 
-    const batch = writeBatch(db);
+    let migratedPosts = 0;
+    let migratedRecs = 0;
 
     // Migrate posts
     if (!existingData.hasPosts) {
@@ -101,15 +109,28 @@ export const migrateDataToFirebase = async (
         });
       }
 
-      POSTS.forEach((post) => {
-        const postRef = doc(collection(db, 'posts'));
-        batch.set(postRef, {
-          ...post,
-          isInitial: true, // Mark as initial/read-only
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        });
-      });
+      const postsToInsert = POSTS.map((post) => ({
+        title: post.title,
+        date: post.date,
+        category: post.category,
+        tags: post.tags,
+        excerpt: post.excerpt,
+        status: post.status,
+        cover_image: post.coverImage || null,
+        content: post.content,
+        is_initial: true, // Mark as initial/read-only
+      }));
+
+      const { error: postsError } = await supabase
+        .from('posts')
+        .insert(postsToInsert as any);
+
+      if (postsError) {
+        console.error('Error migrating posts:', postsError);
+        throw postsError;
+      }
+
+      migratedPosts = POSTS.length;
     }
 
     // Migrate recommendations
@@ -121,24 +142,27 @@ export const migrateDataToFirebase = async (
         });
       }
 
-      RECOMMENDATIONS.forEach((rec) => {
-        const recRef = doc(collection(db, 'recommendations'));
-        batch.set(recRef, {
-          ...rec,
-          isInitial: true, // Mark as initial/read-only
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        });
-      });
+      const recsToInsert = RECOMMENDATIONS.map((rec) => ({
+        title: rec.title,
+        url: rec.url,
+        description: rec.description,
+        type: rec.type,
+        is_initial: true, // Mark as initial/read-only
+      }));
+
+      const { error: recsError } = await supabase
+        .from('recommendations')
+        .insert(recsToInsert as any);
+
+      if (recsError) {
+        console.error('Error migrating recommendations:', recsError);
+        throw recsError;
+      }
+
+      migratedRecs = RECOMMENDATIONS.length;
     }
 
-    // Commit the batch
-    await batch.commit();
-
     // Update progress: Success
-    const migratedPosts = existingData.hasPosts ? 0 : POSTS.length;
-    const migratedRecs = existingData.hasRecommendations ? 0 : RECOMMENDATIONS.length;
-    
     if (onProgress) {
       onProgress({
         status: 'success',
@@ -173,7 +197,7 @@ export const getMigrationStatus = async (): Promise<{
   postsCount: number;
   recommendationsCount: number;
 }> => {
-  if (!db) {
+  if (!supabase) {
     return {
       isComplete: false,
       postsCount: 0,

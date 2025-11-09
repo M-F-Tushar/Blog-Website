@@ -1,13 +1,13 @@
 import React, { createContext, useContext, useState, useCallback, useMemo, useEffect } from 'react';
 import { Recommendation } from '../types';
 import { RECOMMENDATIONS as initialRecommendationsData } from '../constants';
-import { isFirebaseConfigured } from '../services/firebase';
+import { isSupabaseConfigured } from '../services/supabase';
 import {
-  createRecommendation as createRecommendationFirebase,
-  updateRecommendation as updateRecommendationFirebase,
-  deleteRecommendation as deleteRecommendationFirebase,
+  createRecommendation as createRecommendationSupabase,
+  updateRecommendation as updateRecommendationSupabase,
+  deleteRecommendation as deleteRecommendationSupabase,
   subscribeToRecommendationsUpdates
-} from '../services/recommendationsService';
+} from '../services/supabaseRecommendationsService';
 
 interface RecommendationsContextType {
   recommendations: Recommendation[];
@@ -39,7 +39,7 @@ const saveUserRecsToStorage = (recs: Recommendation[]) => {
 }
 
 export const RecommendationsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const useFirebase = isFirebaseConfigured();
+  const useSupabase = isSupabaseConfigured();
   const [recommendations, setRecommendations] = useState<Recommendation[]>(() => {
     const userRecs = getUserRecsFromStorage();
     return [...initialRecommendationsData, ...userRecs];
@@ -47,17 +47,17 @@ export const RecommendationsProvider: React.FC<{ children: React.ReactNode }> = 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Subscribe to Firebase updates if Firebase is configured
+  // Subscribe to Supabase updates if Supabase is configured
   useEffect(() => {
-    if (!useFirebase) {
+    if (!useSupabase) {
       return;
     }
 
     setLoading(true);
     
     const unsubscribe = subscribeToRecommendationsUpdates(
-      (firebaseRecs) => {
-        setRecommendations(firebaseRecs);
+      (supabaseRecs) => {
+        setRecommendations(supabaseRecs);
         setLoading(false);
         setError(null);
       },
@@ -70,12 +70,12 @@ export const RecommendationsProvider: React.FC<{ children: React.ReactNode }> = 
     return () => {
       unsubscribe();
     };
-  }, [useFirebase]);
+  }, [useSupabase]);
 
   const addRecommendation = useCallback(async (recData: Omit<Recommendation, 'id'>): Promise<Recommendation> => {
-    if (useFirebase) {
+    if (useSupabase) {
       try {
-        const createdRec = await createRecommendationFirebase(recData);
+        const createdRec = await createRecommendationSupabase(recData);
         // The subscription will update the state
         return createdRec;
       } catch (err) {
@@ -97,12 +97,12 @@ export const RecommendationsProvider: React.FC<{ children: React.ReactNode }> = 
       setRecommendations(prevRecs => [newRec, ...prevRecs]);
       return newRec;
     }
-  }, [useFirebase]);
+  }, [useSupabase]);
 
   const updateRecommendation = useCallback(async (recId: string, recData: Omit<Recommendation, 'id'>): Promise<Recommendation | undefined> => {
-    if (useFirebase) {
+    if (useSupabase) {
       try {
-        await updateRecommendationFirebase(recId, recData);
+        await updateRecommendationSupabase(recId, recData);
         // The subscription will update the state
         return recommendations.find(r => r.id === recId);
       } catch (err) {
@@ -129,12 +129,12 @@ export const RecommendationsProvider: React.FC<{ children: React.ReactNode }> = 
       setRecommendations(prevRecs => prevRecs.map(r => r.id === recId ? updatedRec : r));
       return updatedRec;
     }
-  }, [useFirebase, recommendations]);
+  }, [useSupabase, recommendations]);
   
   const deleteRecommendation = useCallback(async (recId: string) => {
-    if (useFirebase) {
+    if (useSupabase) {
       try {
-        await deleteRecommendationFirebase(recId);
+        await deleteRecommendationSupabase(recId);
         // The subscription will update the state
       } catch (err) {
         console.error('Error deleting recommendation:', err);
@@ -148,7 +148,7 @@ export const RecommendationsProvider: React.FC<{ children: React.ReactNode }> = 
       saveUserRecsToStorage(updatedUserRecs);
       setRecommendations(prevRecs => prevRecs.filter(r => r.id !== recId));
     }
-  }, [useFirebase]);
+  }, [useSupabase]);
   
   const value = useMemo(() => ({
       recommendations, addRecommendation, updateRecommendation, deleteRecommendation, loading, error

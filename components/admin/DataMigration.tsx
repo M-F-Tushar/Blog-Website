@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { migrateDataToFirebase, getMigrationStatus, MigrationProgress } from '../../utils/migrateData';
-import { isFirebaseConfigured } from '../../services/firebase';
+import { migrateDataToSupabase, getMigrationStatus, MigrationProgress } from '../../utils/migrateToSupabase';
+import { isSupabaseConfigured } from '../../services/supabase';
 
 const DataMigration: React.FC = () => {
   const [migrationProgress, setMigrationProgress] = useState<MigrationProgress>({
@@ -14,7 +14,7 @@ const DataMigration: React.FC = () => {
   } | null>(null);
   const [isMigrating, setIsMigrating] = useState(false);
 
-  const firebaseConfigured = isFirebaseConfigured();
+  const supabaseConfigured = isSupabaseConfigured();
 
   useEffect(() => {
     // Check migration status on mount
@@ -27,16 +27,16 @@ const DataMigration: React.FC = () => {
       }
     };
 
-    if (firebaseConfigured) {
+    if (supabaseConfigured) {
       checkStatus();
     }
-  }, [firebaseConfigured]);
+  }, [supabaseConfigured]);
 
   const handleMigrate = async () => {
     setIsMigrating(true);
     
     try {
-      await migrateDataToFirebase((progress) => {
+      await migrateDataToSupabase((progress) => {
         setMigrationProgress(progress);
       });
 
@@ -50,7 +50,7 @@ const DataMigration: React.FC = () => {
     }
   };
 
-  if (!firebaseConfigured) {
+  if (!supabaseConfigured) {
     return (
       <div className="max-w-4xl mx-auto bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8">
         <h1 className="text-3xl font-bold font-serif text-center mb-8 text-gray-900 dark:text-white">
@@ -58,9 +58,9 @@ const DataMigration: React.FC = () => {
         </h1>
         
         <div className="bg-yellow-100 dark:bg-yellow-900 border-l-4 border-yellow-500 text-yellow-700 dark:text-yellow-200 p-4 mb-6">
-          <p className="font-bold">Firebase Not Configured</p>
+          <p className="font-bold">Supabase Not Configured</p>
           <p className="mt-2">
-            Firebase environment variables are not configured. Please set up Firebase configuration
+            Supabase environment variables are not configured. Please set up Supabase configuration
             in your <code className="bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded">.env</code> file
             before attempting to migrate data.
           </p>
@@ -68,15 +68,11 @@ const DataMigration: React.FC = () => {
             Required environment variables:
           </p>
           <ul className="list-disc list-inside mt-2 ml-4 space-y-1">
-            <li>VITE_FIREBASE_API_KEY</li>
-            <li>VITE_FIREBASE_AUTH_DOMAIN</li>
-            <li>VITE_FIREBASE_PROJECT_ID</li>
-            <li>VITE_FIREBASE_STORAGE_BUCKET</li>
-            <li>VITE_FIREBASE_MESSAGING_SENDER_ID</li>
-            <li>VITE_FIREBASE_APP_ID</li>
+            <li>VITE_SUPABASE_URL</li>
+            <li>VITE_SUPABASE_ANON_KEY</li>
           </ul>
           <p className="mt-4">
-            See <code className="bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded">FIREBASE_SETUP.md</code> for
+            See <code className="bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded">SUPABASE_SETUP.md</code> for
             detailed setup instructions.
           </p>
         </div>
@@ -93,7 +89,7 @@ const DataMigration: React.FC = () => {
       <div className="mb-8">
         <p className="text-gray-700 dark:text-gray-300 mb-4">
           This tool will migrate your initial posts and recommendations from <code className="bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded">constants.ts</code> to
-          Firebase Firestore. This should only be done once during initial setup.
+          Supabase. This should only be done once during initial setup.
         </p>
       </div>
 
@@ -101,8 +97,8 @@ const DataMigration: React.FC = () => {
         <div className="mb-6 p-4 bg-blue-50 dark:bg-blue-900 rounded-lg">
           <h3 className="font-semibold text-blue-900 dark:text-blue-100 mb-2">Current Status:</h3>
           <div className="text-blue-800 dark:text-blue-200">
-            <p>Posts in Firebase: <strong>{migrationStatus.postsCount}</strong></p>
-            <p>Recommendations in Firebase: <strong>{migrationStatus.recommendationsCount}</strong></p>
+            <p>Posts in Supabase: <strong>{migrationStatus.postsCount}</strong></p>
+            <p>Recommendations in Supabase: <strong>{migrationStatus.recommendationsCount}</strong></p>
             <p>
               Status: <strong>{migrationStatus.isComplete ? 'Data Already Migrated' : 'Ready to Migrate'}</strong>
             </p>
@@ -225,8 +221,8 @@ const DataMigration: React.FC = () => {
         <ul className="list-disc list-inside space-y-2 text-sm text-gray-700 dark:text-gray-300">
           <li>Migration is safe to run multiple times - it will skip if data already exists</li>
           <li>Initial posts and recommendations will be marked as read-only</li>
-          <li>After migration, all data will be managed through Firebase</li>
-          <li>Make sure your Firebase Firestore and Storage are properly configured</li>
+          <li>After migration, all data will be managed through Supabase</li>
+          <li>Make sure your Supabase database and storage are properly configured</li>
         </ul>
       </div>
     </div>
