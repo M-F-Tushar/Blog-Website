@@ -7,7 +7,10 @@ import { LoadingSpinner } from './common/LoadingSpinner';
 import { EmptyState } from './common/EmptyState';
 
 const Tags: React.FC = () => {
-    useSEO('All Tags', 'Browse all tags used in the blog posts.');
+    useSEO({
+        title: 'All Tags',
+        description: 'Browse all tags used in the blog posts.'
+    });
     const { posts, loading, error } = usePosts();
     
     const allTags = useMemo(() => {
