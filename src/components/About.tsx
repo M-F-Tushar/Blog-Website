@@ -5,7 +5,7 @@ import { useProfile } from '../hooks/useProfile';
 import { useSiteSettings } from '../hooks/useSiteSettings';
 
 const About: React.FC = () => {
-  const { authorName, authorBio } = useSiteSettings();
+  const { authorName, authorBio, authorTagline } = useSiteSettings();
   const { photoUrl } = useProfile();
   
   useSEO({
@@ -34,7 +34,7 @@ const About: React.FC = () => {
             Hi, I'm {authorName}
           </h1>
           <p className="mt-2 text-xl text-gray-600 dark:text-gray-400">
-            A passionate developer, lifelong learner, and technology enthusiast.
+            {authorTagline || 'A passionate developer, lifelong learner, and technology enthusiast.'}
           </p>
         </div>
       </div>
