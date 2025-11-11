@@ -29,9 +29,12 @@ const AdminLogin: React.FC = () => {
   return (
     <div className="max-w-md mx-auto bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8 mt-10">
       <h1 className="text-2xl font-bold font-serif text-center mb-6 text-gray-900 dark:text-white">Admin Login</h1>
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form onSubmit={handleSubmit} className="space-y-6" aria-label="Admin login form">
         <div>
-          <label htmlFor="password" className={labelClasses}>Password</label>
+          <label htmlFor="password" className={labelClasses}>
+            Password
+            <span className="sr-only"> (required)</span>
+          </label>
           <input
             type="password"
             id="password"
@@ -39,13 +42,21 @@ const AdminLogin: React.FC = () => {
             onChange={(e) => setPassword(e.target.value)}
             className={inputClasses}
             required
+            aria-required="true"
+            aria-invalid={error ? 'true' : 'false'}
+            aria-describedby={error ? 'password-error' : undefined}
           />
         </div>
-        {error && <p className="text-red-500 text-sm text-center">{error}</p>}
+        {error && (
+          <p id="password-error" className="text-red-500 text-sm text-center" role="alert" aria-live="polite">
+            {error}
+          </p>
+        )}
         <div className="text-center">
           <button
             type="submit"
             className="w-full px-6 py-2 bg-accent text-white font-semibold rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent dark:focus:ring-offset-dark-gray transition-colors"
+            aria-label="Submit login"
           >
             Login
           </button>
