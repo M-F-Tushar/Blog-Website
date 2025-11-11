@@ -42,9 +42,6 @@ const Header: React.FC = () => {
             <NavLink to="/blog" className={navLinkClasses} aria-label="Navigate to Blog">Blog</NavLink>
             <NavLink to="/recommendations" className={navLinkClasses} aria-label="Navigate to Recommendations">Recommendations</NavLink>
             <NavLink to="/contact" className={navLinkClasses} aria-label="Navigate to Contact">Contact</NavLink>
-            {isAuthenticated && (
-                <NavLink to="/admin/dashboard" className={navLinkClasses} aria-label="Navigate to Dashboard">Dashboard</NavLink>
-            )}
           </div>
           <div className="flex items-center space-x-2">
             <form onSubmit={handleSearch} className="hidden sm:block" role="search" aria-label="Site search">
