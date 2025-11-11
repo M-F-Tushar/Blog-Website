@@ -2,14 +2,12 @@ import React, { useState } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import ThemeToggle from './ThemeToggle';
 import { useSiteSettings } from '../hooks/useSiteSettings';
-import { useAuth } from '../hooks/useAuth';
 
 const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const navigate = useNavigate();
   const { siteName } = useSiteSettings();
-  const { isAuthenticated } = useAuth();
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -78,9 +76,6 @@ const Header: React.FC = () => {
           <NavLink to="/blog" className={navLinkClasses} onClick={() => setIsMenuOpen(false)} aria-label="Navigate to Blog">Blog</NavLink>
           <NavLink to="/recommendations" className={navLinkClasses} onClick={() => setIsMenuOpen(false)} aria-label="Navigate to Recommendations">Recommendations</NavLink>
           <NavLink to="/contact" className={navLinkClasses} onClick={() => setIsMenuOpen(false)} aria-label="Navigate to Contact">Contact</NavLink>
-          {isAuthenticated && (
-            <NavLink to="/admin/dashboard" className={navLinkClasses} onClick={() => setIsMenuOpen(false)} aria-label="Navigate to Dashboard">Dashboard</NavLink>
-          )}
           <form onSubmit={handleSearch} className="p-2" role="search" aria-label="Mobile search">
               <input
                 type="search"
