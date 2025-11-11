@@ -1,13 +1,8 @@
 import React, { useMemo } from 'react';
 import { useParams, Link, Navigate } from 'react-router-dom';
+import { marked } from 'marked';
 import { usePosts } from '../hooks/usePosts';
 import useSEO from '../hooks/useSEO';
-
-declare global {
-    interface Window {
-        marked: any;
-    }
-}
 
 const BlogPost: React.FC = () => {
   const { postId } = useParams<{ postId: string }>();
@@ -20,8 +15,8 @@ const BlogPost: React.FC = () => {
   useSEO(post?.title || 'Post Not Found', post?.excerpt || '');
 
   const renderedContent = useMemo(() => {
-    if (post?.content && window.marked) {
-        return { __html: window.marked.parse(post.content) };
+    if (post?.content) {
+        return { __html: marked.parse(post.content) };
     }
     return { __html: '<p>Content could not be rendered.</p>' };
   }, [post?.content]);
