@@ -3,10 +3,11 @@ import { marked } from 'marked';
 import useSEO from '../hooks/useSEO';
 import { useProfile } from '../hooks/useProfile';
 import { useSiteSettings } from '../hooks/useSiteSettings';
+import { LoadingSpinner } from './common/LoadingSpinner';
 
 const About: React.FC = () => {
-  const { authorName, authorBio, authorTagline } = useSiteSettings();
-  const { photoUrl } = useProfile();
+  const { authorName, authorBio, authorTagline, loading: settingsLoading } = useSiteSettings();
+  const { photoUrl, loading: profileLoading } = useProfile();
   
   useSEO({
     title: `About ${authorName}`,
@@ -20,6 +21,11 @@ const About: React.FC = () => {
     }
     return { __html: '' };
   }, [authorBio]);
+
+  // Show loading spinner while data is being fetched
+  if (settingsLoading || profileLoading) {
+    return <LoadingSpinner />;
+  }
 
   return (
     <div className="max-w-4xl mx-auto bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8 md:p-12">
