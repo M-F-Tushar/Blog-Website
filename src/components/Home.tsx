@@ -11,7 +11,10 @@ import { EmptyState } from './common/EmptyState';
 const Home: React.FC = () => {
   const { posts, featuredPostId, loading, error } = usePosts();
   const { authorName, authorTagline, siteDescription } = useSiteSettings();
-  useSEO('', siteDescription); // Use default title from site settings
+  useSEO({
+    description: siteDescription,
+    image: 'https://m-f-tushar.github.io/Blog-Website/images/og-image.jpg'
+  });
 
   const publishedPosts = useMemo(() => {
     return posts

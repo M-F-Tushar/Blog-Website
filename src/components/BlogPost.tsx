@@ -1,20 +1,46 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useEffect } from 'react';
 import { useParams, Link, Navigate } from 'react-router-dom';
 import { marked } from 'marked';
 import { usePosts } from '../hooks/usePosts';
+import { useSiteSettings } from '../hooks/useSiteSettings';
 import useSEO from '../hooks/useSEO';
 import { SkeletonPost } from './common/LoadingSpinner';
 import { EmptyState } from './common/EmptyState';
+import { generateBlogPostSchema } from '../utils/structuredData';
 
 const BlogPost: React.FC = () => {
   const { postId } = useParams<{ postId: string }>();
   const { posts, loading } = usePosts();
+  const { authorName } = useSiteSettings();
 
   const post = useMemo(() => {
     return posts.find(p => p.id === postId);
   }, [postId, posts]);
   
-  useSEO(post?.title || 'Post Not Found', post?.excerpt || '');
+  useSEO({
+    title: post?.title,
+    description: post?.excerpt,
+    image: post?.coverImage,
+    type: 'article',
+    author: authorName,
+    publishedTime: post?.date,
+    tags: post?.tags,
+    canonicalUrl: `https://m-f-tushar.github.io/Blog-Website/#/blog/${postId}`
+  });
+
+  // Add structured data for blog post
+  useEffect(() => {
+    if (post) {
+      const script = document.createElement('script');
+      script.type = 'application/ld+json';
+      script.text = JSON.stringify(generateBlogPostSchema(post, authorName));
+      document.head.appendChild(script);
+      
+      return () => {
+        document.head.removeChild(script);
+      };
+    }
+  }, [post, authorName]);
 
   const renderedContent = useMemo(() => {
     if (post?.content) {

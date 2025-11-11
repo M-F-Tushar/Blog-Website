@@ -1,0 +1,12 @@
+User-agent: *
+Allow: /
+
+# Disallow admin pages
+Disallow: /#/admin
+Disallow: /#/admin/*
+
+# Sitemap
+Sitemap: https://m-f-tushar.github.io/Blog-Website/sitemap.xml
+
+# Crawl delay (optional)
+Crawl-delay: 1

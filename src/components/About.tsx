@@ -6,8 +6,13 @@ import { useSiteSettings } from '../hooks/useSiteSettings';
 
 const About: React.FC = () => {
   const { authorName, authorBio } = useSiteSettings();
-  useSEO(`About ${authorName}`, `Learn more about ${authorName}, the author of this blog.`);
   const { photoUrl } = useProfile();
+  
+  useSEO({
+    title: `About ${authorName}`,
+    description: `Learn more about ${authorName}, web developer and CS student.`,
+    image: photoUrl || 'https://m-f-tushar.github.io/Blog-Website/images/og-image.jpg'
+  });
 
   const renderedBio = useMemo(() => {
     if (authorBio) {

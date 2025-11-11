@@ -40,7 +40,10 @@ const RecommendationCard: React.FC<{ item: Recommendation }> = ({ item }) => {
 };
 
 const Recommendations: React.FC = () => {
-  useSEO('Recommendations', 'A curated list of articles, tools, books, and other valuable resources recommended by Mahir Faysal Tushar.');
+  useSEO({
+    title: 'Recommendations',
+    description: 'My favorite tools, resources, and content for web developers.'
+  });
   const { recommendations, loading, error } = useRecommendations();
 
   if (loading) {
