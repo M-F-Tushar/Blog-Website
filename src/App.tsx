@@ -22,6 +22,7 @@ import RecommendationForm from './components/admin/RecommendationForm';
 import AdminSiteSettings from './components/admin/AdminSiteSettings';
 import AdminProfileSettings from './components/admin/AdminProfileSettings';
 import DataMigration from './components/admin/DataMigration';
+import { ErrorBoundary } from './components/common/ErrorBoundary';
 
 const MainLayout: React.FC = () => {
   return (
@@ -37,35 +38,37 @@ const MainLayout: React.FC = () => {
 
 function App() {
   return (
-    <HashRouter>
-      <Routes>
-        <Route path="/" element={<MainLayout />}>
-          <Route index element={<Home />} />
-          <Route path="about" element={<About />} />
-          <Route path="blog" element={<Blog />} />
-          <Route path="blog/:postId" element={<BlogPost />} />
-          <Route path="recommendations" element={<Recommendations />} />
-          <Route path="contact" element={<Contact />} />
-          <Route path="search" element={<Search />} />
-          <Route path="tags" element={<Tags />} />
-          <Route path="tags/:tagName" element={<TagPage />} />
-        </Route>
-        <Route path="/admin/login" element={<AdminLogin />} />
-        <Route path="/admin" element={<AdminLayout />}>
-          <Route element={<AdminRootLayout />}>
-            <Route path="dashboard" element={<AdminDashboard />} />
-            <Route path="posts/create" element={<CreatePost />} />
-            <Route path="posts/edit/:postId" element={<CreatePost />} />
-            <Route path="recommendations" element={<AdminRecommendationsDashboard />} />
-            <Route path="recommendations/create" element={<RecommendationForm />} />
-            <Route path="recommendations/edit/:recId" element={<RecommendationForm />} />
-            <Route path="settings/site" element={<AdminSiteSettings />} />
-            <Route path="settings/profile" element={<AdminProfileSettings />} />
-            <Route path="migrate" element={<DataMigration />} />
+    <ErrorBoundary>
+      <HashRouter>
+        <Routes>
+          <Route path="/" element={<MainLayout />}>
+            <Route index element={<Home />} />
+            <Route path="about" element={<About />} />
+            <Route path="blog" element={<Blog />} />
+            <Route path="blog/:postId" element={<BlogPost />} />
+            <Route path="recommendations" element={<Recommendations />} />
+            <Route path="contact" element={<Contact />} />
+            <Route path="search" element={<Search />} />
+            <Route path="tags" element={<Tags />} />
+            <Route path="tags/:tagName" element={<TagPage />} />
           </Route>
-        </Route>
-      </Routes>
-    </HashRouter>
+          <Route path="/admin/login" element={<AdminLogin />} />
+          <Route path="/admin" element={<AdminLayout />}>
+            <Route element={<AdminRootLayout />}>
+              <Route path="dashboard" element={<AdminDashboard />} />
+              <Route path="posts/create" element={<CreatePost />} />
+              <Route path="posts/edit/:postId" element={<CreatePost />} />
+              <Route path="recommendations" element={<AdminRecommendationsDashboard />} />
+              <Route path="recommendations/create" element={<RecommendationForm />} />
+              <Route path="recommendations/edit/:recId" element={<RecommendationForm />} />
+              <Route path="settings/site" element={<AdminSiteSettings />} />
+              <Route path="settings/profile" element={<AdminProfileSettings />} />
+              <Route path="migrate" element={<DataMigration />} />
+            </Route>
+          </Route>
+        </Routes>
+      </HashRouter>
+    </ErrorBoundary>
   );
 }
 

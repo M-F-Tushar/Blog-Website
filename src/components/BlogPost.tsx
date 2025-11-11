@@ -3,10 +3,12 @@ import { useParams, Link, Navigate } from 'react-router-dom';
 import { marked } from 'marked';
 import { usePosts } from '../hooks/usePosts';
 import useSEO from '../hooks/useSEO';
+import { SkeletonPost } from './common/LoadingSpinner';
+import { EmptyState } from './common/EmptyState';
 
 const BlogPost: React.FC = () => {
   const { postId } = useParams<{ postId: string }>();
-  const { posts } = usePosts();
+  const { posts, loading } = usePosts();
 
   const post = useMemo(() => {
     return posts.find(p => p.id === postId);
@@ -21,8 +23,20 @@ const BlogPost: React.FC = () => {
     return { __html: '<p>Content could not be rendered.</p>' };
   }, [post?.content]);
 
+  if (loading) {
+    return <SkeletonPost />;
+  }
+
   if (!post) {
-    return <Navigate to="/404" replace />; // Or render a "Not Found" component
+    return (
+      <EmptyState
+        icon="🔍"
+        title="Post Not Found"
+        description="The blog post you're looking for doesn't exist or has been removed."
+        actionLabel="Back to Blog"
+        actionLink="/blog"
+      />
+    );
   }
 
   return (

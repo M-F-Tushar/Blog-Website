@@ -5,9 +5,11 @@ import { useSiteSettings } from '../hooks/useSiteSettings';
 import { PostStatus } from '../types/types';
 import Card from './Card';
 import useSEO from '../hooks/useSEO';
+import { SkeletonCard } from './common/LoadingSpinner';
+import { EmptyState } from './common/EmptyState';
 
 const Home: React.FC = () => {
-  const { posts, featuredPostId } = usePosts();
+  const { posts, featuredPostId, loading, error } = usePosts();
   const { authorName, authorTagline, siteDescription } = useSiteSettings();
   useSEO('', siteDescription); // Use default title from site settings
 
@@ -25,6 +27,67 @@ const Home: React.FC = () => {
       const postsWithoutFeatured = featuredPost ? publishedPosts.filter(p => p.id !== featuredPost.id) : publishedPosts;
       return postsWithoutFeatured.slice(0, 3);
   }, [publishedPosts, featuredPost]);
+
+  // Add loading state
+  if (loading) {
+    return (
+      <div className="space-y-16">
+        <section className="text-center py-10 md:py-16">
+          <h1 className="text-4xl md:text-5xl font-bold font-serif text-gray-900 dark:text-white">
+            Hi, I'm {authorName}
+          </h1>
+          <p className="mt-4 text-lg md:text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+            {authorTagline}
+          </p>
+        </section>
+        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+          <SkeletonCard />
+          <SkeletonCard />
+          <SkeletonCard />
+        </div>
+      </div>
+    );
+  }
+
+  // Add error state
+  if (error) {
+    return (
+      <EmptyState
+        icon="⚠️"
+        title="Failed to Load Posts"
+        description={error}
+        actionLabel="Try Again"
+        actionLink="/"
+      />
+    );
+  }
+
+  // Add empty state
+  if (publishedPosts.length === 0) {
+    return (
+      <div className="space-y-16">
+        <section className="text-center py-10 md:py-16">
+          <h1 className="text-4xl md:text-5xl font-bold font-serif text-gray-900 dark:text-white">
+            Hi, I'm {authorName}
+          </h1>
+          <p className="mt-4 text-lg md:text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+            {authorTagline}
+          </p>
+          <div className="mt-8 flex justify-center space-x-4">
+            <Link to="/about" className="px-6 py-3 bg-accent text-white font-semibold rounded-md shadow-md hover:bg-indigo-700 transition-colors">
+              About Me
+            </Link>
+          </div>
+        </section>
+        
+        <EmptyState
+          icon="✍️"
+          title="No Posts Yet"
+          description="I'm working on my first blog post. Check back soon for exciting content!"
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-16">

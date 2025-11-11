@@ -2,6 +2,8 @@ import React from 'react';
 import { useRecommendations } from '../hooks/useRecommendations';
 import { Recommendation } from '../types/types';
 import useSEO from '../hooks/useSEO';
+import { LoadingSpinner } from './common/LoadingSpinner';
+import { EmptyState } from './common/EmptyState';
 
 const RecommendationCard: React.FC<{ item: Recommendation }> = ({ item }) => {
   const typeColorMap: { [key: string]: string } = {
@@ -39,7 +41,41 @@ const RecommendationCard: React.FC<{ item: Recommendation }> = ({ item }) => {
 
 const Recommendations: React.FC = () => {
   useSEO('Recommendations', 'A curated list of articles, tools, books, and other valuable resources recommended by Mahir Faysal Tushar.');
-  const { recommendations } = useRecommendations();
+  const { recommendations, loading, error } = useRecommendations();
+
+  if (loading) {
+    return (
+      <div className="space-y-8">
+        <h1 className="text-4xl font-bold font-serif text-gray-900 dark:text-white">Recommendations</h1>
+        <LoadingSpinner />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <EmptyState
+        icon="⚠️"
+        title="Error Loading Recommendations"
+        description={error}
+      />
+    );
+  }
+
+  if (recommendations.length === 0) {
+    return (
+      <div className="space-y-8">
+        <h1 className="text-4xl font-bold font-serif text-gray-900 dark:text-white">Recommendations</h1>
+        <EmptyState
+          icon="⭐"
+          title="No Recommendations Yet"
+          description="I'll be adding my favorite tools, resources, and content soon!"
+          actionLabel="Go Home"
+          actionLink="/"
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-12">
