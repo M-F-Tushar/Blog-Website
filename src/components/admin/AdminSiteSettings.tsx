@@ -12,6 +12,8 @@ const AdminSiteSettings: React.FC = () => {
   });
   const [newCategory, setNewCategory] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
+  const [saving, setSaving] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -29,11 +31,23 @@ const AdminSiteSettings: React.FC = () => {
     }));
   };
 
-  const handleSettingsSubmit = (e: React.FormEvent) => {
+  const handleSettingsSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    updateSettings(formState);
-    setSuccessMessage('Site settings updated successfully!');
-    setTimeout(() => setSuccessMessage(''), 3000);
+    setSaving(true);
+    setErrorMessage('');
+    setSuccessMessage('');
+    
+    try {
+      await updateSettings(formState);
+      setSuccessMessage('Site settings updated successfully!');
+      setTimeout(() => setSuccessMessage(''), 3000);
+    } catch (error) {
+      console.error('Failed to update settings:', error);
+      setErrorMessage('Failed to update site settings. Please try again.');
+      setTimeout(() => setErrorMessage(''), 5000);
+    } finally {
+      setSaving(false);
+    }
   };
   
   const handleAddCategory = (e: React.FormEvent) => {
@@ -72,9 +86,16 @@ const AdminSiteSettings: React.FC = () => {
         </div>
         
         <div className="text-right">
-          <button type="submit" className="px-6 py-2 bg-accent text-white font-semibold rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent">Save All Settings</button>
+          <button 
+            type="submit" 
+            disabled={saving}
+            className="px-6 py-2 bg-accent text-white font-semibold rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {saving ? 'Saving...' : 'Save All Settings'}
+          </button>
         </div>
         {successMessage && <p className="text-green-600 text-center mt-4">{successMessage}</p>}
+        {errorMessage && <p className="text-red-600 text-center mt-4">{errorMessage}</p>}
       </form>
       
       {/* Category Management */}
