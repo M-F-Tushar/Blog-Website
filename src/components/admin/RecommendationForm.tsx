@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useRecommendations } from '../../hooks/useRecommendations';
-import { RecommendationType, Recommendation } from '../../types';
+import { RecommendationType, Recommendation } from '../../types/types';
 
 const RecommendationForm: React.FC = () => {
   const { recId } = useParams<{ recId?: string }>();

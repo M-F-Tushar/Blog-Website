@@ -1,5 +1,5 @@
 import React from 'react';
-import { Post, Recommendation, RecommendationType, PostStatus, Category } from './types';
+import { Post, Recommendation, RecommendationType, PostStatus, Category } from '../types/types';
 
 /**
  * IMPORTANT: These constants serve as fallback data when Supabase is not configured.

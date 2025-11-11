@@ -1,5 +1,5 @@
 import { supabase, recommendationToDatabase, recommendationFromDatabase } from './supabase';
-import { Recommendation } from '../types';
+import { Recommendation } from '../types/types';
 
 const RECOMMENDATIONS_TABLE = 'recommendations';
 

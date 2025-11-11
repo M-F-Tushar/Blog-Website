@@ -2,7 +2,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { usePosts } from '../../hooks/usePosts';
-import { Post } from '../../types';
+import { Post } from '../../types/types';
 import DashboardAnalytics from './DashboardAnalytics';
 
 const AdminDashboard: React.FC = () => {

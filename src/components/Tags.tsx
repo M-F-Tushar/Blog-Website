@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { usePosts } from '../hooks/usePosts';
-import { PostStatus } from '../types';
+import { PostStatus } from '../types/types';
 import useSEO from '../hooks/useSEO';
 
 const Tags: React.FC = () => {

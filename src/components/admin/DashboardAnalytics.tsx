@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { usePosts } from '../../hooks/usePosts';
 import { useRecommendations } from '../../hooks/useRecommendations';
-import { PostStatus } from '../../types';
+import { PostStatus } from '../../types/types';
 import { useSiteSettings } from '../../hooks/useSiteSettings';
 
 interface StatCardProps {

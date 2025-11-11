@@ -1,5 +1,5 @@
 import { supabase, postToDatabase, postFromDatabase } from './supabase';
-import { Post } from '../types';
+import { Post } from '../types/types';
 
 const POSTS_TABLE = 'posts';
 

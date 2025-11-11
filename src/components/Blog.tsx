@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import Card from './Card';
 import { usePosts } from '../hooks/usePosts';
-import { PostStatus } from '../types';
+import { PostStatus } from '../types/types';
 import Pagination from './Pagination';
 import useSEO from '../hooks/useSEO';
 

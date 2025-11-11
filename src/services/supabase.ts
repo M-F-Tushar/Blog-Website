@@ -1,5 +1,5 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
-import { Post, Recommendation } from '../types';
+import { Post, Recommendation } from '../types/types';
 
 // Supabase configuration from environment variables
 const supabaseUrl = (import.meta as any).env.VITE_SUPABASE_URL;

@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
-import './index.css';
+import '../index.css';
 import { ThemeProvider } from './hooks/useTheme';
 import { PostsProvider } from './hooks/usePosts';
 import { RecommendationsProvider } from './hooks/useRecommendations';
