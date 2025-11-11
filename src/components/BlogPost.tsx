@@ -7,6 +7,8 @@ import useSEO from '../hooks/useSEO';
 import { SkeletonPost } from './common/LoadingSpinner';
 import { EmptyState } from './common/EmptyState';
 import { generateBlogPostSchema } from '../utils/structuredData';
+import { calculateReadingTime, formatReadingTime } from '../utils/readingTime';
+import ShareButtons from './common/ShareButtons';
 
 const BlogPost: React.FC = () => {
   const { postId } = useParams<{ postId: string }>();
@@ -65,6 +67,9 @@ const BlogPost: React.FC = () => {
     );
   }
 
+  const readingTime = calculateReadingTime(post.content);
+  const currentUrl = window.location.href;
+
   return (
     <article className="max-w-3xl mx-auto bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden">
       {post.coverImage && (
@@ -72,8 +77,12 @@ const BlogPost: React.FC = () => {
       )}
       <div className="p-8 md:p-12">
         <header className="mb-8">
-          <div className="text-sm text-gray-500 dark:text-gray-400">
-            <span>{post.date}</span> &bull; <span>{post.category}</span>
+          <div className="text-sm text-gray-500 dark:text-gray-400 flex items-center space-x-2">
+            <span>{post.date}</span>
+            <span>&bull;</span>
+            <span>{post.category}</span>
+            <span>&bull;</span>
+            <span>{formatReadingTime(readingTime)}</span>
           </div>
           <h1 className="text-4xl md:text-5xl font-bold font-serif text-gray-900 dark:text-white mt-2">
             {post.title}
@@ -96,7 +105,15 @@ const BlogPost: React.FC = () => {
           dangerouslySetInnerHTML={renderedContent}
         />
         
-        <div className="mt-12 pt-8 border-t border-gray-200 dark:border-gray-700">
+        <div className="mt-8 pt-6 border-t border-gray-200 dark:border-gray-700">
+          <ShareButtons 
+            url={currentUrl}
+            title={post.title}
+            description={post.excerpt}
+          />
+        </div>
+        
+        <div className="mt-6">
             <Link to="/blog" className="text-accent hover:underline">
                 &larr; Back to Blog
             </Link>
