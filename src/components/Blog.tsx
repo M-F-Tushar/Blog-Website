@@ -4,12 +4,14 @@ import { usePosts } from '../hooks/usePosts';
 import { PostStatus } from '../types/types';
 import Pagination from './Pagination';
 import useSEO from '../hooks/useSEO';
+import { SkeletonCard } from './common/LoadingSpinner';
+import { EmptyState } from './common/EmptyState';
 
 const POSTS_PER_PAGE = 6;
 
 const Blog: React.FC = () => {
   useSEO('Blog', 'Read the latest articles on technology, life, and personal reflections.');
-  const { posts } = usePosts();
+  const { posts, loading, error } = usePosts();
   const [currentPage, setCurrentPage] = useState(1);
   
   const publishedPosts = useMemo(() => {
@@ -29,6 +31,44 @@ const Blog: React.FC = () => {
     setCurrentPage(page);
     window.scrollTo(0, 0);
   };
+
+  if (loading) {
+    return (
+      <div className="space-y-8">
+        <h1 className="text-4xl font-bold font-serif text-gray-900 dark:text-white">Blog</h1>
+        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+          <SkeletonCard />
+          <SkeletonCard />
+          <SkeletonCard />
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <EmptyState
+        icon="⚠️"
+        title="Error Loading Posts"
+        description={error}
+      />
+    );
+  }
+
+  if (publishedPosts.length === 0) {
+    return (
+      <div className="space-y-8">
+        <h1 className="text-4xl font-bold font-serif text-gray-900 dark:text-white">Blog</h1>
+        <EmptyState
+          icon="📝"
+          title="No Blog Posts Yet"
+          description="New content is coming soon! Check back later for interesting articles and tutorials."
+          actionLabel="Go Home"
+          actionLink="/"
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-12">

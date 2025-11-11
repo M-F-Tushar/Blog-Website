@@ -3,6 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import { usePosts } from '../hooks/usePosts';
 import Card from './Card';
 import useSEO from '../hooks/useSEO';
+import { EmptyState } from './common/EmptyState';
 
 const Search: React.FC = () => {
   const [searchParams] = useSearchParams();
@@ -46,9 +47,13 @@ const Search: React.FC = () => {
             ))}
           </div>
         ) : (
-          <div className="text-center py-10">
-            <p className="text-xl text-gray-500 dark:text-gray-400">No posts found matching your search.</p>
-          </div>
+          <EmptyState
+            icon="🔍"
+            title="No Results Found"
+            description={`No posts found for "${query}". Try a different search term.`}
+            actionLabel="Clear Search"
+            actionLink="/search"
+          />
         )
       ) : (
         <div className="text-center py-10">
