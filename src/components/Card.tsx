@@ -1,12 +1,15 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Post } from '../types/types';
+import { calculateReadingTime, formatReadingTime } from '../utils/readingTime';
 
 interface CardProps {
   post: Post;
 }
 
 const Card: React.FC<CardProps> = ({ post }) => {
+  const readingTime = calculateReadingTime(post.content);
+  
   return (
     <article className="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden flex flex-col h-full group" aria-labelledby={`post-title-${post.id}`}>
       {post.coverImage && (
@@ -20,7 +23,11 @@ const Card: React.FC<CardProps> = ({ post }) => {
       )}
       <div className="p-6 flex flex-col flex-grow">
         <header className="flex-grow">
-            <time className="text-sm text-gray-500 dark:text-gray-400" dateTime={post.date}>{post.date}</time>
+            <div className="flex items-center text-sm text-gray-500 dark:text-gray-400 space-x-2">
+              <time dateTime={post.date}>{post.date}</time>
+              <span>&bull;</span>
+              <span>{formatReadingTime(readingTime)}</span>
+            </div>
             <h2 id={`post-title-${post.id}`} className="text-xl font-bold font-serif mt-2 mb-2 text-gray-900 dark:text-white">
             <Link to={`/blog/${post.id}`} className="hover:text-accent dark:hover:text-accent-light transition-colors" aria-label={`Read full article: ${post.title}`}>
                 {post.title}

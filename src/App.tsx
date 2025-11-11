@@ -24,6 +24,8 @@ import AdminProfileSettings from './components/admin/AdminProfileSettings';
 import DataMigration from './components/admin/DataMigration';
 import { ErrorBoundary } from './components/common/ErrorBoundary';
 import SkipToContent from './components/common/SkipToContent';
+import BackToTop from './components/common/BackToTop';
+import NotFound from './components/NotFound';
 
 const MainLayout: React.FC = () => {
   return (
@@ -53,6 +55,7 @@ function App() {
             <Route path="search" element={<Search />} />
             <Route path="tags" element={<Tags />} />
             <Route path="tags/:tagName" element={<TagPage />} />
+            <Route path="*" element={<NotFound />} />
           </Route>
           <Route path="/admin/login" element={<AdminLogin />} />
           <Route path="/admin" element={<AdminLayout />}>
@@ -69,6 +72,7 @@ function App() {
             </Route>
           </Route>
         </Routes>
+        <BackToTop />
       </HashRouter>
     </ErrorBoundary>
   );
