@@ -4,12 +4,12 @@ import { useAuth } from '../../hooks/useAuth';
 import { useSiteSettings } from '../../hooks/useSiteSettings';
 
 const AdminSidebar: React.FC = () => {
-    const { logout } = useAuth();
+    const { signOut } = useAuth();
     const navigate = useNavigate();
     const { authorName } = useSiteSettings();
 
-    const handleLogout = () => {
-        logout();
+    const handleLogout = async () => {
+        await signOut();
         navigate('/admin/login');
     };
     

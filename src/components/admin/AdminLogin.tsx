@@ -3,10 +3,12 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 
 const AdminLogin: React.FC = () => {
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const { login, isAuthenticated } = useAuth();
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { signIn, isAuthenticated } = useAuth();
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -14,54 +16,72 @@ const AdminLogin: React.FC = () => {
     }
   }, [isAuthenticated, navigate]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-    const success = login(password);
-    if (!success) {
-      setError('Incorrect password. Please try again.');
+    setLoading(true);
+
+    const result = await signIn(email, password);
+
+    if (result.success) {
+      navigate('/admin/dashboard');
+    } else {
+      setError(result.error || 'Invalid credentials');
     }
+    
+    setLoading(false);
   };
 
-  const inputClasses = "w-full px-3 py-2 text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-accent transition-colors duration-200";
-  const labelClasses = "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1";
+  const inputClasses = "w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-accent focus:border-transparent dark:bg-gray-700 dark:text-white";
+  const labelClasses = "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2";
 
   return (
-    <div className="max-w-md mx-auto bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8 mt-10">
-      <h1 className="text-2xl font-bold font-serif text-center mb-6 text-gray-900 dark:text-white">Admin Login</h1>
-      <form onSubmit={handleSubmit} className="space-y-6" aria-label="Admin login form">
-        <div>
-          <label htmlFor="password" className={labelClasses}>
-            Password
-            <span className="sr-only"> (required)</span>
-          </label>
-          <input
-            type="password"
-            id="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className={inputClasses}
-            required
-            aria-required="true"
-            aria-invalid={error ? 'true' : 'false'}
-            aria-describedby={error ? 'password-error' : undefined}
-          />
-        </div>
-        {error && (
-          <p id="password-error" className="text-red-500 text-sm text-center" role="alert" aria-live="polite">
-            {error}
-          </p>
-        )}
-        <div className="text-center">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
+      <div className="max-w-md w-full bg-white dark:bg-gray-800 shadow-lg rounded-lg p-8">
+        <h1 className="text-3xl font-bold text-center text-gray-900 dark:text-white mb-8">
+          Admin Login
+        </h1>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div>
+            <label htmlFor="email" className={labelClasses}>
+              Email
+            </label>
+            <input
+              type="email"
+              id="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className={inputClasses}
+              required
+              disabled={loading}
+            />
+          </div>
+          <div>
+            <label htmlFor="password" className={labelClasses}>
+              Password
+            </label>
+            <input
+              type="password"
+              id="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className={inputClasses}
+              required
+              disabled={loading}
+            />
+          </div>
+          {error && (
+            <p className="text-red-500 text-sm text-center">{error}</p>
+          )}
           <button
             type="submit"
-            className="w-full px-6 py-2 bg-accent text-white font-semibold rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent dark:focus:ring-offset-dark-gray transition-colors"
-            aria-label="Submit login"
+            disabled={loading}
+            className="w-full px-6 py-2 bg-accent text-white font-semibold rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent transition-colors disabled:opacity-50"
           >
-            Login
+            {loading ? 'Logging in...' : 'Login'}
           </button>
-        </div>
-      </form>
+        </form>
+      </div>
     </div>
   );
 };

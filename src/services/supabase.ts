@@ -38,7 +38,13 @@ let supabase: SupabaseClient<Database> | null = null;
 
 if (isSupabaseConfigured()) {
   try {
-    supabase = createClient<Database>(supabaseUrl!, supabaseAnonKey!);
+    supabase = createClient<Database>(supabaseUrl!, supabaseAnonKey!, {
+      auth: {
+        autoRefreshToken: true,
+        persistSession: true,
+        detectSessionInUrl: true
+      }
+    });
     console.log('Supabase initialized successfully');
   } catch (error) {
     console.error('Error initializing Supabase:', error);

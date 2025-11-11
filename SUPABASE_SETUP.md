@@ -146,7 +146,6 @@ CREATE INDEX idx_recommendations_created_at ON recommendations(created_at DESC);
 ```bash
 VITE_SUPABASE_URL=your_project_url_here
 VITE_SUPABASE_ANON_KEY=your_anon_key_here
-VITE_ADMIN_PASSWORD=your_secure_password_here
 ```
 
 2. Replace the placeholder values with your actual Supabase credentials
@@ -154,22 +153,31 @@ VITE_ADMIN_PASSWORD=your_secure_password_here
 
 **Important:** Never commit your `.env` file to Git! It's already in `.gitignore`.
 
-### Step 7: Configure GitHub Secrets (for deployment)
+### Step 7: Create Admin User in Supabase
+
+1. In your Supabase dashboard, click "Authentication" in the left sidebar
+2. Click on the "Users" tab
+3. Click "Add user" → "Create new user"
+4. Fill in the details:
+   - **Email**: Your admin email address
+   - **Password**: A strong password (save it securely!)
+   - **Auto Confirm User**: ✅ **Check this box**
+5. Click "Create user"
+6. Save your email and password - you'll use these to log into the admin dashboard
+
+### Step 8: Configure GitHub Secrets (for deployment)
 
 1. Go to your GitHub repository
 2. Click "Settings" → "Secrets and variables" → "Actions"
-3. Click "New repository secret" and add these three secrets:
+3. Click "New repository secret" and add these two secrets:
 
    - Name: `VITE_SUPABASE_URL`  
      Value: Your Supabase project URL
    
    - Name: `VITE_SUPABASE_ANON_KEY`  
      Value: Your Supabase anon key
-   
-   - Name: `VITE_ADMIN_PASSWORD`  
-     Value: Your admin password
 
-### Step 8: Run Data Migration
+### Step 9: Run Data Migration
 
 1. Start your local development server:
    ```bash
@@ -178,14 +186,14 @@ VITE_ADMIN_PASSWORD=your_secure_password_here
    ```
 
 2. Open http://localhost:5173 in your browser
-3. Go to the admin login page: `/admin`
-4. Log in with your admin password
+3. Go to the admin login page: `/admin/login`
+4. Log in with your Supabase admin email and password (created in Step 7)
 5. Navigate to "Data Migration" in the admin dashboard
 6. Click "Migrate Data from constants.ts"
 7. Wait for the migration to complete (should take a few seconds)
 8. Verify success message showing posts and recommendations migrated
 
-### Step 9: Verify Everything Works
+### Step 10: Verify Everything Works
 
 1. Go back to your Supabase dashboard
 2. Click "Table Editor" in the left sidebar
