@@ -7,7 +7,10 @@ import useSEO from '../hooks/useSEO';
 
 const TagPage: React.FC = () => {
   const { tagName } = useParams<{ tagName: string }>();
-  useSEO(`Posts tagged with "${tagName}"`, `Find all articles and posts tagged with "${tagName}".`);
+  useSEO({
+    title: `Posts tagged with "${tagName}"`,
+    description: `Find all articles and posts tagged with "${tagName}".`
+  });
   const { posts } = usePosts();
 
   const filteredPosts = useMemo(() => {

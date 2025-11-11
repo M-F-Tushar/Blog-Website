@@ -10,7 +10,10 @@ import { EmptyState } from './common/EmptyState';
 const POSTS_PER_PAGE = 6;
 
 const Blog: React.FC = () => {
-  useSEO('Blog', 'Read the latest articles on technology, life, and personal reflections.');
+  useSEO({
+    title: 'Blog',
+    description: 'Read my latest articles about web development, programming, and technology.'
+  });
   const { posts, loading, error } = usePosts();
   const [currentPage, setCurrentPage] = useState(1);
   

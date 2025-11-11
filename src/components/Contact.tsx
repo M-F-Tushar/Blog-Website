@@ -4,7 +4,10 @@ import { useSiteSettings } from '../hooks/useSiteSettings';
 
 const Contact: React.FC = () => {
     const { authorName, socialLinks } = useSiteSettings();
-    useSEO('Contact', `Get in touch with ${authorName}.`);
+    useSEO({
+        title: 'Contact',
+        description: `Get in touch with ${authorName}.`
+    });
 
     return (
         <div className="max-w-2xl mx-auto text-center">
