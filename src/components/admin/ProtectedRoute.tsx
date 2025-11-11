@@ -1,9 +1,13 @@
 import React from 'react';
-import { Navigate, Outlet } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import { LoadingSpinner } from '../common/LoadingSpinner';
 
-const AdminLayout: React.FC = () => {
+interface ProtectedRouteProps {
+  children: React.ReactNode;
+}
+
+const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   const { isAuthenticated, loading } = useAuth();
 
   if (loading) {
@@ -14,7 +18,7 @@ const AdminLayout: React.FC = () => {
     return <Navigate to="/admin/login" replace />;
   }
 
-  return <Outlet />;
+  return <>{children}</>;
 };
 
-export default AdminLayout;
+export default ProtectedRoute;

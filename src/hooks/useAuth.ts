@@ -1,38 +1,86 @@
-import React, { createContext, useContext, useState, useMemo, ReactNode } from 'react';
-
-// This is a simple client-side password. In a real-world application,
-// this would be handled by a secure backend authentication system.
-const ADMIN_PASSWORD = (import.meta as any).env.VITE_ADMIN_PASSWORD || 'password123';
+import React, { createContext, useContext, useState, useEffect, useCallback, useMemo, ReactNode } from 'react';
+import { authService } from '../services/authService';
+import type { User, Session } from '@supabase/supabase-js';
 
 interface AuthContextType {
+  user: User | null;
+  session: Session | null;
+  loading: boolean;
   isAuthenticated: boolean;
-  login: (password: string) => boolean;
-  logout: () => void;
+  signIn: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
+  signOut: () => Promise<{ success: boolean; error?: string }>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
-    // Check session storage to see if user was already logged in
-    return sessionStorage.getItem('isAuthenticated') === 'true';
-  });
+  const [user, setUser] = useState<User | null>(null);
+  const [session, setSession] = useState<Session | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  const login = (password: string): boolean => {
-    if (password === ADMIN_PASSWORD) {
-      sessionStorage.setItem('isAuthenticated', 'true');
+  useEffect(() => {
+    // Check active session on mount
+    authService.getSession().then((session) => {
+      setSession(session);
+      setUser(session?.user ?? null);
+      setIsAuthenticated(!!session);
+      setLoading(false);
+    });
+
+    // Listen for auth changes
+    const { data: { subscription } } = authService.onAuthStateChange(
+      async (event, session) => {
+        setSession(session);
+        setUser(session?.user ?? null);
+        setIsAuthenticated(!!session);
+        setLoading(false);
+      }
+    );
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
+
+  const signIn = useCallback(async (email: string, password: string) => {
+    setLoading(true);
+    try {
+      const data = await authService.signIn(email, password);
+      setSession(data.session);
+      setUser(data.user);
       setIsAuthenticated(true);
-      return true;
+      return { success: true };
+    } catch (error: any) {
+      return { success: false, error: error.message };
+    } finally {
+      setLoading(false);
     }
-    return false;
-  };
+  }, []);
 
-  const logout = () => {
-    sessionStorage.removeItem('isAuthenticated');
-    setIsAuthenticated(false);
-  };
-  
-  const value = useMemo(() => ({ isAuthenticated, login, logout }), [isAuthenticated]);
+  const signOut = useCallback(async () => {
+    setLoading(true);
+    try {
+      await authService.signOut();
+      setSession(null);
+      setUser(null);
+      setIsAuthenticated(false);
+      return { success: true };
+    } catch (error: any) {
+      return { success: false, error: error.message };
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  const value = useMemo(() => ({
+    user,
+    session,
+    loading,
+    isAuthenticated,
+    signIn,
+    signOut,
+  }), [user, session, loading, isAuthenticated, signIn, signOut]);
 
   return React.createElement(AuthContext.Provider, { value }, children);
 };
