@@ -39,6 +39,7 @@ CREATE TABLE site_settings (
   social_linkedin TEXT,
   social_twitter TEXT,
   social_email TEXT,
+  featured_post_id UUID REFERENCES posts(id),
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
@@ -71,6 +72,7 @@ CREATE INDEX idx_posts_date ON posts(date DESC);
 CREATE INDEX idx_posts_status ON posts(status);
 CREATE INDEX idx_posts_tags ON posts USING GIN(tags);
 CREATE INDEX idx_recommendations_category ON recommendations(category);
+CREATE INDEX idx_site_settings_featured_post ON site_settings(featured_post_id);
 
 -- Function to automatically update updated_at timestamp
 CREATE OR REPLACE FUNCTION update_updated_at_column()

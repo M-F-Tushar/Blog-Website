@@ -1,6 +1,6 @@
 import { supabase } from './supabase';
 
-const SETTINGS_TABLE = 'settings';
+const SETTINGS_TABLE = 'site_settings';
 
 export interface AppSettings {
   featuredPostId: string | null;
