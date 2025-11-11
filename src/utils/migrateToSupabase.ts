@@ -1,5 +1,5 @@
 import { supabase } from '../services/supabase';
-import { POSTS, RECOMMENDATIONS } from '../constants';
+import { POSTS, RECOMMENDATIONS } from '../constants/constants';
 
 export interface MigrationProgress {
   status: 'idle' | 'checking' | 'migrating' | 'success' | 'error';

@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useCallback, useMemo, useEffect } from 'react';
-import { Post, PostStatus } from '../types';
-import { POSTS as initialPostsData } from '../constants';
+import { Post, PostStatus } from '../types/types';
+import { POSTS as initialPostsData } from '../constants/constants';
 import { isSupabaseConfigured } from '../services/supabase';
 import { 
   createPost as createPostSupabase, 

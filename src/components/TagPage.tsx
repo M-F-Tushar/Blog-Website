@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { usePosts } from '../hooks/usePosts';
 import Card from './Card';
-import { PostStatus } from '../types';
+import { PostStatus } from '../types/types';
 import useSEO from '../hooks/useSEO';
 
 const TagPage: React.FC = () => {

@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { usePosts } from '../hooks/usePosts';
 import { useSiteSettings } from '../hooks/useSiteSettings';
-import { PostStatus } from '../types';
+import { PostStatus } from '../types/types';
 import Card from './Card';
 import useSEO from '../hooks/useSEO';
 

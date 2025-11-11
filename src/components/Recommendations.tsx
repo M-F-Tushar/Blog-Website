@@ -1,6 +1,6 @@
 import React from 'react';
 import { useRecommendations } from '../hooks/useRecommendations';
-import { Recommendation } from '../types';
+import { Recommendation } from '../types/types';
 import useSEO from '../hooks/useSEO';
 
 const RecommendationCard: React.FC<{ item: Recommendation }> = ({ item }) => {
