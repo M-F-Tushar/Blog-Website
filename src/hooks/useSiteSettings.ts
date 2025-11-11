@@ -133,7 +133,6 @@ export const SiteSettingsProvider: React.FC<{ children: React.ReactNode }> = ({ 
       const { data: existingSettings, error: fetchError } = await supabase
         .from('site_settings')
         .select('id')
-        .limit(1)
         .single();
 
       if (fetchError && fetchError.code !== 'PGRST116') {
@@ -143,7 +142,7 @@ export const SiteSettingsProvider: React.FC<{ children: React.ReactNode }> = ({ 
       }
 
       // Prepare the update data with snake_case field names
-      const updateData: Record<string, any> = {};
+      const updateData: Record<string, string> = {};
       
       if (newSettings.siteName !== undefined) updateData.site_name = newSettings.siteName;
       if (newSettings.siteDescription !== undefined) updateData.site_description = newSettings.siteDescription;
