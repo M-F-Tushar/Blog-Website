@@ -1,13 +1,8 @@
 import React, { useMemo } from 'react';
+import { marked } from 'marked';
 import useSEO from '../hooks/useSEO';
 import { useProfile } from '../hooks/useProfile';
 import { useSiteSettings } from '../hooks/useSiteSettings';
-
-declare global {
-    interface Window {
-        marked: any;
-    }
-}
 
 const About: React.FC = () => {
   const { authorName, authorBio } = useSiteSettings();
@@ -15,8 +10,8 @@ const About: React.FC = () => {
   const { photoUrl } = useProfile();
 
   const renderedBio = useMemo(() => {
-    if (authorBio && window.marked) {
-        return { __html: window.marked.parse(authorBio) };
+    if (authorBio) {
+        return { __html: marked.parse(authorBio) };
     }
     return { __html: '' };
   }, [authorBio]);
