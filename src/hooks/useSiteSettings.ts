@@ -18,7 +18,7 @@ interface SiteSettings {
 }
 
 interface SiteSettingsContextType extends SiteSettings {
-  updateSettings: (newSettings: Partial<Omit<SiteSettings, 'categories'>>) => void;
+  updateSettings: (newSettings: Partial<Omit<SiteSettings, 'categories'>>) => Promise<void>;
   addCategory: (category: string) => void;
   deleteCategory: (category: string) => void;
   loading: boolean;
@@ -115,12 +115,93 @@ export const SiteSettingsProvider: React.FC<{ children: React.ReactNode }> = ({ 
     fetchSettings();
   }, []);
 
-  const updateSettings = useCallback((newSettings: Partial<Omit<SiteSettings, 'categories'>>) => {
-    setSettings(prev => {
-      const updated = { ...prev, ...newSettings };
-      saveSettingsToStorage(updated);
-      return updated;
-    });
+  const updateSettings = useCallback(async (newSettings: Partial<Omit<SiteSettings, 'categories'>>) => {
+    console.log('💾 Updating site settings...', newSettings);
+    
+    if (!supabase) {
+      console.warn('⚠️ Supabase is not configured, only saving to localStorage');
+      setSettings(prev => {
+        const updated = { ...prev, ...newSettings };
+        saveSettingsToStorage(updated);
+        return updated;
+      });
+      return;
+    }
+
+    try {
+      // First, get the current site_settings row ID
+      const { data: existingSettings, error: fetchError } = await supabase
+        .from('site_settings')
+        .select('id')
+        .single();
+
+      if (fetchError && fetchError.code !== 'PGRST116') {
+        // PGRST116 is "no rows returned" error
+        console.error('❌ Error fetching site settings ID:', fetchError);
+        throw fetchError;
+      }
+
+      // Prepare the update data with snake_case field names
+      const updateData: Record<string, string> = {};
+      
+      if (newSettings.siteName !== undefined) updateData.site_name = newSettings.siteName;
+      if (newSettings.siteDescription !== undefined) updateData.site_description = newSettings.siteDescription;
+      if (newSettings.authorName !== undefined) updateData.author_name = newSettings.authorName;
+      if (newSettings.authorTagline !== undefined) updateData.author_tagline = newSettings.authorTagline;
+      if (newSettings.authorBio !== undefined) updateData.author_bio = newSettings.authorBio;
+      
+      if (newSettings.socialLinks) {
+        if (newSettings.socialLinks.github !== undefined) updateData.social_github = newSettings.socialLinks.github;
+        if (newSettings.socialLinks.linkedin !== undefined) updateData.social_linkedin = newSettings.socialLinks.linkedin;
+        if (newSettings.socialLinks.email !== undefined) updateData.social_email = newSettings.socialLinks.email;
+      }
+
+      console.log('📤 Sending update to Supabase:', updateData);
+
+      if (existingSettings?.id) {
+        // Update existing row
+        const { error: updateError } = await supabase
+          .from('site_settings')
+          .update(updateData)
+          .eq('id', existingSettings.id);
+
+        if (updateError) {
+          console.error('❌ Error updating site settings:', updateError);
+          throw updateError;
+        }
+
+        console.log('✅ Site settings updated successfully in Supabase');
+      } else {
+        // Insert new row if none exists
+        const { error: insertError } = await supabase
+          .from('site_settings')
+          .insert(updateData);
+
+        if (insertError) {
+          console.error('❌ Error inserting site settings:', insertError);
+          throw insertError;
+        }
+
+        console.log('✅ Site settings inserted successfully in Supabase');
+      }
+
+      // After successful Supabase update, update local state and localStorage
+      setSettings(prev => {
+        const updated = { ...prev, ...newSettings };
+        saveSettingsToStorage(updated);
+        return updated;
+      });
+
+    } catch (error) {
+      console.error('❌ Exception updating site settings:', error);
+      // Still update localStorage even if Supabase fails
+      setSettings(prev => {
+        const updated = { ...prev, ...newSettings };
+        saveSettingsToStorage(updated);
+        return updated;
+      });
+      throw error; // Re-throw so the UI can handle the error
+    }
   }, []);
 
   const addCategory = useCallback((category: string) => {
