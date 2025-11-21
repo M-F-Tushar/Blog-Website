@@ -14,6 +14,8 @@ import { EmptyState } from './common/EmptyState';
 const Home: React.FC = () => {
   const { posts, featuredPostId, loading, error } = usePosts();
   const { authorName, authorTagline, siteDescription } = useSiteSettings();
+  const typedTagline = useTypingEffect(authorTagline, 50, 1000);
+
   useSEO({
     description: siteDescription,
     image: 'https://m-f-tushar.github.io/Blog-Website/images/og-image.jpg'
@@ -120,7 +122,7 @@ const Home: React.FC = () => {
           </h1>
 
           <p className="text-xl md:text-2xl text-gray-600 dark:text-gray-300 mb-10 h-8">
-            {useTypingEffect(authorTagline, 50, 1000)}
+            {typedTagline}
             <span className="animate-pulse text-accent">|</span>
           </p>
 
