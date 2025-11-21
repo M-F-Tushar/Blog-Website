@@ -19,7 +19,7 @@ const BlogPost: React.FC = () => {
   const { postId } = useParams<{ postId: string }>();
   const { posts, loading } = usePosts();
   const { authorName } = useSiteSettings();
-  const { getStyles } = useReadingPreferences();
+  useReadingPreferences(); // This hook now injects styles dynamically
 
   const post = useMemo(() => {
     return posts.find(p => p.id === postId);
@@ -112,8 +112,7 @@ const BlogPost: React.FC = () => {
           </header>
 
           <div
-            className="prose dark:prose-invert max-w-none"
-            style={getStyles()}
+            className="prose dark:prose-invert max-w-none prose-reading-preferences"
             dangerouslySetInnerHTML={renderedContent}
           />
 

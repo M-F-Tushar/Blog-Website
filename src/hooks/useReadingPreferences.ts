@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { useLocalStorage } from './useLocalStorage';
 
 export interface ReadingPreferences {
@@ -16,34 +17,51 @@ export const useReadingPreferences = () => {
         defaultPreferences
     );
 
-    const getFontSize = () => {
-        switch (preferences.fontSize) {
-            case 'small':
-                return '16px';
-            case 'large':
-                return '20px';
-            case 'medium':
-            default:
-                return '18px';
-        }
-    };
+    // Inject dynamic styles into the document
+    useEffect(() => {
+        const styleId = 'reading-preferences-styles';
+        let styleElement = document.getElementById(styleId) as HTMLStyleElement;
 
-    const getLineHeight = () => {
-        switch (preferences.lineHeight) {
-            case 'compact':
-                return '1.5';
-            case 'relaxed':
-                return '2';
-            case 'normal':
-            default:
-                return '1.75';
+        if (!styleElement) {
+            styleElement = document.createElement('style');
+            styleElement.id = styleId;
+            document.head.appendChild(styleElement);
         }
-    };
 
-    const getStyles = () => ({
-        fontSize: getFontSize(),
-        lineHeight: getLineHeight(),
-    });
+        const fontSize = preferences.fontSize === 'small' ? '16px' :
+            preferences.fontSize === 'large' ? '20px' : '18px';
+        const lineHeight = preferences.lineHeight === 'compact' ? '1.5' :
+            preferences.lineHeight === 'relaxed' ? '2' : '1.75';
+
+        styleElement.textContent = `
+            .prose-reading-preferences * {
+                font-size: ${fontSize} !important;
+                line-height: ${lineHeight} !important;
+            }
+            .prose-reading-preferences h1 {
+                font-size: calc(${fontSize} * 2.25) !important;
+            }
+            .prose-reading-preferences h2 {
+                font-size: calc(${fontSize} * 1.875) !important;
+            }
+            .prose-reading-preferences h3 {
+                font-size: calc(${fontSize} * 1.5) !important;
+            }
+            .prose-reading-preferences h4 {
+                font-size: calc(${fontSize} * 1.25) !important;
+            }
+            .prose-reading-preferences code {
+                font-size: calc(${fontSize} * 0.875) !important;
+            }
+        `;
+
+        return () => {
+            // Cleanup on unmount
+            if (styleElement && styleElement.parentNode) {
+                styleElement.parentNode.removeChild(styleElement);
+            }
+        };
+    }, [preferences.fontSize, preferences.lineHeight]);
 
     const setFontSize = (size: ReadingPreferences['fontSize']) => {
         setPreferences({ ...preferences, fontSize: size });
@@ -55,9 +73,6 @@ export const useReadingPreferences = () => {
 
     return {
         preferences,
-        getStyles,
-        getFontSize,
-        getLineHeight,
         setFontSize,
         setLineHeight
     };
