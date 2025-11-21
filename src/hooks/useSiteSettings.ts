@@ -7,6 +7,26 @@ interface SocialLinks {
   email: string;
 }
 
+export interface Skill {
+  name: string;
+  level: number; // 1-5
+  iconName: string; // Store icon name as string
+}
+
+export interface TimelineItem {
+  year: string;
+  title: string;
+  organization: string;
+  description: string;
+  type: 'work' | 'education';
+}
+
+export interface Achievement {
+  title: string;
+  issuer: string;
+  year: string;
+}
+
 interface SiteSettings {
   siteName: string;
   authorName: string;
@@ -15,10 +35,13 @@ interface SiteSettings {
   siteDescription: string;
   socialLinks: SocialLinks;
   categories: string[];
+  skills: Skill[];
+  timeline: TimelineItem[];
+  achievements: Achievement[];
 }
 
 interface SiteSettingsContextType extends SiteSettings {
-  updateSettings: (newSettings: Partial<Omit<SiteSettings, 'categories'>>) => Promise<void>;
+  updateSettings: (newSettings: Partial<SiteSettings>) => Promise<void>;
   addCategory: (category: string) => void;
   deleteCategory: (category: string) => void;
   loading: boolean;
@@ -39,6 +62,9 @@ const getSettingsFromStorage = (): SiteSettings => {
       email: '',
     },
     categories: ['Life', 'Technology', 'Reflections'],
+    skills: [],
+    timeline: [],
+    achievements: [],
   };
   try {
     const savedSettings = window.localStorage.getItem('siteSettings');
@@ -66,7 +92,7 @@ export const SiteSettingsProvider: React.FC<{ children: React.ReactNode }> = ({ 
     const fetchSettings = async () => {
       console.log('🔍 Fetching site settings from Supabase...');
       setLoading(true);
-      
+
       if (!supabase) {
         console.warn('⚠️ Supabase is not configured, using localStorage settings');
         setLoading(false);
@@ -82,7 +108,6 @@ export const SiteSettingsProvider: React.FC<{ children: React.ReactNode }> = ({ 
           .single();
 
         console.log('📦 Supabase site_settings data:', data);
-        console.log('❌ Supabase error:', error);
 
         if (data && !error) {
           const fetchedSettings: SiteSettings = {
@@ -96,11 +121,13 @@ export const SiteSettingsProvider: React.FC<{ children: React.ReactNode }> = ({ 
               linkedin: data.social_linkedin || '',
               email: data.social_email || '',
             },
-            categories: settings.categories, // Keep categories from localStorage for now
+            categories: data.categories || settings.categories,
+            skills: data.skills || [],
+            timeline: data.timeline || [],
+            achievements: data.achievements || [],
           };
           console.log('✅ Settings fetched successfully:', fetchedSettings);
           setSettings(fetchedSettings);
-          // Also save to localStorage for admin panel updates
           saveSettingsToStorage(fetchedSettings);
         } else if (error) {
           console.error('❌ Error fetching site settings:', error);
@@ -115,9 +142,9 @@ export const SiteSettingsProvider: React.FC<{ children: React.ReactNode }> = ({ 
     fetchSettings();
   }, []);
 
-  const updateSettings = useCallback(async (newSettings: Partial<Omit<SiteSettings, 'categories'>>) => {
+  const updateSettings = useCallback(async (newSettings: Partial<SiteSettings>) => {
     console.log('💾 Updating site settings...', newSettings);
-    
+
     if (!supabase) {
       console.warn('⚠️ Supabase is not configured, only saving to localStorage');
       setSettings(prev => {
@@ -136,25 +163,29 @@ export const SiteSettingsProvider: React.FC<{ children: React.ReactNode }> = ({ 
         .single();
 
       if (fetchError && fetchError.code !== 'PGRST116') {
-        // PGRST116 is "no rows returned" error
         console.error('❌ Error fetching site settings ID:', fetchError);
         throw fetchError;
       }
 
       // Prepare the update data with snake_case field names
-      const updateData: Record<string, string> = {};
-      
+      const updateData: Record<string, any> = {};
+
       if (newSettings.siteName !== undefined) updateData.site_name = newSettings.siteName;
       if (newSettings.siteDescription !== undefined) updateData.site_description = newSettings.siteDescription;
       if (newSettings.authorName !== undefined) updateData.author_name = newSettings.authorName;
       if (newSettings.authorTagline !== undefined) updateData.author_tagline = newSettings.authorTagline;
       if (newSettings.authorBio !== undefined) updateData.author_bio = newSettings.authorBio;
-      
+
       if (newSettings.socialLinks) {
         if (newSettings.socialLinks.github !== undefined) updateData.social_github = newSettings.socialLinks.github;
         if (newSettings.socialLinks.linkedin !== undefined) updateData.social_linkedin = newSettings.socialLinks.linkedin;
         if (newSettings.socialLinks.email !== undefined) updateData.social_email = newSettings.socialLinks.email;
       }
+
+      if (newSettings.categories !== undefined) updateData.categories = newSettings.categories;
+      if (newSettings.skills !== undefined) updateData.skills = newSettings.skills;
+      if (newSettings.timeline !== undefined) updateData.timeline = newSettings.timeline;
+      if (newSettings.achievements !== undefined) updateData.achievements = newSettings.achievements;
 
       console.log('📤 Sending update to Supabase:', updateData);
 
@@ -200,27 +231,21 @@ export const SiteSettingsProvider: React.FC<{ children: React.ReactNode }> = ({ 
         saveSettingsToStorage(updated);
         return updated;
       });
-      throw error; // Re-throw so the UI can handle the error
+      throw error;
     }
   }, []);
 
   const addCategory = useCallback((category: string) => {
     if (!category.trim() || settings.categories.includes(category.trim())) return;
-    setSettings(prev => {
-        const updated = { ...prev, categories: [...prev.categories, category.trim()] };
-        saveSettingsToStorage(updated);
-        return updated;
-    });
-  }, [settings.categories]);
+    const newCategories = [...settings.categories, category.trim()];
+    updateSettings({ categories: newCategories });
+  }, [settings.categories, updateSettings]);
 
   const deleteCategory = useCallback((categoryToDelete: string) => {
-    setSettings(prev => {
-        const updated = { ...prev, categories: prev.categories.filter(c => c !== categoryToDelete) };
-        saveSettingsToStorage(updated);
-        return updated;
-    });
-  }, []);
-  
+    const newCategories = settings.categories.filter(c => c !== categoryToDelete);
+    updateSettings({ categories: newCategories });
+  }, [settings.categories, updateSettings]);
+
   const value = useMemo(() => ({ ...settings, updateSettings, addCategory, deleteCategory, loading }), [settings, updateSettings, addCategory, deleteCategory, loading]);
 
   return React.createElement(SiteSettingsContext.Provider, { value }, children);
