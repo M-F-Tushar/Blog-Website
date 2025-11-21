@@ -7,18 +7,24 @@ import useSEO from '../hooks/useSEO';
 import { SkeletonPost } from './common/LoadingSpinner';
 import { EmptyState } from './common/EmptyState';
 import { generateBlogPostSchema } from '../utils/structuredData';
-import { calculateReadingTime, formatReadingTime } from '../utils/readingTime';
+import { calculateReadingTime, formatReadingTime, getWordCount } from '../utils/readingTime';
 import ShareButtons from './common/ShareButtons';
+import ScrollProgress from './common/ScrollProgress';
+import ReadingControls from './common/ReadingControls';
+import RelatedPosts from './common/RelatedPosts';
+import PostNavigation from './common/PostNavigation';
+import { useReadingPreferences } from '../hooks/useReadingPreferences';
 
 const BlogPost: React.FC = () => {
   const { postId } = useParams<{ postId: string }>();
   const { posts, loading } = usePosts();
   const { authorName } = useSiteSettings();
+  const { getFontSizeClass, getLineHeightClass } = useReadingPreferences();
 
   const post = useMemo(() => {
     return posts.find(p => p.id === postId);
   }, [postId, posts]);
-  
+
   useSEO({
     title: post?.title,
     description: post?.excerpt,
@@ -37,7 +43,7 @@ const BlogPost: React.FC = () => {
       script.type = 'application/ld+json';
       script.text = JSON.stringify(generateBlogPostSchema(post, authorName));
       document.head.appendChild(script);
-      
+
       return () => {
         document.head.removeChild(script);
       };
@@ -46,7 +52,7 @@ const BlogPost: React.FC = () => {
 
   const renderedContent = useMemo(() => {
     if (post?.content) {
-        return { __html: marked.parse(post.content) };
+      return { __html: marked.parse(post.content) };
     }
     return { __html: '<p>Content could not be rendered.</p>' };
   }, [post?.content]);
@@ -68,58 +74,70 @@ const BlogPost: React.FC = () => {
   }
 
   const readingTime = calculateReadingTime(post.content);
+  const totalWords = getWordCount(post.content);
   const currentUrl = window.location.href;
 
   return (
-    <article className="max-w-3xl mx-auto bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden">
-      {post.coverImage && (
-        <img src={post.coverImage} alt={post.title} className="w-full h-64 md:h-80 object-cover" />
-      )}
-      <div className="p-8 md:p-12">
-        <header className="mb-8">
-          <div className="text-sm text-gray-500 dark:text-gray-400 flex items-center space-x-2">
-            <span>{post.date}</span>
-            <span>&bull;</span>
-            <span>{post.category}</span>
-            <span>&bull;</span>
-            <span>{formatReadingTime(readingTime)}</span>
-          </div>
-          <h1 className="text-4xl md:text-5xl font-bold font-serif text-gray-900 dark:text-white mt-2">
-            {post.title}
-          </h1>
-          <div className="mt-4 flex flex-wrap gap-2">
-            {post.tags.map(tag => (
-              <Link
-                key={tag}
-                to={`/tags/${tag}`}
-                className="px-3 py-1 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-full text-sm hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
-              >
-                #{tag}
-              </Link>
-            ))}
-          </div>
-        </header>
-        
-        <div 
-          className="prose prose-lg dark:prose-invert max-w-none"
-          dangerouslySetInnerHTML={renderedContent}
-        />
-        
-        <div className="mt-8 pt-6 border-t border-gray-200 dark:border-gray-700">
-          <ShareButtons 
-            url={currentUrl}
-            title={post.title}
-            description={post.excerpt}
+    <>
+      <ScrollProgress totalWords={totalWords} />
+      <ReadingControls />
+
+      <article className="max-w-3xl mx-auto bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden">
+        {post.coverImage && (
+          <img src={post.coverImage} alt={post.title} className="w-full h-64 md:h-80 object-cover" />
+        )}
+        <div className="p-8 md:p-12">
+          <header className="mb-8">
+            <div className="text-sm text-gray-500 dark:text-gray-400 flex items-center space-x-2">
+              <span>{post.date}</span>
+              <span>&bull;</span>
+              <span>{post.category}</span>
+              <span>&bull;</span>
+              <span>{formatReadingTime(readingTime)}</span>
+            </div>
+            <h1 className="text-4xl md:text-5xl font-bold font-serif text-gray-900 dark:text-white mt-2">
+              {post.title}
+            </h1>
+            <div className="mt-4 flex flex-wrap gap-2">
+              {post.tags.map(tag => (
+                <Link
+                  key={tag}
+                  to={`/tags/${tag}`}
+                  className="px-3 py-1 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-full text-sm hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
+                >
+                  #{tag}
+                </Link>
+              ))}
+            </div>
+          </header>
+
+          <div
+            className={`prose prose-lg dark:prose-invert max-w-none ${getFontSizeClass()} ${getLineHeightClass()}`}
+            dangerouslySetInnerHTML={renderedContent}
           />
-        </div>
-        
-        <div className="mt-6">
+
+          <div className="mt-8 pt-6 border-t border-gray-200 dark:border-gray-700">
+            <ShareButtons
+              url={currentUrl}
+              title={post.title}
+              description={post.excerpt}
+            />
+          </div>
+
+          {/* Post Navigation */}
+          <PostNavigation currentPostId={post.id} allPosts={posts} />
+
+          {/* Related Posts */}
+          <RelatedPosts currentPost={post} allPosts={posts} />
+
+          <div className="mt-6">
             <Link to="/blog" className="text-accent hover:underline">
-                &larr; Back to Blog
+              &larr; Back to Blog
             </Link>
+          </div>
         </div>
-      </div>
-    </article>
+      </article>
+    </>
   );
 };
 

@@ -1,6 +1,7 @@
 // FIX: Replaced BrowserRouter with HashRouter to solve persistent routing issues in the preview environment.
 import React from 'react';
-import { HashRouter, Routes, Route, Outlet } from 'react-router-dom';
+import { HashRouter, Routes, Route, Outlet, useLocation } from 'react-router-dom';
+import { AnimatePresence } from 'framer-motion';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import Home from './components/Home';
@@ -24,16 +25,31 @@ import AdminProfileSettings from './components/admin/AdminProfileSettings';
 import DataMigration from './components/admin/DataMigration';
 import { ErrorBoundary } from './components/common/ErrorBoundary';
 import SkipToContent from './components/common/SkipToContent';
-import BackToTop from './components/common/BackToTop';
+import ScrollToTop from './components/common/ScrollToTop';
 import NotFound from './components/NotFound';
 
 const MainLayout: React.FC = () => {
+  const location = useLocation();
+
   return (
     <div className="flex flex-col min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-200">
       <SkipToContent />
       <Header />
-      <main id="main-content" className="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-8 animate-fade-in">
-        <Outlet />
+      <main id="main-content" className="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <AnimatePresence mode="wait">
+          <Routes location={location} key={location.pathname}>
+            <Route index element={<Home />} />
+            <Route path="about" element={<About />} />
+            <Route path="blog" element={<Blog />} />
+            <Route path="blog/:postId" element={<BlogPost />} />
+            <Route path="recommendations" element={<Recommendations />} />
+            <Route path="contact" element={<Contact />} />
+            <Route path="search" element={<Search />} />
+            <Route path="tags" element={<Tags />} />
+            <Route path="tags/:tagName" element={<TagPage />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </AnimatePresence>
       </main>
       <Footer />
     </div>
@@ -45,18 +61,7 @@ function App() {
     <ErrorBoundary>
       <HashRouter>
         <Routes>
-          <Route path="/" element={<MainLayout />}>
-            <Route index element={<Home />} />
-            <Route path="about" element={<About />} />
-            <Route path="blog" element={<Blog />} />
-            <Route path="blog/:postId" element={<BlogPost />} />
-            <Route path="recommendations" element={<Recommendations />} />
-            <Route path="contact" element={<Contact />} />
-            <Route path="search" element={<Search />} />
-            <Route path="tags" element={<Tags />} />
-            <Route path="tags/:tagName" element={<TagPage />} />
-            <Route path="*" element={<NotFound />} />
-          </Route>
+          <Route path="/*" element={<MainLayout />} />
           <Route path="/admin/login" element={<AdminLogin />} />
           <Route path="/admin" element={<AdminLayout />}>
             <Route element={<AdminRootLayout />}>
@@ -72,7 +77,7 @@ function App() {
             </Route>
           </Route>
         </Routes>
-        <BackToTop />
+        <ScrollToTop />
       </HashRouter>
     </ErrorBoundary>
   );

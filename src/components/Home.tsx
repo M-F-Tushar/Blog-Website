@@ -1,7 +1,10 @@
 import React, { useMemo } from 'react';
 import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import { ArrowRight } from 'lucide-react';
 import { usePosts } from '../hooks/usePosts';
 import { useSiteSettings } from '../hooks/useSiteSettings';
+import { useTypingEffect } from '../hooks/useTypingEffect';
 import { PostStatus } from '../types/types';
 import Card from './Card';
 import useSEO from '../hooks/useSEO';
@@ -25,10 +28,10 @@ const Home: React.FC = () => {
   const featuredPost = useMemo(() => {
     return featuredPostId ? publishedPosts.find(p => p.id === featuredPostId) : publishedPosts[0];
   }, [featuredPostId, publishedPosts]);
-  
+
   const recentPosts = useMemo(() => {
-      const postsWithoutFeatured = featuredPost ? publishedPosts.filter(p => p.id !== featuredPost.id) : publishedPosts;
-      return postsWithoutFeatured.slice(0, 3);
+    const postsWithoutFeatured = featuredPost ? publishedPosts.filter(p => p.id !== featuredPost.id) : publishedPosts;
+    return postsWithoutFeatured.slice(0, 3);
   }, [publishedPosts, featuredPost]);
 
   // Add loading state
@@ -82,7 +85,7 @@ const Home: React.FC = () => {
             </Link>
           </div>
         </section>
-        
+
         <EmptyState
           icon="✍️"
           title="No Posts Yet"
@@ -95,21 +98,48 @@ const Home: React.FC = () => {
   return (
     <div className="space-y-16">
       {/* Hero Section */}
-      <section className="text-center py-10 md:py-16">
-        <h1 className="text-4xl md:text-5xl font-bold font-serif text-gray-900 dark:text-white">
-          Hi, I'm {authorName}
-        </h1>
-        <p className="mt-4 text-lg md:text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
-          {authorTagline}
-        </p>
-        <div className="mt-8 flex justify-center space-x-4">
-          <Link to="/about" className="px-6 py-3 bg-accent text-white font-semibold rounded-md shadow-md hover:bg-indigo-700 transition-colors">
-            About Me
-          </Link>
-          <Link to="/blog" className="px-6 py-3 bg-gray-200 text-gray-800 font-semibold rounded-md shadow-md hover:bg-gray-300 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600 transition-colors">
-            Read the Blog
-          </Link>
+      <section className="relative -mt-8 mb-16 py-20 md:py-32 px-4 rounded-3xl overflow-hidden text-center">
+        {/* Animated Gradient Background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-indigo-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-indigo-950 animate-gradient-slow -z-10" />
+
+        {/* Decorative Elements */}
+        <div className="absolute top-0 left-0 w-full h-full overflow-hidden -z-10 opacity-30 dark:opacity-10">
+          <div className="absolute top-10 left-10 w-72 h-72 bg-purple-300 rounded-full mix-blend-multiply filter blur-xl animate-blob" />
+          <div className="absolute top-10 right-10 w-72 h-72 bg-yellow-300 rounded-full mix-blend-multiply filter blur-xl animate-blob animation-delay-2000" />
+          <div className="absolute -bottom-8 left-20 w-72 h-72 bg-pink-300 rounded-full mix-blend-multiply filter blur-xl animate-blob animation-delay-4000" />
         </div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          className="relative z-10 max-w-4xl mx-auto"
+        >
+          <h1 className="text-5xl md:text-7xl font-bold font-serif text-gray-900 dark:text-white mb-6 tracking-tight">
+            Hi, I'm <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent to-purple-600">{authorName}</span>
+          </h1>
+
+          <p className="text-xl md:text-2xl text-gray-600 dark:text-gray-300 mb-10 h-8">
+            {useTypingEffect(authorTagline, 50, 1000)}
+            <span className="animate-pulse text-accent">|</span>
+          </p>
+
+          <div className="flex flex-col sm:flex-row justify-center gap-4">
+            <Link
+              to="/blog"
+              className="px-8 py-4 bg-accent text-white font-bold rounded-full shadow-lg hover:bg-indigo-700 hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 flex items-center justify-center gap-2"
+            >
+              Start Reading
+              <ArrowRight size={20} />
+            </Link>
+            <Link
+              to="/about"
+              className="px-8 py-4 bg-white dark:bg-gray-800 text-gray-900 dark:text-white font-bold rounded-full shadow-md hover:shadow-lg border border-gray-200 dark:border-gray-700 transform hover:-translate-y-1 transition-all duration-300"
+            >
+              More About Me
+            </Link>
+          </div>
+        </motion.div>
       </section>
 
       {/* Featured Post */}
