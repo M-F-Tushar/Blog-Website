@@ -1,17 +1,13 @@
 import React, { createContext, useContext, useState, useCallback, useMemo, useEffect } from 'react';
 import { Post, PostStatus } from '../types/types';
 import { POSTS as initialPostsData } from '../constants/constants';
-import { isSupabaseConfigured } from '../services/supabase';
-import { 
-  createPost as createPostSupabase, 
-  updatePost as updatePostSupabase, 
+import { isSupabaseConfigured, supabase } from '../services/supabase';
+import {
+  createPost as createPostSupabase,
+  updatePost as updatePostSupabase,
   deletePost as deletePostSupabase,
   subscribeToPostsUpdates
 } from '../services/supabasePostsService';
-import { 
-  setFeaturedPostId as setFeaturedPostSupabase,
-  subscribeToSettingsUpdates
-} from '../services/supabaseSettingsService';
 
 // A "user post" is now identical to Post, but without methods.
 type UserPost = Post;
@@ -30,21 +26,21 @@ interface PostsContextType {
 const PostsContext = createContext<PostsContextType | undefined>(undefined);
 
 const getUserPostsFromStorage = (): UserPost[] => {
-    try {
-        const savedUserPosts = window.localStorage.getItem('userBlogPosts');
-        return savedUserPosts ? JSON.parse(savedUserPosts) : [];
-    } catch (error) {
-        console.error('Error reading user posts from localStorage', error);
-        return [];
-    }
+  try {
+    const savedUserPosts = window.localStorage.getItem('userBlogPosts');
+    return savedUserPosts ? JSON.parse(savedUserPosts) : [];
+  } catch (error) {
+    console.error('Error reading user posts from localStorage', error);
+    return [];
+  }
 };
 
 const saveUserPostsToStorage = (posts: UserPost[]) => {
-    try {
-        window.localStorage.setItem('userBlogPosts', JSON.stringify(posts));
-    } catch (error) {
-        console.error('Error saving user posts to localStorage', error);
-    }
+  try {
+    window.localStorage.setItem('userBlogPosts', JSON.stringify(posts));
+  } catch (error) {
+    console.error('Error saving user posts to localStorage', error);
+  }
 }
 
 export const PostsProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -52,12 +48,12 @@ export const PostsProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const [posts, setPosts] = useState<Post[]>(() => {
     // Initialize with localStorage data or initial data
     const userPosts = getUserPostsFromStorage();
-    const initialPostsWithFlag = initialPostsData.map(p => ({...p, isInitial: true}));
+    const initialPostsWithFlag = initialPostsData.map(p => ({ ...p, isInitial: true }));
     return [...initialPostsWithFlag, ...userPosts];
   });
-  
+
   const [featuredPostId, setFeaturedPostIdState] = useState<string | null>(() => {
-      return window.localStorage.getItem('featuredPostId');
+    return window.localStorage.getItem('featuredPostId');
   });
 
   const [loading, setLoading] = useState(false);
@@ -65,12 +61,12 @@ export const PostsProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   // Subscribe to Supabase updates if Supabase is configured
   useEffect(() => {
-    if (!useSupabase) {
+    if (!useSupabase || !supabase) {
       return;
     }
 
     setLoading(true);
-    
+
     // Subscribe to posts
     const unsubscribePosts = subscribeToPostsUpdates(
       (supabasePosts) => {
@@ -84,37 +80,86 @@ export const PostsProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       }
     );
 
-    // Subscribe to settings (for featured post)
-    const unsubscribeSettings = subscribeToSettingsUpdates(
-      (settings) => {
-        setFeaturedPostIdState(settings.featuredPostId);
-      },
-      (err) => {
-        console.error('Error subscribing to settings:', err);
+    // Fetch initial featured post ID
+    const fetchFeaturedPost = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('site_settings')
+          .select('featured_post_id')
+          .limit(1)
+          .single();
+
+        if (data) {
+          setFeaturedPostIdState(data.featured_post_id);
+        }
+      } catch (err) {
+        console.error('Error fetching featured post:', err);
       }
-    );
+    };
+    fetchFeaturedPost();
+
+    // Subscribe to settings changes for featured post
+    const settingsChannel = supabase
+      .channel('posts-settings-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'site_settings',
+        },
+        (payload) => {
+          if (payload.new && 'featured_post_id' in payload.new) {
+            setFeaturedPostIdState((payload.new as any).featured_post_id);
+          }
+        }
+      )
+      .subscribe();
 
     return () => {
       unsubscribePosts();
-      unsubscribeSettings();
+      supabase.removeChannel(settingsChannel);
     };
   }, [useSupabase]);
 
   const setFeaturedPost = useCallback(async (postId: string | null) => {
-    if (useSupabase) {
+    if (useSupabase && supabase) {
       try {
-        await setFeaturedPostSupabase(postId);
-        // The subscription will update the state
+        // Get existing settings ID
+        const { data: existingData } = await supabase
+          .from('site_settings')
+          .select('id')
+          .limit(1)
+          .single();
+
+        if (existingData) {
+          const { error } = await supabase
+            .from('site_settings')
+            .update({ featured_post_id: postId })
+            .eq('id', existingData.id);
+
+          if (error) throw error;
+        } else {
+          // Create if not exists (though unlikely if site settings are initialized)
+          const { error } = await supabase
+            .from('site_settings')
+            .insert({ featured_post_id: postId });
+
+          if (error) throw error;
+        }
+
+        // Optimistic update (subscription will confirm)
+        setFeaturedPostIdState(postId);
       } catch (err) {
         console.error('Error setting featured post:', err);
         setError(err instanceof Error ? err.message : 'Failed to set featured post');
       }
     } else {
       // Fallback to localStorage
-      if(postId) {
-          window.localStorage.setItem('featuredPostId', postId);
+      if (postId) {
+        window.localStorage.setItem('featuredPostId', postId);
       } else {
-          window.localStorage.removeItem('featuredPostId');
+        window.localStorage.removeItem('featuredPostId');
       }
       setFeaturedPostIdState(postId);
     }
@@ -155,9 +200,9 @@ export const PostsProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       const currentUserPosts = getUserPostsFromStorage();
       const updatedUserPosts = [newPost, ...currentUserPosts];
       saveUserPostsToStorage(updatedUserPosts);
-      
+
       setPosts(prevPosts => [newPost, ...prevPosts]);
-      
+
       return newPost;
     }
   }, [useSupabase]);
@@ -180,22 +225,22 @@ export const PostsProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       const postIndex = currentUserPosts.findIndex(p => p.id === postId);
 
       if (postIndex === -1) return undefined;
-      
+
       const originalPost = currentUserPosts[postIndex];
       const updatedPost: UserPost = {
-          ...originalPost,
-          ...postData,
-          tags: postData.tags,
+        ...originalPost,
+        ...postData,
+        tags: postData.tags,
       };
-      
+
       currentUserPosts[postIndex] = updatedPost;
       saveUserPostsToStorage(currentUserPosts);
-      
+
       setPosts(prevPosts => prevPosts.map(p => p.id === postId ? updatedPost : p));
       return updatedPost;
     }
   }, [useSupabase, posts]);
-  
+
   const deletePost = useCallback(async (postId: string) => {
     if (useSupabase) {
       try {
@@ -224,14 +269,14 @@ export const PostsProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   }, [useSupabase, featuredPostId, setFeaturedPost]);
 
   const value = useMemo(() => ({
-      posts,
-      addPost,
-      updatePost,
-      deletePost,
-      featuredPostId,
-      setFeaturedPost,
-      loading,
-      error
+    posts,
+    addPost,
+    updatePost,
+    deletePost,
+    featuredPostId,
+    setFeaturedPost,
+    loading,
+    error
   }), [posts, addPost, updatePost, deletePost, featuredPostId, setFeaturedPost, loading, error]);
 
   return React.createElement(PostsContext.Provider, { value }, children);
