@@ -16,29 +16,34 @@ export const useReadingPreferences = () => {
         defaultPreferences
     );
 
-    const getFontSizeClass = () => {
+    const getFontSize = () => {
         switch (preferences.fontSize) {
             case 'small':
-                return 'prose-base';
+                return '16px';
             case 'large':
-                return 'prose-xl';
+                return '20px';
             case 'medium':
             default:
-                return 'prose-lg';
+                return '18px';
         }
     };
 
-    const getLineHeightClass = () => {
+    const getLineHeight = () => {
         switch (preferences.lineHeight) {
             case 'compact':
-                return 'leading-normal';
+                return '1.5';
             case 'relaxed':
-                return 'leading-loose';
+                return '2';
             case 'normal':
             default:
-                return 'leading-relaxed';
+                return '1.75';
         }
     };
+
+    const getStyles = () => ({
+        fontSize: getFontSize(),
+        lineHeight: getLineHeight(),
+    });
 
     const setFontSize = (size: ReadingPreferences['fontSize']) => {
         setPreferences({ ...preferences, fontSize: size });
@@ -50,8 +55,9 @@ export const useReadingPreferences = () => {
 
     return {
         preferences,
-        getFontSizeClass,
-        getLineHeightClass,
+        getStyles,
+        getFontSize,
+        getLineHeight,
         setFontSize,
         setLineHeight
     };
