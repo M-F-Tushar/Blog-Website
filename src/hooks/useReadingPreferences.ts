@@ -19,12 +19,12 @@ export const useReadingPreferences = () => {
     const getFontSizeClass = () => {
         switch (preferences.fontSize) {
             case 'small':
-                return 'text-base';
+                return 'prose-base';
             case 'large':
-                return 'text-xl';
+                return 'prose-xl';
             case 'medium':
             default:
-                return 'text-lg';
+                return 'prose-lg';
         }
     };
 

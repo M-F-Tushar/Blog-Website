@@ -112,7 +112,7 @@ const BlogPost: React.FC = () => {
           </header>
 
           <div
-            className={`prose prose-lg dark:prose-invert max-w-none ${getFontSizeClass()} ${getLineHeightClass()}`}
+            className={`prose dark:prose-invert max-w-none ${getFontSizeClass()} ${getLineHeightClass()}`}
             dangerouslySetInnerHTML={renderedContent}
           />
 
