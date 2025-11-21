@@ -38,4 +38,12 @@ export default {
   plugins: [
     require('@tailwindcss/typography'),
   ],
+  safelist: [
+    'prose-base',
+    'prose-lg',
+    'prose-xl',
+    'leading-normal',
+    'leading-relaxed',
+    'leading-loose',
+  ],
 }
