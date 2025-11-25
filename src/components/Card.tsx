@@ -1,36 +1,34 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Calendar, Clock, ArrowRight, Bookmark, BookmarkCheck, Folder } from 'lucide-react';
+import { Calendar, Clock, ArrowRight, Folder } from 'lucide-react';
 import { Post } from '../types/types';
 import { calculateReadingTime, formatReadingTime } from '../utils/readingTime';
-import { useLocalStorage } from '../hooks/useLocalStorage';
+import { useBookmarks } from '../hooks/useBookmarks';
+import BookmarkButton from './common/BookmarkButton';
 import ShareMenu from './common/ShareMenu';
+import Highlighter from './common/Highlighter';
 
 export type ViewMode = 'grid' | 'list' | 'compact';
 
 interface CardProps {
   post: Post;
   viewMode?: ViewMode;
+  highlight?: string;
 }
 
-const Card: React.FC<CardProps> = ({ post, viewMode = 'grid' }) => {
+const Card: React.FC<CardProps> = ({ post, viewMode = 'grid', highlight }) => {
   const readingTime = calculateReadingTime(post.content);
-  const [bookmarks, setBookmarks] = useLocalStorage<string[]>('bookmarked-posts', []);
+  const { isBookmarked, toggleBookmark } = useBookmarks();
   const [isHovered, setIsHovered] = useState(false);
 
-  const isBookmarked = bookmarks.includes(post.id);
+  const bookmarked = isBookmarked(post.id);
   const postUrl = `${window.location.origin}${window.location.pathname}#/blog/${post.id}`;
 
-  const toggleBookmark = (e: React.MouseEvent) => {
+  const handleToggleBookmark = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-
-    if (isBookmarked) {
-      setBookmarks(bookmarks.filter(id => id !== post.id));
-    } else {
-      setBookmarks([...bookmarks, post.id]);
-    }
+    toggleBookmark(post.id);
   };
 
   const handleShareClick = (e: React.MouseEvent) => {
@@ -72,22 +70,19 @@ const Card: React.FC<CardProps> = ({ post, viewMode = 'grid' }) => {
       aria-labelledby={`post-title-${post.id}`}
     >
       {/* Bookmark Button - Position varies by view */}
-      <motion.button
-        initial={{ opacity: 0, scale: 0.8 }}
-        animate={{ opacity: isHovered || isBookmarked ? 1 : 0, scale: isHovered ? 1 : 0.8 }}
-        transition={{ duration: 0.2 }}
-        onClick={toggleBookmark}
-        className={`absolute z-10 p-2 bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm rounded-full shadow-lg hover:scale-110 transition-transform focus:outline-none focus:ring-2 focus:ring-accent ${viewMode === 'compact' ? 'right-2 top-1/2 -translate-y-1/2' : 'top-3 right-3'
-          }`}
-        aria-label={isBookmarked ? "Remove bookmark" : "Add bookmark"}
-        title={isBookmarked ? "Remove bookmark" : "Save for later"}
-      >
-        {isBookmarked ? (
-          <BookmarkCheck size={18} className="text-accent" />
-        ) : (
-          <Bookmark size={18} className="text-gray-600 dark:text-gray-400" />
-        )}
-      </motion.button>
+      <div className={`absolute z-10 ${viewMode === 'compact' ? 'right-2 top-1/2 -translate-y-1/2' : 'top-3 right-3'}`}>
+        <motion.div
+          initial={{ opacity: 0, scale: 0.8 }}
+          animate={{ opacity: isHovered || bookmarked ? 1 : 0, scale: isHovered ? 1 : 0.8 }}
+          transition={{ duration: 0.2 }}
+        >
+          <BookmarkButton
+            isBookmarked={bookmarked}
+            onToggle={handleToggleBookmark}
+            className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm"
+          />
+        </motion.div>
+      </div>
 
       {post.coverImage && (
         <Link
@@ -143,13 +138,13 @@ const Card: React.FC<CardProps> = ({ post, viewMode = 'grid' }) => {
               aria-label={`Read full article: ${post.title}`}
               title={post.title}
             >
-              {post.title}
+              <Highlighter text={post.title} highlight={highlight || ''} />
             </Link>
           </h2>
 
           {viewMode !== 'compact' && (
             <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed line-clamp-3 mb-4">
-              {post.excerpt}
+              <Highlighter text={post.excerpt} highlight={highlight || ''} />
             </p>
           )}
 

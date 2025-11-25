@@ -54,6 +54,7 @@ const Header: React.FC = () => {
             <NavLink to="/about" className={navLinkClasses} aria-label="Navigate to About">About</NavLink>
             <NavLink to="/blog" className={navLinkClasses} aria-label="Navigate to Blog">Blog</NavLink>
             <NavLink to="/recommendations" className={navLinkClasses} aria-label="Navigate to Recommendations">Recommendations</NavLink>
+            <NavLink to="/bookmarks" className={navLinkClasses} aria-label="Navigate to Reading List">Reading List</NavLink>
             <NavLink to="/contact" className={navLinkClasses} aria-label="Navigate to Contact">Contact</NavLink>
           </div>
           <div className="flex items-center space-x-2">
@@ -99,6 +100,7 @@ const Header: React.FC = () => {
           <NavLink to="/about" className={navLinkClasses} onClick={() => setIsMenuOpen(false)} aria-label="Navigate to About">About</NavLink>
           <NavLink to="/blog" className={navLinkClasses} onClick={() => setIsMenuOpen(false)} aria-label="Navigate to Blog">Blog</NavLink>
           <NavLink to="/recommendations" className={navLinkClasses} onClick={() => setIsMenuOpen(false)} aria-label="Navigate to Recommendations">Recommendations</NavLink>
+          <NavLink to="/bookmarks" className={navLinkClasses} onClick={() => setIsMenuOpen(false)} aria-label="Navigate to Reading List">Reading List</NavLink>
           <NavLink to="/contact" className={navLinkClasses} onClick={() => setIsMenuOpen(false)} aria-label="Navigate to Contact">Contact</NavLink>
           <form onSubmit={handleSearch} className="p-2 relative" role="search" aria-label="Mobile search">
             <input

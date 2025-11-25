@@ -8,6 +8,7 @@ import { useTypingEffect } from '../hooks/useTypingEffect';
 import { PostStatus } from '../types/types';
 import Card from './Card';
 import useSEO from '../hooks/useSEO';
+import { generateWebSiteSchema } from '../utils/seo';
 import { SkeletonCard } from './common/LoadingSpinner';
 import { EmptyState } from './common/EmptyState';
 
@@ -16,9 +17,12 @@ const Home: React.FC = () => {
   const { authorName, authorTagline, siteDescription } = useSiteSettings();
   const typedTagline = useTypingEffect(authorTagline, 50, 1000);
 
+  const schema = useMemo(() => generateWebSiteSchema(), []);
+
   useSEO({
     description: siteDescription,
-    image: 'https://m-f-tushar.github.io/Blog-Website/images/og-image.jpg'
+    image: 'https://m-f-tushar.github.io/Blog-Website/images/og-image.jpg',
+    schema
   });
 
   const publishedPosts = useMemo(() => {

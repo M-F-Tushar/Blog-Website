@@ -10,11 +10,12 @@ interface SEOProps {
   publishedTime?: string;
   tags?: string[];
   canonicalUrl?: string;
+  schema?: object;
 }
 
 const useSEO = (props?: SEOProps) => {
   const { siteName, siteDescription } = useSiteSettings();
-  
+
   const {
     title,
     description = siteDescription,
@@ -23,7 +24,8 @@ const useSEO = (props?: SEOProps) => {
     author,
     publishedTime,
     tags = [],
-    canonicalUrl
+    canonicalUrl,
+    schema
   } = props || {};
 
   const fullTitle = title ? `${title} | ${siteName}` : siteName;
@@ -37,13 +39,13 @@ const useSEO = (props?: SEOProps) => {
     const updateMetaTag = (name: string, content: string, property = false) => {
       const attr = property ? 'property' : 'name';
       let element = document.querySelector(`meta[${attr}="${name}"]`);
-      
+
       if (!element) {
         element = document.createElement('meta');
         element.setAttribute(attr, name);
         document.head.appendChild(element);
       }
-      
+
       element.setAttribute('content', content);
     };
 
@@ -81,7 +83,18 @@ const useSEO = (props?: SEOProps) => {
       document.head.appendChild(canonicalElement);
     }
     canonicalElement.setAttribute('href', url);
-  }, [fullTitle, description, image, url, type, author, publishedTime, tags, siteName]);
+
+    // JSON-LD Schema
+    if (schema) {
+      let script = document.querySelector('script[type="application/ld+json"]');
+      if (!script) {
+        script = document.createElement('script');
+        script.setAttribute('type', 'application/ld+json');
+        document.head.appendChild(script);
+      }
+      script.textContent = JSON.stringify(schema);
+    }
+  }, [fullTitle, description, image, url, type, author, publishedTime, tags, siteName, schema]);
 };
 
 export default useSEO;

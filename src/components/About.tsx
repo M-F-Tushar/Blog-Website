@@ -1,11 +1,13 @@
 import React, { useMemo } from 'react';
-import { marked } from 'marked';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import { motion } from 'framer-motion';
 import {
   Code, Database, Globe, Smartphone, Award, BookOpen,
   Calendar, TrendingUp, Users, Briefcase, GraduationCap
 } from 'lucide-react';
 import useSEO from '../hooks/useSEO';
+import { generatePersonSchema } from '../utils/seo';
 import { useProfile } from '../hooks/useProfile';
 import { useSiteSettings } from '../hooks/useSiteSettings';
 import { usePosts } from '../hooks/usePosts';
@@ -21,18 +23,14 @@ const About: React.FC = () => {
   const { photoUrl, loading: profileLoading } = useProfile();
   const { posts } = usePosts();
 
+  const schema = useMemo(() => generatePersonSchema(), []);
+
   useSEO({
     title: `About ${authorName}`,
     description: `Learn more about ${authorName}, web developer and CS student.`,
-    image: photoUrl || 'https://m-f-tushar.github.io/Blog-Website/images/og-image.jpg'
+    image: photoUrl || 'https://m-f-tushar.github.io/Blog-Website/images/og-image.jpg',
+    schema
   });
-
-  const renderedBio = useMemo(() => {
-    if (authorBio) {
-      return { __html: marked.parse(authorBio) };
-    }
-    return { __html: '' };
-  }, [authorBio]);
 
   // Calculate statistics
   const stats = useMemo(() => {
@@ -65,7 +63,7 @@ const About: React.FC = () => {
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ delay: 0.2 }}
-            src={photoUrl}
+            src={photoUrl || 'https://m-f-tushar.github.io/Blog-Website/images/og-image.jpg'}
             alt={authorName}
             className="w-48 h-48 rounded-full object-cover shadow-2xl ring-4 ring-white dark:ring-gray-800"
           />
@@ -111,10 +109,11 @@ const About: React.FC = () => {
       {/* Bio */}
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-8">
         <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-6">About Me</h2>
-        <div
-          className="prose prose-lg dark:prose-invert max-w-none text-gray-700 dark:text-gray-300"
-          dangerouslySetInnerHTML={renderedBio}
-        />
+        <div className="prose prose-lg dark:prose-invert max-w-none text-gray-700 dark:text-gray-300">
+          <ReactMarkdown remarkPlugins={[remarkGfm]}>
+            {authorBio || ''}
+          </ReactMarkdown>
+        </div>
       </div>
 
       {/* Skills Section */}

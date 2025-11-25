@@ -1,31 +1,74 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import App from './App';
 import '../index.css';
-import { ThemeProvider } from './hooks/useTheme';
-import { PostsProvider } from './hooks/usePosts';
-import { RecommendationsProvider } from './hooks/useRecommendations';
-import { AuthProvider } from './hooks/useAuth';
-import { ProfileProvider } from './hooks/useProfile';
-import { SiteSettingsProvider } from './hooks/useSiteSettings';
+
+console.log('Loading app...');
+
+// Simple error boundary
+interface ErrorBoundaryProps {
+  children: React.ReactNode;
+}
+
+interface ErrorBoundaryState {
+  hasError: boolean;
+  error: Error | null;
+}
+
+class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundaryState> {
+  constructor(props: ErrorBoundaryProps) {
+    super(props);
+    this.state = { hasError: false, error: null };
+  }
+
+  static getDerivedStateFromError(error: Error): ErrorBoundaryState {
+    return { hasError: true, error };
+  }
+
+  componentDidCatch(error: Error, errorInfo: React.ErrorInfo): void {
+    console.error('Error caught by boundary:', error, errorInfo);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div style={{ padding: '20px', fontFamily: 'Arial' }}>
+          <h1 style={{ color: 'red' }}>Something went wrong!</h1>
+          <pre style={{ background: '#f5f5f5', padding: '10px', overflow: 'auto' }}>
+            {this.state.error?.toString()}
+          </pre>
+          <p>Check the console for more details.</p>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
-root.render(
-  <React.StrictMode>
-    <SiteSettingsProvider>
-      <ThemeProvider>
-        <AuthProvider>
-          <ProfileProvider>
-            <PostsProvider>
-              <RecommendationsProvider>
-                <App />
-              </RecommendationsProvider>
-            </PostsProvider>
-          </ProfileProvider>
-        </AuthProvider>
-      </ThemeProvider>
-    </SiteSettingsProvider>
-  </React.StrictMode>
-);
+
+// Try to import and render App
+import('./App').then((module) => {
+  const App = module.default;
+  console.log('App loaded:', App);
+
+  root.render(
+    <React.StrictMode>
+      <ErrorBoundary>
+        <App />
+      </ErrorBoundary>
+    </React.StrictMode>
+  );
+  console.log('App rendered');
+}).catch((error) => {
+  console.error('Failed to load App:', error);
+  root.render(
+    <div style={{ padding: '20px', fontFamily: 'Arial' }}>
+      <h1 style={{ color: 'red' }}>Failed to load App component!</h1>
+      <pre style={{ background: '#f5f5f5', padding: '10px', overflow: 'auto' }}>
+        {error.toString()}
+      </pre>
+    </div>
+  );
+});

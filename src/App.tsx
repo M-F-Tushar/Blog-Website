@@ -1,32 +1,45 @@
 // FIX: Replaced BrowserRouter with HashRouter to solve persistent routing issues in the preview environment.
-import React from 'react';
+import React, { Suspense, lazy } from 'react';
 import { HashRouter, Routes, Route, Outlet, useLocation } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import Header from './components/Header';
 import Footer from './components/Footer';
-import Home from './components/Home';
-import About from './components/About';
-import Blog from './components/Blog';
-import BlogPost from './components/BlogPost';
-import Recommendations from './components/Recommendations';
-import Contact from './components/Contact';
-import Search from './components/Search';
-import Tags from './components/Tags';
-import TagPage from './components/TagPage';
-import AdminLogin from './components/admin/AdminLogin';
-import AdminLayout from './components/admin/AdminLayout';
-import AdminRootLayout from './components/admin/AdminRootLayout';
-import AdminDashboard from './components/admin/AdminDashboard';
-import CreatePost from './components/CreatePost';
-import AdminRecommendationsDashboard from './components/admin/AdminRecommendationsDashboard';
-import RecommendationForm from './components/admin/RecommendationForm';
-import AdminSiteSettings from './components/admin/AdminSiteSettings';
-import AdminProfileSettings from './components/admin/AdminProfileSettings';
-import DataMigration from './components/admin/DataMigration';
 import { ErrorBoundary } from './components/common/ErrorBoundary';
 import SkipToContent from './components/common/SkipToContent';
 import ScrollToTop from './components/common/ScrollToTop';
-import NotFound from './components/NotFound';
+import { LoadingSpinner } from './components/common/LoadingSpinner';
+import { SiteSettingsProvider } from './hooks/useSiteSettings';
+import { PostsProvider } from './hooks/usePosts';
+import { ThemeProvider } from './hooks/useTheme';
+import { ProfileProvider } from './hooks/useProfile';
+import { RecommendationsProvider } from './hooks/useRecommendations';
+import { AuthProvider } from './hooks/useAuth';
+import { BookmarksProvider } from './context/BookmarksContext';
+
+// Lazy load components
+const Home = lazy(() => import('./components/Home'));
+const About = lazy(() => import('./components/About'));
+const Blog = lazy(() => import('./components/Blog'));
+const BlogPost = lazy(() => import('./components/BlogPost'));
+const Recommendations = lazy(() => import('./components/Recommendations'));
+const Contact = lazy(() => import('./components/Contact'));
+const Search = lazy(() => import('./components/Search'));
+const ReadingList = lazy(() => import('./components/ReadingList'));
+const Tags = lazy(() => import('./components/Tags'));
+const TagPage = lazy(() => import('./components/TagPage'));
+const NotFound = lazy(() => import('./components/NotFound'));
+
+// Admin components
+const AdminLogin = lazy(() => import('./components/admin/AdminLogin'));
+const AdminLayout = lazy(() => import('./components/admin/AdminLayout'));
+const AdminRootLayout = lazy(() => import('./components/admin/AdminRootLayout'));
+const AdminDashboard = lazy(() => import('./components/admin/AdminDashboard'));
+const CreatePost = lazy(() => import('./components/CreatePost'));
+const AdminRecommendationsDashboard = lazy(() => import('./components/admin/AdminRecommendationsDashboard'));
+const RecommendationForm = lazy(() => import('./components/admin/RecommendationForm'));
+const AdminSiteSettings = lazy(() => import('./components/admin/AdminSiteSettings'));
+const AdminProfileSettings = lazy(() => import('./components/admin/AdminProfileSettings'));
+const DataMigration = lazy(() => import('./components/admin/DataMigration'));
 
 const MainLayout: React.FC = () => {
   const location = useLocation();
@@ -37,18 +50,21 @@ const MainLayout: React.FC = () => {
       <Header />
       <main id="main-content" className="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <AnimatePresence mode="wait">
-          <Routes location={location} key={location.pathname}>
-            <Route index element={<Home />} />
-            <Route path="about" element={<About />} />
-            <Route path="blog" element={<Blog />} />
-            <Route path="blog/:postId" element={<BlogPost />} />
-            <Route path="recommendations" element={<Recommendations />} />
-            <Route path="contact" element={<Contact />} />
-            <Route path="search" element={<Search />} />
-            <Route path="tags" element={<Tags />} />
-            <Route path="tags/:tagName" element={<TagPage />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+          <Suspense fallback={<div className="flex justify-center items-center min-h-[50vh]"><LoadingSpinner /></div>}>
+            <Routes location={location} key={location.pathname}>
+              <Route index element={<Home />} />
+              <Route path="about" element={<About />} />
+              <Route path="blog" element={<Blog />} />
+              <Route path="blog/:postId" element={<BlogPost />} />
+              <Route path="recommendations" element={<Recommendations />} />
+              <Route path="contact" element={<Contact />} />
+              <Route path="search" element={<Search />} />
+              <Route path="bookmarks" element={<ReadingList />} />
+              <Route path="tags" element={<Tags />} />
+              <Route path="tags/:tagName" element={<TagPage />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </Suspense>
         </AnimatePresence>
       </main>
       <Footer />
@@ -59,26 +75,48 @@ const MainLayout: React.FC = () => {
 function App() {
   return (
     <ErrorBoundary>
-      <HashRouter>
-        <Routes>
-          <Route path="/*" element={<MainLayout />} />
-          <Route path="/admin/login" element={<AdminLogin />} />
-          <Route path="/admin" element={<AdminLayout />}>
-            <Route element={<AdminRootLayout />}>
-              <Route path="dashboard" element={<AdminDashboard />} />
-              <Route path="posts/create" element={<CreatePost />} />
-              <Route path="posts/edit/:postId" element={<CreatePost />} />
-              <Route path="recommendations" element={<AdminRecommendationsDashboard />} />
-              <Route path="recommendations/create" element={<RecommendationForm />} />
-              <Route path="recommendations/edit/:recId" element={<RecommendationForm />} />
-              <Route path="settings/site" element={<AdminSiteSettings />} />
-              <Route path="settings/profile" element={<AdminProfileSettings />} />
-              <Route path="migrate" element={<DataMigration />} />
-            </Route>
-          </Route>
-        </Routes>
-        <ScrollToTop />
-      </HashRouter>
+      <AuthProvider>
+        <ThemeProvider>
+          <SiteSettingsProvider>
+            <PostsProvider>
+              <ProfileProvider>
+                <RecommendationsProvider>
+                  <BookmarksProvider>
+                    <HashRouter>
+                      <Routes>
+                        <Route path="/*" element={<MainLayout />} />
+                        <Route path="/admin/login" element={
+                          <Suspense fallback={<div className="flex justify-center items-center min-h-screen"><LoadingSpinner /></div>}>
+                            <AdminLogin />
+                          </Suspense>
+                        } />
+                        <Route path="/admin" element={
+                          <Suspense fallback={<div className="flex justify-center items-center min-h-screen"><LoadingSpinner /></div>}>
+                            <AdminLayout />
+                          </Suspense>
+                        }>
+                          <Route element={<AdminRootLayout />}>
+                            <Route path="dashboard" element={<AdminDashboard />} />
+                            <Route path="posts/create" element={<CreatePost />} />
+                            <Route path="posts/edit/:postId" element={<CreatePost />} />
+                            <Route path="recommendations" element={<AdminRecommendationsDashboard />} />
+                            <Route path="recommendations/create" element={<RecommendationForm />} />
+                            <Route path="recommendations/edit/:recId" element={<RecommendationForm />} />
+                            <Route path="settings/site" element={<AdminSiteSettings />} />
+                            <Route path="settings/profile" element={<AdminProfileSettings />} />
+                            <Route path="migrate" element={<DataMigration />} />
+                          </Route>
+                        </Route>
+                      </Routes>
+                      <ScrollToTop />
+                    </HashRouter>
+                  </BookmarksProvider>
+                </RecommendationsProvider>
+              </ProfileProvider>
+            </PostsProvider>
+          </SiteSettingsProvider>
+        </ThemeProvider>
+      </AuthProvider>
     </ErrorBoundary>
   );
 }

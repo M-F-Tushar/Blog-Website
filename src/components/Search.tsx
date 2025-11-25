@@ -173,7 +173,7 @@ const Search: React.FC = () => {
           {sortedPosts.length > 0 ? (
             <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
               {sortedPosts.map((post) => (
-                <Card key={post.id} post={post} />
+                <Card key={post.id} post={post} highlight={query} />
               ))}
             </div>
           ) : (
