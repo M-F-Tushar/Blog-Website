@@ -5,7 +5,7 @@ import { AnimatePresence } from 'framer-motion';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import { ErrorBoundary } from './components/common/ErrorBoundary';
-import SkipToContent from './components/common/SkipToContent';
+
 import ScrollToTop from './components/common/ScrollToTop';
 import { LoadingSpinner } from './components/common/LoadingSpinner';
 import { SiteSettingsProvider } from './hooks/useSiteSettings';
@@ -35,7 +35,9 @@ const AdminLayout = lazy(() => import('./components/admin/AdminLayout'));
 const AdminRootLayout = lazy(() => import('./components/admin/AdminRootLayout'));
 const AdminDashboard = lazy(() => import('./components/admin/AdminDashboard'));
 const CreatePost = lazy(() => import('./components/CreatePost'));
-const AdminRecommendationsDashboard = lazy(() => import('./components/admin/AdminRecommendationsDashboard'));
+const AdminRecommendationsDashboard = lazy(
+  () => import('./components/admin/AdminRecommendationsDashboard')
+);
 const RecommendationForm = lazy(() => import('./components/admin/RecommendationForm'));
 const AdminSiteSettings = lazy(() => import('./components/admin/AdminSiteSettings'));
 const AdminProfileSettings = lazy(() => import('./components/admin/AdminProfileSettings'));
@@ -46,11 +48,16 @@ const MainLayout: React.FC = () => {
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-200">
-      <SkipToContent />
       <Header />
       <main id="main-content" className="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <AnimatePresence mode="wait">
-          <Suspense fallback={<div className="flex justify-center items-center min-h-[50vh]"><LoadingSpinner /></div>}>
+          <Suspense
+            fallback={
+              <div className="flex justify-center items-center min-h-[50vh]">
+                <LoadingSpinner />
+              </div>
+            }
+          >
             <Routes location={location} key={location.pathname}>
               <Route index element={<Home />} />
               <Route path="about" element={<About />} />
@@ -85,23 +92,47 @@ function App() {
                     <HashRouter>
                       <Routes>
                         <Route path="/*" element={<MainLayout />} />
-                        <Route path="/admin/login" element={
-                          <Suspense fallback={<div className="flex justify-center items-center min-h-screen"><LoadingSpinner /></div>}>
-                            <AdminLogin />
-                          </Suspense>
-                        } />
-                        <Route path="/admin" element={
-                          <Suspense fallback={<div className="flex justify-center items-center min-h-screen"><LoadingSpinner /></div>}>
-                            <AdminLayout />
-                          </Suspense>
-                        }>
+                        <Route
+                          path="/admin/login"
+                          element={
+                            <Suspense
+                              fallback={
+                                <div className="flex justify-center items-center min-h-screen">
+                                  <LoadingSpinner />
+                                </div>
+                              }
+                            >
+                              <AdminLogin />
+                            </Suspense>
+                          }
+                        />
+                        <Route
+                          path="/admin"
+                          element={
+                            <Suspense
+                              fallback={
+                                <div className="flex justify-center items-center min-h-screen">
+                                  <LoadingSpinner />
+                                </div>
+                              }
+                            >
+                              <AdminLayout />
+                            </Suspense>
+                          }
+                        >
                           <Route element={<AdminRootLayout />}>
                             <Route path="dashboard" element={<AdminDashboard />} />
                             <Route path="posts/create" element={<CreatePost />} />
                             <Route path="posts/edit/:postId" element={<CreatePost />} />
-                            <Route path="recommendations" element={<AdminRecommendationsDashboard />} />
+                            <Route
+                              path="recommendations"
+                              element={<AdminRecommendationsDashboard />}
+                            />
                             <Route path="recommendations/create" element={<RecommendationForm />} />
-                            <Route path="recommendations/edit/:recId" element={<RecommendationForm />} />
+                            <Route
+                              path="recommendations/edit/:recId"
+                              element={<RecommendationForm />}
+                            />
                             <Route path="settings/site" element={<AdminSiteSettings />} />
                             <Route path="settings/profile" element={<AdminProfileSettings />} />
                             <Route path="migrate" element={<DataMigration />} />
