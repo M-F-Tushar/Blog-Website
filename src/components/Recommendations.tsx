@@ -48,7 +48,7 @@ const Recommendations: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="space-y-8">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
         <h1 className="text-4xl font-bold font-serif text-gray-900 dark:text-white">Recommendations</h1>
         <LoadingSpinner />
       </div>
@@ -57,17 +57,19 @@ const Recommendations: React.FC = () => {
 
   if (error) {
     return (
-      <EmptyState
-        icon="⚠️"
-        title="Error Loading Recommendations"
-        description={error}
-      />
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+        <EmptyState
+          icon="⚠️"
+          title="Error Loading Recommendations"
+          description={error}
+        />
+      </div>
     );
   }
 
   if (recommendations.length === 0) {
     return (
-      <div className="space-y-8">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
         <h1 className="text-4xl font-bold font-serif text-gray-900 dark:text-white">Recommendations</h1>
         <EmptyState
           icon="⭐"
@@ -81,7 +83,7 @@ const Recommendations: React.FC = () => {
   }
 
   return (
-    <div className="space-y-12">
+    <div className="container mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
       <div className="text-center">
         <h1 className="text-4xl font-bold font-serif text-gray-900 dark:text-white">My Recommendations</h1>
         <p className="mt-2 text-lg text-gray-600 dark:text-gray-300">

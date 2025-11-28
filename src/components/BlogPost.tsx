@@ -10,6 +10,7 @@ import rehypeSlug from 'rehype-slug';
 import rehypeAutolinkHeadings from 'rehype-autolink-headings';
 import 'katex/dist/katex.min.css';
 import 'highlight.js/styles/github-dark.css';
+import { Calendar, Clock, Tag, ChevronLeft, User } from 'lucide-react';
 import { usePosts } from '../hooks/usePosts';
 import { useSiteSettings } from '../hooks/useSiteSettings';
 import useSEO from '../hooks/useSEO';
@@ -30,7 +31,7 @@ const BlogPost: React.FC = () => {
   const { postId } = useParams<{ postId: string }>();
   const { posts, loading } = usePosts();
   const { authorName } = useSiteSettings();
-  useReadingPreferences(); // This hook now injects styles dynamically
+  useReadingPreferences();
 
   const post = useMemo(() => {
     return posts.find(p => p.id === postId);
@@ -54,8 +55,6 @@ const BlogPost: React.FC = () => {
     canonicalUrl: `https://m-f-tushar.github.io/Blog-Website/#/blog/${postId}`,
     schema
   });
-
-
 
   if (loading) {
     return <SkeletonPost />;
@@ -82,38 +81,68 @@ const BlogPost: React.FC = () => {
       <ScrollProgress totalWords={totalWords} />
       <ReadingControls />
 
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="lg:grid lg:grid-cols-[1fr_300px] gap-8 items-start">
-          <article className="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden min-w-0">
-            {post.coverImage && (
-              <img src={post.coverImage} alt={post.title} className="w-full h-64 md:h-80 object-cover" />
-            )}
-            <div className="p-8 md:p-12">
-              <header className="mb-8">
-                <div className="text-sm text-gray-500 dark:text-gray-400 flex items-center space-x-2">
-                  <span>{post.date}</span>
-                  <span>&bull;</span>
-                  <span>{post.category}</span>
-                  <span>&bull;</span>
-                  <span>{formatReadingTime(readingTime)}</span>
-                </div>
-                <h1 className="text-4xl md:text-5xl font-bold font-serif text-gray-900 dark:text-white mt-2">
-                  {post.title}
-                </h1>
-                <div className="mt-4 flex flex-wrap gap-2">
-                  {post.tags.map(tag => (
-                    <Link
-                      key={tag}
-                      to={`/tags/${tag}`}
-                      className="px-3 py-1 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-full text-sm hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors"
-                    >
-                      #{tag}
-                    </Link>
-                  ))}
-                </div>
-              </header>
+      <article className="min-h-screen pb-20">
+        {/* Hero Section */}
+        <div className="relative h-[60vh] min-h-[400px] w-full overflow-hidden">
+          {post.coverImage ? (
+            <>
+              <div className="absolute inset-0 bg-black/50 z-10" />
+              <img
+                src={post.coverImage}
+                alt={post.title}
+                className="w-full h-full object-cover"
+              />
+            </>
+          ) : (
+            <div className="absolute inset-0 bg-gradient-to-br from-primary-900 via-secondary-900 to-black z-10" />
+          )}
 
-              <div className="prose dark:prose-invert max-w-none prose-reading-preferences">
+          <div className="absolute inset-0 z-20 flex flex-col justify-end pb-16 container mx-auto px-4 sm:px-6 lg:px-8">
+            <Link
+              to="/blog"
+              className="inline-flex items-center text-white/80 hover:text-white mb-6 transition-colors w-fit"
+            >
+              <ChevronLeft size={20} className="mr-1" />
+              Back to Blog
+            </Link>
+
+            <div className="max-w-4xl">
+              <div className="flex flex-wrap items-center gap-4 text-sm text-white/80 mb-4">
+                <span className="bg-primary-600/90 text-white px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider">
+                  {post.category}
+                </span>
+                <span className="flex items-center gap-1">
+                  <Calendar size={14} />
+                  {new Date(post.date).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}
+                </span>
+                <span className="flex items-center gap-1">
+                  <Clock size={14} />
+                  {formatReadingTime(readingTime)}
+                </span>
+              </div>
+
+              <h1 className="text-4xl md:text-6xl font-bold font-serif text-white mb-6 leading-tight">
+                {post.title}
+              </h1>
+
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center text-white">
+                  <User size={20} />
+                </div>
+                <div>
+                  <p className="text-white font-medium">{authorName}</p>
+                  <p className="text-white/60 text-xs">Author</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 -mt-10 relative z-30">
+          <div className="grid lg:grid-cols-[1fr_300px] gap-12">
+            {/* Main Content */}
+            <div className="bg-white dark:bg-secondary-900 rounded-2xl shadow-xl p-8 md:p-12">
+              <div className="prose dark:prose-invert prose-lg max-w-none prose-headings:font-serif prose-headings:font-bold prose-a:text-primary-600 dark:prose-a:text-primary-400 prose-img:rounded-xl prose-img:shadow-lg">
                 <ReactMarkdown
                   remarkPlugins={[remarkGfm, remarkMath]}
                   rehypePlugins={[
@@ -125,18 +154,51 @@ const BlogPost: React.FC = () => {
                   ]}
                   components={{
                     img: ({ node, ...props }) => (
-                      <img {...props} className="rounded-lg shadow-md my-8" loading="lazy" />
+                      <img {...props} className="rounded-xl shadow-lg my-8 w-full" loading="lazy" />
                     ),
                     a: ({ node, ...props }) => (
-                      <a {...props} target="_blank" rel="noopener noreferrer" className="text-accent hover:underline" />
-                    )
+                      <a {...props} target="_blank" rel="noopener noreferrer" className="text-primary-600 dark:text-primary-400 hover:underline decoration-2 decoration-primary-200 dark:decoration-primary-800 underline-offset-2 transition-all" />
+                    ),
+                    blockquote: ({ node, ...props }) => (
+                      <blockquote {...props} className="border-l-4 border-primary-500 bg-primary-50 dark:bg-primary-900/20 p-4 rounded-r-lg italic" />
+                    ),
+                    code: ({ node, inline, className, children, ...props }: any) => {
+                      const match = /language-(\w+)/.exec(className || '');
+                      return !inline && match ? (
+                        <div className="relative group">
+                          <code className={className} {...props}>
+                            {children}
+                          </code>
+                        </div>
+                      ) : (
+                        <code className="bg-secondary-100 dark:bg-secondary-800 px-1.5 py-0.5 rounded text-sm font-mono text-secondary-800 dark:text-secondary-200" {...props}>
+                          {children}
+                        </code>
+                      );
+                    }
                   }}
                 >
                   {post.content}
                 </ReactMarkdown>
               </div>
 
-              <div className="mt-8 pt-6 border-t border-gray-200 dark:border-gray-700">
+              {/* Tags */}
+              <div className="mt-12 pt-8 border-t border-secondary-200 dark:border-secondary-800">
+                <div className="flex flex-wrap gap-2">
+                  {post.tags.map(tag => (
+                    <Link
+                      key={tag}
+                      to={`/tags/${tag}`}
+                      className="inline-flex items-center gap-1.5 px-4 py-2 bg-secondary-100 dark:bg-secondary-800 text-secondary-700 dark:text-secondary-300 rounded-full text-sm hover:bg-primary-100 dark:hover:bg-primary-900/30 hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
+                    >
+                      <Tag size={14} />
+                      {tag}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+
+              <div className="mt-8">
                 <ShareButtons
                   url={currentUrl}
                   title={post.title}
@@ -144,28 +206,25 @@ const BlogPost: React.FC = () => {
                 />
               </div>
 
-              {/* Post Navigation */}
               <PostNavigation currentPostId={post.id} allPosts={posts} />
-
-              {/* Related Posts */}
               <RelatedPosts currentPost={post} allPosts={posts} />
-
-              {/* Comments Section */}
               <CommentSection postId={post.id} />
-
-              <div className="mt-6">
-                <Link to="/blog" className="text-accent hover:underline">
-                  &larr; Back to Blog
-                </Link>
-              </div>
             </div>
-          </article>
 
-          <aside className="hidden lg:block sticky top-24">
-            <TableOfContents content={post.content} />
-          </aside>
+            {/* Sidebar */}
+            <aside className="hidden lg:block space-y-8">
+              <div className="sticky top-24 space-y-8">
+                <div className="bg-white dark:bg-secondary-900 rounded-xl shadow-lg p-6 border border-secondary-200 dark:border-secondary-800">
+                  <h3 className="text-lg font-bold font-serif mb-4 text-secondary-900 dark:text-white">Table of Contents</h3>
+                  <TableOfContents content={post.content} />
+                </div>
+
+                {/* Could add more sidebar widgets here like "About Author" or "Newsletter" */}
+              </div>
+            </aside>
+          </div>
         </div>
-      </div>
+      </article>
     </>
   );
 };

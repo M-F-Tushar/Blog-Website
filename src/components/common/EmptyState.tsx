@@ -7,6 +7,7 @@ interface EmptyStateProps {
   description: string;
   actionLabel?: string;
   actionLink?: string;
+  onAction?: () => void;
 }
 
 export const EmptyState: React.FC<EmptyStateProps> = ({
@@ -15,6 +16,7 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
   description,
   actionLabel,
   actionLink,
+  onAction,
 }) => (
   <div className="text-center py-16">
     <div className="text-6xl mb-4">{icon}</div>
@@ -24,13 +26,22 @@ export const EmptyState: React.FC<EmptyStateProps> = ({
     <p className="text-gray-600 dark:text-gray-400 mb-6 max-w-md mx-auto">
       {description}
     </p>
-    {actionLabel && actionLink && (
-      <Link
-        to={actionLink}
-        className="inline-block px-6 py-3 bg-accent text-white font-semibold rounded-md hover:bg-indigo-700 transition-colors"
-      >
-        {actionLabel}
-      </Link>
+    {actionLabel && (
+      actionLink ? (
+        <Link
+          to={actionLink}
+          className="inline-block px-6 py-3 bg-accent text-white font-semibold rounded-md hover:bg-indigo-700 transition-colors"
+        >
+          {actionLabel}
+        </Link>
+      ) : onAction ? (
+        <button
+          onClick={onAction}
+          className="inline-block px-6 py-3 bg-accent text-white font-semibold rounded-md hover:bg-indigo-700 transition-colors"
+        >
+          {actionLabel}
+        </button>
+      ) : null
     )}
   </div>
 );

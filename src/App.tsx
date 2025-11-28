@@ -49,7 +49,7 @@ const MainLayout: React.FC = () => {
   return (
     <div className="flex flex-col min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-200">
       <Header />
-      <main id="main-content" className="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main id="main-content" className="flex-grow">
         <AnimatePresence mode="wait">
           <Suspense
             fallback={

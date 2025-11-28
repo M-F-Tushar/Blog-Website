@@ -15,9 +15,10 @@ interface CardProps {
   post: Post;
   viewMode?: ViewMode;
   highlight?: string;
+  featured?: boolean;
 }
 
-const Card: React.FC<CardProps> = ({ post, viewMode = 'grid', highlight }) => {
+const Card: React.FC<CardProps> = ({ post, viewMode = 'grid', highlight, featured = false }) => {
   const readingTime = calculateReadingTime(post.content);
   const { isBookmarked, toggleBookmark } = useBookmarks();
   const [isHovered, setIsHovered] = useState(false);
@@ -66,7 +67,7 @@ const Card: React.FC<CardProps> = ({ post, viewMode = 'grid', highlight }) => {
       transition={{ type: "spring", stiffness: 300 }}
       onHoverStart={() => setIsHovered(true)}
       onHoverEnd={() => setIsHovered(false)}
-      className={`bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden flex group border border-transparent hover:border-gray-200 dark:hover:border-gray-700 transition-all duration-300 relative ${containerClasses[viewMode]}`}
+      className={`bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden flex group border border-transparent hover:border-gray-200 dark:hover:border-gray-700 transition-all duration-300 relative ${containerClasses[viewMode]} ${featured ? 'md:flex-row md:h-96' : ''}`}
       aria-labelledby={`post-title-${post.id}`}
     >
       {/* Bookmark Button - Position varies by view */}
@@ -87,7 +88,7 @@ const Card: React.FC<CardProps> = ({ post, viewMode = 'grid', highlight }) => {
       {post.coverImage && (
         <Link
           to={`/blog/${post.id}`}
-          className={`block overflow-hidden relative ${imageContainerClasses[viewMode]}`}
+          className={`block overflow-hidden relative ${featured ? 'w-full md:w-1/2 h-64 md:h-full' : imageContainerClasses[viewMode]}`}
           aria-label={`View ${post.title}`}
         >
           <img
@@ -112,7 +113,7 @@ const Card: React.FC<CardProps> = ({ post, viewMode = 'grid', highlight }) => {
         </Link>
       )}
 
-      <div className={`flex ${contentClasses[viewMode]}`}>
+      <div className={`flex ${featured ? 'flex-col md:w-1/2 p-8 justify-center' : contentClasses[viewMode]}`}>
         <header className={viewMode === 'compact' ? 'flex-grow pr-12' : 'flex-grow'}>
           {/* Meta Info */}
           <div className="flex items-center flex-wrap gap-3 text-xs font-medium text-gray-500 dark:text-gray-400 mb-2">
