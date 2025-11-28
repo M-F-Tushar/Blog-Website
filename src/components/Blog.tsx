@@ -104,7 +104,7 @@ const Blog: React.FC = () => {
   return (
     <div className="space-y-12 pb-12">
       {/* Header Section */}
-      <section className="relative py-16 md:py-24 bg-secondary-50 dark:bg-secondary-900/50 -mt-8 px-4">
+      <section className="relative py-12 md:py-16 bg-secondary-50 dark:bg-secondary-900/50 -mt-8 px-4">
         <div className="container mx-auto max-w-4xl text-center relative z-10">
           <motion.div
             initial={{ opacity: 0, y: 20 }}

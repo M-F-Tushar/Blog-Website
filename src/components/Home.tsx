@@ -86,7 +86,7 @@ const Home: React.FC = () => {
   return (
     <div className="space-y-16 pb-12">
       {/* Hero Section */}
-      <section className="relative -mt-8 py-16 md:py-24 px-4 overflow-hidden">
+      <section className="relative -mt-8 py-12 md:py-16 px-4 overflow-hidden">
         {/* Background Elements */}
         <div className="absolute inset-0 -z-10">
           <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[600px] bg-primary-200/30 dark:bg-primary-900/20 rounded-full blur-3xl opacity-50 mix-blend-multiply dark:mix-blend-screen animate-blob" />

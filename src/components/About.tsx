@@ -53,7 +53,7 @@ const About: React.FC = () => {
   return (
     <div className="space-y-24 pb-12">
       {/* Hero Section */}
-      <section className="relative py-20 md:py-32 px-4 -mt-8 overflow-hidden">
+      <section className="relative py-12 md:py-20 px-4 -mt-8 overflow-hidden">
         {/* Background Elements */}
         <div className="absolute inset-0 -z-10">
           <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-primary-200/20 dark:bg-primary-900/10 rounded-full blur-3xl opacity-50 mix-blend-multiply dark:mix-blend-screen animate-blob" />
@@ -202,8 +202,8 @@ const About: React.FC = () => {
                   >
                     <div className="absolute -left-[41px] md:-left-[57px] top-0 p-2 bg-white dark:bg-secondary-950 border-2 border-secondary-200 dark:border-secondary-800 rounded-full">
                       <div className={`p-1.5 rounded-full ${item.type === 'work'
-                          ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400'
-                          : 'bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400'
+                        ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400'
+                        : 'bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400'
                         }`}>
                         {item.type === 'work' ? <Briefcase size={16} /> : <GraduationCap size={16} />}
                       </div>

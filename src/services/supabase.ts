@@ -11,6 +11,14 @@ export const isSupabaseConfigured = () => {
 };
 
 // Define database schema type
+export type Json =
+  | string
+  | number
+  | boolean
+  | null
+  | { [key: string]: Json | undefined }
+  | Json[]
+
 export interface Database {
   public: {
     Tables: {
@@ -18,17 +26,57 @@ export interface Database {
         Row: DatabasePost;
         Insert: Omit<DatabasePost, 'id' | 'created_at' | 'updated_at'>;
         Update: Partial<Omit<DatabasePost, 'id' | 'created_at' | 'updated_at'>>;
+        Relationships: [];
       };
       recommendations: {
         Row: DatabaseRecommendation;
         Insert: Omit<DatabaseRecommendation, 'id' | 'created_at' | 'updated_at'>;
         Update: Partial<Omit<DatabaseRecommendation, 'id' | 'created_at' | 'updated_at'>>;
+        Relationships: [];
       };
-      settings: {
+      site_settings: {
         Row: DatabaseSettings;
         Insert: Partial<DatabaseSettings>;
         Update: Partial<DatabaseSettings>;
+        Relationships: [];
       };
+      bookmarks: {
+        Row: {
+          id: string;
+          user_id: string;
+          post_id: string;
+          created_at: string;
+        };
+        Insert: {
+          user_id: string;
+          post_id: string;
+        };
+        Update: {
+          user_id?: string;
+          post_id?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "bookmarks_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "users";
+            referencedColumns: ["id"];
+          }
+        ];
+      };
+    };
+    Views: {
+      [_ in never]: never;
+    };
+    Functions: {
+      [_ in never]: never;
+    };
+    Enums: {
+      [_ in never]: never;
+    };
+    CompositeTypes: {
+      [_ in never]: never;
     };
   };
 }
@@ -85,8 +133,21 @@ export interface DatabaseRecommendation {
 export interface DatabaseSettings {
   id: string;
   featured_post_id: string | null;
-  site_title: string;
+  site_title: string; // Keep for backward compatibility if needed, or remove if unused
+  site_name: string;
   site_description: string;
+  author_name: string;
+  author_tagline: string;
+  author_bio: string;
+  social_github: string;
+  social_linkedin: string;
+  social_email: string;
+  categories: string[];
+  skills: any[]; // Using any[] for complex JSON types to avoid circular deps or complex definitions here
+  timeline: any[];
+  achievements: any[];
+  created_at?: string;
+  updated_at?: string;
 }
 
 // Helper functions to convert between camelCase (React) and snake_case (PostgreSQL)

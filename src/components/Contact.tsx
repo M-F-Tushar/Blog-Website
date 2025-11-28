@@ -82,7 +82,7 @@ const Contact: React.FC = () => {
     return (
         <div className="space-y-24 pb-12">
             {/* Header */}
-            <section className="relative py-20 md:py-24 bg-secondary-50 dark:bg-secondary-900/50 -mt-8 px-4 text-center">
+            <section className="relative py-12 md:py-16 bg-secondary-50 dark:bg-secondary-900/50 -mt-8 px-4 text-center">
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}

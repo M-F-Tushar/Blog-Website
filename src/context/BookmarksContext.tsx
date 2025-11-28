@@ -17,7 +17,7 @@ export const BookmarksProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     const { user } = useAuth();
 
     const fetchBookmarks = useCallback(async () => {
-        if (!user) {
+        if (!user || !supabase) {
             setBookmarks([]);
             setIsLoading(false);
             return;
@@ -49,7 +49,19 @@ export const BookmarksProvider: React.FC<{ children: React.ReactNode }> = ({ chi
             return;
         }
 
+        if (!supabase) {
+            console.error('Supabase client not initialized');
+            return;
+        }
+
         const isBookmarked = bookmarks.includes(postId);
+
+        // Optimistic update
+        setBookmarks(prev =>
+            isBookmarked
+                ? prev.filter(id => id !== postId)
+                : [...prev, postId]
+        );
 
         try {
             if (isBookmarked) {
@@ -60,17 +72,27 @@ export const BookmarksProvider: React.FC<{ children: React.ReactNode }> = ({ chi
                     .eq('post_id', postId);
 
                 if (error) throw error;
-                setBookmarks(prev => prev.filter(id => id !== postId));
             } else {
                 const { error } = await supabase
                     .from('bookmarks')
                     .insert({ user_id: user.id, post_id: postId });
 
-                if (error) throw error;
-                setBookmarks(prev => [...prev, postId]);
+                if (error) {
+                    // Ignore unique constraint violation (race condition)
+                    if (error.code === '23505') { // unique_violation
+                        return;
+                    }
+                    throw error;
+                }
             }
         } catch (error) {
             console.error('Error toggling bookmark:', error);
+            // Revert optimistic update on error
+            setBookmarks(prev =>
+                isBookmarked
+                    ? [...prev, postId]
+                    : prev.filter(id => id !== postId)
+            );
             alert('Failed to update bookmark. Please try again.');
         }
     };
