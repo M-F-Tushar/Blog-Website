@@ -1,28 +1,53 @@
-# 📝 Personal Blog Website
+# 📝 Personal Blog
 
-A modern, responsive personal blog built with React, TypeScript, Tailwind CSS, and Supabase.
+A modern, professional personal blog platform built with React, TypeScript, and Tailwind CSS. Features a beautiful, responsive design with dark mode support, SEO optimization, and a powerful admin panel for content management.
 
-![Blog Screenshot](https://via.placeholder.com/800x400?text=Blog+Screenshot)
+![Blog Preview](https://via.placeholder.com/1200x600?text=Modern+Personal+Blog)
 
-## ✨ Features
+## ✨ Key Features
 
-- 📱 **Fully Responsive** - Works on all devices
-- 🌙 **Dark Mode** - Toggle between light and dark themes
-- ⚡ **Fast Performance** - Optimized build with Vite
-- 🔍 **SEO Optimized** - Dynamic meta tags and sitemap
-- ♿ **Accessible** - WCAG 2.1 Level AA compliant
-- 🔐 **Secure Admin** - Supabase authentication
-- 📖 **Reading Time** - Estimated reading time for posts
-- 🏷️ **Tag System** - Organize posts by topics
-- 💬 **Recommendations** - Share favorite tools and resources
-- 🔗 **Social Sharing** - Share posts on social media
+### 🎨 Modern Design
+- **Professional UI/UX** - Clean, modern interface with glassmorphism effects
+- **Responsive Layout** - Optimized for mobile, tablet, and desktop
+- **Dark Mode** - Seamless theme switching with system preference detection
+- **Smooth Animations** - Framer Motion powered transitions and micro-interactions
+- **Custom Typography** - Beautiful font pairing with Inter and Playfair Display
+
+### 📖 Content Management
+- **Rich Markdown Editor** - Write posts with full Markdown support
+- **Syntax Highlighting** - Code blocks with highlight.js
+- **Math Rendering** - LaTeX support via KaTeX
+- **Image Optimization** - Automatic image handling and optimization
+- **Draft System** - Save and publish posts when ready
+
+### 🔍 Discovery & Navigation
+- **Advanced Search** - Filter posts by title, content, tags, and categories
+- **Tag System** - Organize content with multiple tags
+- **Reading Time** - Automatic reading time calculation
+- **Table of Contents** - Auto-generated TOC for long posts
+- **Related Posts** - Smart content recommendations
+
+### 🎯 User Experience
+- **SEO Optimized** - Dynamic meta tags, Open Graph, and Twitter Cards
+- **Fast Performance** - Vite-powered build with code splitting
+- **Accessibility** - WCAG 2.1 AA compliant
+- **Bookmarks** - Save posts to read later
+- **Social Sharing** - Share posts on Twitter, LinkedIn, and Facebook
+- **Comments** - Engage with readers (optional)
+
+### 🔐 Admin Features
+- **Secure Authentication** - Supabase-powered auth system
+- **Content Dashboard** - Manage posts, recommendations, and settings
+- **Profile Management** - Update author bio, social links, and photo
+- **Site Settings** - Customize site name, description, and metadata
+- **Analytics Ready** - Easy integration with analytics platforms
 
 ## 🚀 Quick Start
 
 ### Prerequisites
 
 - Node.js 18+ and npm
-- Supabase account (free tier works great)
+- Supabase account (free tier available)
 - Git
 
 ### Installation
@@ -57,11 +82,11 @@ A modern, responsive personal blog built with React, TypeScript, Tailwind CSS, a
 
 6. **Open in browser**
    
-   Navigate to `http://localhost:5173`
+   Navigate to `http://localhost:3000`
 
 ## 🗄️ Database Setup
 
-### Create Tables in Supabase
+### Supabase Configuration
 
 Execute these SQL commands in your Supabase SQL Editor:
 
@@ -73,6 +98,7 @@ CREATE TABLE posts (
   content TEXT NOT NULL,
   excerpt TEXT,
   cover_image TEXT,
+  category TEXT DEFAULT 'General',
   date TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   status TEXT DEFAULT 'draft',
   tags TEXT[],
@@ -86,8 +112,7 @@ CREATE TABLE recommendations (
   title TEXT NOT NULL,
   description TEXT NOT NULL,
   url TEXT NOT NULL,
-  category TEXT NOT NULL,
-  image TEXT,
+  type TEXT NOT NULL,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
@@ -99,7 +124,7 @@ CREATE TABLE site_settings (
   author_name TEXT,
   author_tagline TEXT,
   author_bio TEXT,
-  photo_url TEXT,
+  author_image TEXT,
   social_github TEXT,
   social_linkedin TEXT,
   social_twitter TEXT,
@@ -108,15 +133,29 @@ CREATE TABLE site_settings (
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
+-- Profile settings table
+CREATE TABLE profile_settings (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  bio TEXT,
+  skills JSONB,
+  timeline JSONB,
+  achievements JSONB,
+  statistics JSONB,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
 -- Enable Row Level Security
 ALTER TABLE posts ENABLE ROW LEVEL SECURITY;
 ALTER TABLE recommendations ENABLE ROW LEVEL SECURITY;
 ALTER TABLE site_settings ENABLE ROW LEVEL SECURITY;
+ALTER TABLE profile_settings ENABLE ROW LEVEL SECURITY;
 
 -- Public read access
 CREATE POLICY "Allow public read access" ON posts FOR SELECT USING (true);
 CREATE POLICY "Allow public read access" ON recommendations FOR SELECT USING (true);
 CREATE POLICY "Allow public read access" ON site_settings FOR SELECT USING (true);
+CREATE POLICY "Allow public read access" ON profile_settings FOR SELECT USING (true);
 
 -- Authenticated write access
 CREATE POLICY "Allow authenticated users to insert" ON posts FOR INSERT TO authenticated WITH CHECK (true);
@@ -128,6 +167,7 @@ CREATE POLICY "Allow authenticated users to update" ON recommendations FOR UPDAT
 CREATE POLICY "Allow authenticated users to delete" ON recommendations FOR DELETE TO authenticated USING (true);
 
 CREATE POLICY "Allow authenticated users to update" ON site_settings FOR UPDATE TO authenticated USING (true);
+CREATE POLICY "Allow authenticated users to update" ON profile_settings FOR UPDATE TO authenticated USING (true);
 ```
 
 ### Create Admin User
@@ -136,94 +176,205 @@ CREATE POLICY "Allow authenticated users to update" ON site_settings FOR UPDATE 
 2. Click "Add user" → "Create new user"
 3. Enter email and secure password
 4. Check "Auto Confirm User"
-5. Save credentials
+5. Save credentials for admin login
 
-## 📝 Scripts
+## 📝 Available Scripts
 
 - `npm run dev` - Start development server
 - `npm run build` - Build for production
 - `npm run preview` - Preview production build
+- `npm run lint` - Run ESLint
+- `npm run lint:fix` - Fix ESLint errors
+- `npm run format` - Format code with Prettier
 - `npm run generate-sitemap` - Generate sitemap.xml
 
 ## 🚀 Deployment
 
 ### Deploy to GitHub Pages
 
-1. **Update `vite.config.ts`** base path (already configured)
+1. **Update `vite.config.ts`** with your repository name (already configured)
 
 2. **Build the project**
    ```bash
    npm run build
    ```
 
-3. **Deploy to GitHub Pages**
+3. **Deploy**
    
-   The built files in `dist/` directory can be deployed to GitHub Pages.
-   
-   Or use GitHub Actions for automatic deployment.
+   The built files in `dist/` can be deployed to GitHub Pages using GitHub Actions or manually.
 
-### Deploy to Vercel/Netlify
+### Deploy to Vercel
+
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/M-F-Tushar/Blog-Website)
 
 1. Connect your GitHub repository
 2. Set build command: `npm run build`
 3. Set output directory: `dist`
+4. Add environment variables (Supabase credentials)
+
+### Deploy to Netlify
+
+[![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/M-F-Tushar/Blog-Website)
+
+1. Connect your repository
+2. Build command: `npm run build`
+3. Publish directory: `dist`
 4. Add environment variables
 
 ## 🛠️ Tech Stack
 
-- **Frontend:** React 18, TypeScript
-- **Styling:** Tailwind CSS
-- **Backend:** Supabase (PostgreSQL)
-- **Build Tool:** Vite
-- **Routing:** React Router v6
-- **Markdown:** Marked.js
-- **Icons:** Heroicons (via SVG)
+### Frontend
+- **React 19** - UI library
+- **TypeScript** - Type safety
+- **Tailwind CSS** - Utility-first styling
+- **Framer Motion** - Animations
+- **React Router v6** - Routing
+- **Lucide React** - Icons
+
+### Content & Markdown
+- **React Markdown** - Markdown rendering
+- **Remark GFM** - GitHub Flavored Markdown
+- **Rehype Highlight** - Syntax highlighting
+- **KaTeX** - Math rendering
+- **Mermaid** - Diagrams
+
+### Backend & Database
+- **Supabase** - Backend as a Service
+- **PostgreSQL** - Database
+- **Row Level Security** - Data protection
+
+### Build & Development
+- **Vite** - Build tool
+- **ESLint** - Linting
+- **Prettier** - Code formatting
+- **Husky** - Git hooks
+- **lint-staged** - Pre-commit checks
 
 ## 📁 Project Structure
 
 ```
 Blog-Website/
 ├── src/
-│   ├── components/       # React components
-│   │   ├── admin/       # Admin panel components
-│   │   └── common/      # Reusable components
-│   ├── hooks/           # Custom React hooks
-│   ├── services/        # API services
-│   ├── types/           # TypeScript types
-│   ├── constants/       # Constants
-│   ├── utils/           # Utility functions
-│   ├── App.tsx          # Main app component
-│   └── main.tsx         # Entry point
-├── public/              # Static assets
-├── scripts/             # Build scripts
-└── supabase/           # Database schema
+│   ├── components/          # React components
+│   │   ├── admin/          # Admin panel components
+│   │   ├── blog/           # Blog-specific components
+│   │   ├── comments/       # Comment system
+│   │   └── common/         # Reusable components
+│   ├── hooks/              # Custom React hooks
+│   ├── services/           # API services
+│   ├── types/              # TypeScript types
+│   ├── utils/              # Utility functions
+│   ├── context/            # React contexts
+│   ├── App.tsx             # Main app component
+│   └── main.tsx            # Entry point
+├── public/                 # Static assets
+│   ├── posts/             # Blog post markdown files
+│   └── images/            # Images and media
+├── scripts/               # Build and utility scripts
+├── supabase/              # Database schema
+├── index.css              # Global styles
+├── tailwind.config.js     # Tailwind configuration
+└── vite.config.ts         # Vite configuration
 ```
+
+## 🎨 Customization
+
+### Update Site Information
+
+1. **Login to Admin Panel**
+   - Navigate to `/admin/login`
+   - Use your Supabase credentials
+
+2. **Update Settings**
+   - Go to Settings → Site Settings
+   - Update site name, description, and metadata
+   - Go to Settings → Profile Settings
+   - Update author bio, skills, and social links
+
+### Customize Theme
+
+Edit `tailwind.config.js` to customize:
+- Color palette
+- Fonts
+- Spacing
+- Animations
+
+### Add Custom Pages
+
+1. Create component in `src/components/`
+2. Add route in `src/App.tsx`
+3. Update navigation in `src/components/Header.tsx`
+
+## 📖 Writing Posts
+
+### Using the Admin Panel
+
+1. Login to admin panel
+2. Navigate to Posts → Create New
+3. Write content in Markdown
+4. Add tags and category
+5. Upload cover image (optional)
+6. Save as draft or publish
+
+### Markdown Features
+
+- **Headers**: `# H1`, `## H2`, etc.
+- **Bold**: `**text**`
+- **Italic**: `*text*`
+- **Links**: `[text](url)`
+- **Images**: `![alt](url)`
+- **Code**: `` `code` `` or ` ```language `
+- **Math**: `$inline$` or `$$block$$`
+- **Tables**: GitHub Flavored Markdown tables
+- **Task Lists**: `- [ ] Task`
 
 ## 🤝 Contributing
 
-Contributions are welcome! Please read [CONTRIBUTING.md](CONTRIBUTING.md) for details.
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
 
 ## 📄 License
 
-This project is licensed under the MIT License - see [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## 👨‍💻 Author
 
 **M-F-Tushar**
 - GitHub: [@M-F-Tushar](https://github.com/M-F-Tushar)
-- LinkedIn: [Your LinkedIn](https://linkedin.com/in/yourprofile)
+- LinkedIn: [Connect with me](https://linkedin.com/in/yourprofile)
+- Email: your.email@example.com
 
 ## 🙏 Acknowledgments
 
-- Built with React and Vite
-- Styled with Tailwind CSS
-- Powered by Supabase
-- Icons from Heroicons
+- [React](https://react.dev/) - UI library
+- [Vite](https://vitejs.dev/) - Build tool
+- [Tailwind CSS](https://tailwindcss.com/) - Styling
+- [Supabase](https://supabase.com/) - Backend platform
+- [Framer Motion](https://www.framer.com/motion/) - Animations
+- [Lucide](https://lucide.dev/) - Icons
 
 ## 📞 Support
 
-If you have any questions or issues, please open an issue on GitHub.
+If you have any questions or need help, please:
+- Open an issue on GitHub
+- Check the [documentation](https://github.com/M-F-Tushar/Blog-Website/wiki)
+- Reach out via email
+
+## 🌟 Show Your Support
+
+If you find this project useful, please consider:
+- ⭐ Starring the repository
+- 🐛 Reporting bugs
+- 💡 Suggesting new features
+- 🔀 Contributing code
 
 ---
 
-Made with ❤️ by M-F-Tushar
+**Made with ❤️ by M-F-Tushar**
+
+*A modern personal blog platform for developers and writers*
