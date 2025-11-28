@@ -1,6 +1,6 @@
 // FIX: Replaced BrowserRouter with HashRouter to solve persistent routing issues in the preview environment.
 import React, { Suspense, lazy } from 'react';
-import { HashRouter, Routes, Route, Outlet, useLocation } from 'react-router-dom';
+import { HashRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import Header from './components/Header';
 import Footer from './components/Footer';
@@ -49,7 +49,7 @@ const MainLayout: React.FC = () => {
   return (
     <div className="flex flex-col min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-200">
       <Header />
-      <main id="main-content" className="flex-grow">
+      <main id="main-content" className="flex-grow pt-20 md:pt-24">
         <AnimatePresence mode="wait">
           <Suspense
             fallback={

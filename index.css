@@ -25,7 +25,7 @@
     --ring: 221.2 83.2% 53.3%;
     --radius: 0.5rem;
   }
- 
+
   .dark {
     --background: 222.2 84% 4.9%;
     --foreground: 210 40% 98%;
@@ -53,13 +53,20 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
-  
+
   body {
     @apply bg-white dark:bg-secondary-950 text-secondary-900 dark:text-secondary-50 antialiased min-h-screen flex flex-col;
-    font-feature-settings: "rlig" 1, "calt" 1;
+    font-feature-settings:
+      'rlig' 1,
+      'calt' 1;
   }
 
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     @apply font-serif font-bold tracking-tight;
   }
 
@@ -72,7 +79,7 @@
   .glass {
     @apply bg-white/70 dark:bg-secondary-900/70 backdrop-blur-lg border border-white/20 dark:border-secondary-700/30;
   }
-  
+
   .glass-card {
     @apply bg-white/50 dark:bg-secondary-800/50 backdrop-blur-md border border-white/20 dark:border-secondary-700/30 shadow-lg;
   }
@@ -83,6 +90,39 @@
 
   .container-padding {
     @apply px-4 sm:px-6 lg:px-8;
+  }
+
+  /* Custom scrollbar styling for trending topics */
+  .scrollbar-thin {
+    scrollbar-width: thin;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar {
+    height: 6px;
+  }
+
+  .scrollbar-thumb-secondary-300::-webkit-scrollbar-thumb {
+    background-color: rgb(203 213 225);
+    border-radius: 3px;
+  }
+
+  .dark .scrollbar-thumb-secondary-700::-webkit-scrollbar-thumb {
+    background-color: rgb(51 65 85);
+    border-radius: 3px;
+  }
+
+  .scrollbar-track-transparent::-webkit-scrollbar-track {
+    background-color: transparent;
+  }
+
+  .scrollbar-thumb-secondary-300:hover::-webkit-scrollbar-thumb,
+  .hover\:scrollbar-thumb-secondary-400:hover::-webkit-scrollbar-thumb {
+    background-color: rgb(148 163 184);
+  }
+
+  .dark .scrollbar-thumb-secondary-700:hover::-webkit-scrollbar-thumb,
+  .dark .hover\:scrollbar-thumb-secondary-600:hover::-webkit-scrollbar-thumb {
+    background-color: rgb(71 85 105);
   }
 
   /* Screen reader only utility class */
@@ -107,6 +147,18 @@
     overflow: visible;
     clip: auto;
     white-space: normal;
+  }
+}
+
+/* Custom animations */
+@keyframes fade {
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.3;
   }
 }
 

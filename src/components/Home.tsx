@@ -22,31 +22,36 @@ const Home: React.FC = () => {
   useSEO({
     description: siteDescription,
     image: 'https://m-f-tushar.github.io/Blog-Website/images/og-image.jpg',
-    schema
+    schema,
   });
 
   const publishedPosts = useMemo(() => {
     return posts
-      .filter(p => p.status === PostStatus.PUBLISHED)
+      .filter((p) => p.status === PostStatus.PUBLISHED)
       .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
   }, [posts]);
 
   const featuredPost = useMemo(() => {
-    return featuredPostId ? publishedPosts.find(p => p.id === featuredPostId) : publishedPosts[0];
+    return featuredPostId ? publishedPosts.find((p) => p.id === featuredPostId) : publishedPosts[0];
   }, [featuredPostId, publishedPosts]);
 
   const recentPosts = useMemo(() => {
-    const postsWithoutFeatured = featuredPost ? publishedPosts.filter(p => p.id !== featuredPost.id) : publishedPosts;
+    const postsWithoutFeatured = featuredPost
+      ? publishedPosts.filter((p) => p.id !== featuredPost.id)
+      : publishedPosts;
     return postsWithoutFeatured.slice(0, 6);
   }, [publishedPosts, featuredPost]);
 
   // Extract popular tags (naive implementation based on frequency)
   const popularTags = useMemo(() => {
-    const tags = publishedPosts.flatMap(p => p.tags || []);
-    const tagCounts = tags.reduce((acc, tag) => {
-      acc[tag] = (acc[tag] || 0) + 1;
-      return acc;
-    }, {} as Record<string, number>);
+    const tags = publishedPosts.flatMap((p) => p.tags || []);
+    const tagCounts = tags.reduce(
+      (acc, tag) => {
+        acc[tag] = (acc[tag] || 0) + 1;
+        return acc;
+      },
+      {} as Record<string, number>
+    );
     return Object.entries(tagCounts)
       .sort((a, b) => b[1] - a[1])
       .slice(0, 6)
@@ -79,9 +84,9 @@ const Home: React.FC = () => {
   }
 
   return (
-    <div className="space-y-24 pb-12">
+    <div className="space-y-16 pb-12">
       {/* Hero Section */}
-      <section className="relative -mt-8 py-24 md:py-32 px-4 overflow-hidden">
+      <section className="relative -mt-8 py-16 md:py-24 px-4 overflow-hidden">
         {/* Background Elements */}
         <div className="absolute inset-0 -z-10">
           <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[600px] bg-primary-200/30 dark:bg-primary-900/20 rounded-full blur-3xl opacity-50 mix-blend-multiply dark:mix-blend-screen animate-blob" />
@@ -96,16 +101,20 @@ const Home: React.FC = () => {
           >
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/50 dark:bg-secondary-800/50 backdrop-blur-sm border border-secondary-200 dark:border-secondary-700 mb-8">
               <Sparkles size={16} className="text-accent-500" />
-              <span className="text-sm font-medium text-secondary-600 dark:text-secondary-300">Welcome to my digital garden</span>
+              <span className="text-sm font-medium text-secondary-600 dark:text-secondary-300">
+                Welcome to my digital garden
+              </span>
             </div>
 
             <h1 className="text-5xl md:text-7xl font-bold font-serif text-secondary-900 dark:text-white mb-8 tracking-tight leading-tight">
-              Hi, I'm <span className="text-gradient">{authorName}</span>
+              Hi, I&apos;m <span className="text-gradient">{authorName}</span>
             </h1>
 
-            <p className="text-xl md:text-2xl text-secondary-600 dark:text-secondary-300 mb-12 max-w-2xl mx-auto leading-relaxed h-20 md:h-auto">
+            <p className="text-xl md:text-2xl text-secondary-600 dark:text-secondary-300 mb-10 max-w-2xl mx-auto leading-relaxed h-20 md:h-auto">
               {typedTagline}
-              <span className="animate-pulse text-primary-500">|</span>
+              <span className="opacity-75 text-primary-500 animate-[fade_1s_ease-in-out_infinite]">
+                |
+              </span>
             </p>
 
             <div className="flex flex-col sm:flex-row justify-center gap-4">
@@ -132,7 +141,9 @@ const Home: React.FC = () => {
         <section className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center gap-2 mb-8">
             <Sparkles className="text-accent-500" />
-            <h2 className="text-3xl font-bold font-serif text-secondary-900 dark:text-white">Featured Story</h2>
+            <h2 className="text-3xl font-bold font-serif text-secondary-900 dark:text-white">
+              Featured Story
+            </h2>
           </div>
           <div className="transform hover:-translate-y-1 transition-transform duration-300">
             <Card post={featuredPost} featured />
@@ -145,18 +156,22 @@ const Home: React.FC = () => {
         <section className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center gap-2 mb-6">
             <Tag className="text-primary-500" />
-            <h2 className="text-2xl font-bold font-serif text-secondary-900 dark:text-white">Trending Topics</h2>
+            <h2 className="text-2xl font-bold font-serif text-secondary-900 dark:text-white">
+              Trending Topics
+            </h2>
           </div>
-          <div className="flex flex-wrap gap-3">
-            {popularTags.map(tag => (
-              <Link
-                key={tag}
-                to={`/tags/${tag}`}
-                className="px-4 py-2 bg-white dark:bg-secondary-800 border border-secondary-200 dark:border-secondary-700 rounded-full text-secondary-600 dark:text-secondary-300 hover:border-primary-500 hover:text-primary-500 dark:hover:text-primary-400 transition-colors"
-              >
-                #{tag}
-              </Link>
-            ))}
+          <div className="relative">
+            <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-thin scrollbar-thumb-secondary-300 dark:scrollbar-thumb-secondary-700 scrollbar-track-transparent hover:scrollbar-thumb-secondary-400 dark:hover:scrollbar-thumb-secondary-600 md:flex-wrap md:overflow-x-visible">
+              {popularTags.map((tag) => (
+                <Link
+                  key={tag}
+                  to={`/tags/${tag}`}
+                  className="px-4 py-2 bg-white dark:bg-secondary-800 border border-secondary-200 dark:border-secondary-700 rounded-full text-secondary-600 dark:text-secondary-300 hover:border-primary-500 hover:text-primary-500 dark:hover:text-primary-400 transition-colors whitespace-nowrap flex-shrink-0"
+                >
+                  #{tag}
+                </Link>
+              ))}
+            </div>
           </div>
         </section>
       )}
@@ -167,9 +182,14 @@ const Home: React.FC = () => {
           <div className="flex items-center justify-between mb-8">
             <div className="flex items-center gap-2">
               <TrendingUp className="text-green-500" />
-              <h2 className="text-3xl font-bold font-serif text-secondary-900 dark:text-white">Latest Articles</h2>
+              <h2 className="text-3xl font-bold font-serif text-secondary-900 dark:text-white">
+                Latest Articles
+              </h2>
             </div>
-            <Link to="/blog" className="hidden md:flex items-center gap-1 text-primary-600 dark:text-primary-400 hover:underline">
+            <Link
+              to="/blog"
+              className="hidden md:flex items-center gap-1 text-primary-600 dark:text-primary-400 hover:underline"
+            >
               View all <ArrowRight size={16} />
             </Link>
           </div>
@@ -181,7 +201,10 @@ const Home: React.FC = () => {
           </div>
 
           <div className="mt-12 text-center md:hidden">
-            <Link to="/blog" className="inline-flex items-center gap-2 px-6 py-3 bg-secondary-100 dark:bg-secondary-800 text-secondary-900 dark:text-white rounded-full font-medium">
+            <Link
+              to="/blog"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-secondary-100 dark:bg-secondary-800 text-secondary-900 dark:text-white rounded-full font-medium"
+            >
               View all articles <ArrowRight size={16} />
             </Link>
           </div>
@@ -204,10 +227,14 @@ const Home: React.FC = () => {
             </h2>
 
             <p className="text-lg text-secondary-300">
-              Get the latest articles, tutorials, and insights delivered straight to your inbox. No spam, just quality content.
+              Get the latest articles, tutorials, and insights delivered straight to your inbox. No
+              spam, just quality content.
             </p>
 
-            <form className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto" onSubmit={(e) => e.preventDefault()}>
+            <form
+              className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto"
+              onSubmit={(e) => e.preventDefault()}
+            >
               <input
                 type="email"
                 placeholder="Enter your email"

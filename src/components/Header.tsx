@@ -30,8 +30,11 @@ const Header: React.FC = () => {
 
   // Close menu on route change
   useEffect(() => {
-    setIsMenuOpen(false);
-  }, [location]);
+    if (isMenuOpen) {
+      setIsMenuOpen(false);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location.pathname]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -41,7 +44,7 @@ const Header: React.FC = () => {
   };
 
   const performSearch = (query: string) => {
-    const updatedSearches = [query, ...recentSearches.filter(s => s !== query)].slice(0, 10);
+    const updatedSearches = [query, ...recentSearches.filter((s) => s !== query)].slice(0, 10);
     setRecentSearches(updatedSearches);
     navigate(`/search?q=${encodeURIComponent(query)}`);
     setSearchQuery('');
@@ -60,10 +63,9 @@ const Header: React.FC = () => {
 
   return (
     <header
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled || isMenuOpen
-          ? 'glass shadow-sm py-3'
-          : 'bg-transparent py-5'
-        }`}
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+        isScrolled || isMenuOpen ? 'glass shadow-sm py-3' : 'bg-transparent py-5'
+      }`}
     >
       <nav className="container mx-auto px-4 sm:px-6 lg:px-8" aria-label="Main navigation">
         <div className="flex items-center justify-between">
@@ -83,9 +85,10 @@ const Header: React.FC = () => {
                 key={link.path}
                 to={link.path}
                 className={({ isActive }) =>
-                  `px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${isActive
-                    ? 'bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400'
-                    : 'text-secondary-600 dark:text-secondary-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-secondary-50 dark:hover:bg-secondary-800/50'
+                  `px-4 py-2 text-sm font-medium transition-all duration-200 relative ${
+                    isActive
+                      ? 'text-primary-600 dark:text-primary-400 after:absolute after:bottom-0 after:left-1/2 after:-translate-x-1/2 after:w-1/2 after:h-0.5 after:bg-primary-600 dark:after:bg-primary-400 after:rounded-full'
+                      : 'text-secondary-600 dark:text-secondary-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-secondary-50 dark:hover:bg-secondary-800/50 rounded-full'
                   }`
                 }
               >
@@ -105,10 +108,13 @@ const Header: React.FC = () => {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   onFocus={() => setShowSuggestions(true)}
-                  className="pl-10 pr-4 py-2 w-40 focus:w-60 text-sm bg-secondary-100/50 dark:bg-secondary-800/50 border border-transparent focus:border-primary-500/50 rounded-full focus:outline-none focus:ring-2 focus:ring-primary-500/20 transition-all duration-300"
+                  className="pl-10 pr-4 py-2 w-40 focus:w-60 text-sm bg-secondary-100 dark:bg-secondary-800 border border-secondary-200 dark:border-secondary-700 focus:border-primary-500 rounded-full focus:outline-none focus:ring-2 focus:ring-primary-500/20 transition-all duration-300 placeholder:text-secondary-500 dark:placeholder:text-secondary-400"
                   aria-label="Search blog posts"
                 />
-                <SearchIcon size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-secondary-400 group-focus-within:text-primary-500 transition-colors" />
+                <SearchIcon
+                  size={16}
+                  className="absolute left-3.5 top-1/2 -translate-y-1/2 text-secondary-500 dark:text-secondary-400 group-focus-within:text-primary-500 transition-colors"
+                />
               </form>
 
               <SearchSuggestions
@@ -124,7 +130,11 @@ const Header: React.FC = () => {
             {/* Theme Toggle */}
             <button
               onClick={toggleTheme}
-              className="p-2 rounded-full text-secondary-600 dark:text-secondary-300 hover:bg-secondary-100 dark:hover:bg-secondary-800 transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500/50"
+              className={`p-2 rounded-full transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary-500/50 hover:scale-110 ${
+                theme === 'dark'
+                  ? 'bg-secondary-800 text-amber-400 hover:bg-secondary-700'
+                  : 'bg-secondary-100 text-indigo-600 hover:bg-secondary-200'
+              }`}
               aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
             >
               {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
@@ -134,7 +144,7 @@ const Header: React.FC = () => {
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               className="md:hidden p-2 rounded-full text-secondary-600 dark:text-secondary-300 hover:bg-secondary-100 dark:hover:bg-secondary-800 transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500/50"
-              aria-label={isMenuOpen ? "Close menu" : "Open menu"}
+              aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
               aria-expanded={isMenuOpen}
             >
               {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
@@ -145,8 +155,9 @@ const Header: React.FC = () => {
 
       {/* Mobile Menu Overlay */}
       <div
-        className={`md:hidden fixed inset-0 z-40 bg-white/95 dark:bg-secondary-950/95 backdrop-blur-xl transition-transform duration-300 ease-in-out ${isMenuOpen ? 'translate-x-0' : 'translate-x-full'
-          }`}
+        className={`md:hidden fixed inset-0 z-40 bg-white/95 dark:bg-secondary-950/95 backdrop-blur-xl transition-transform duration-300 ease-in-out ${
+          isMenuOpen ? 'translate-x-0' : 'translate-x-full'
+        }`}
         style={{ top: '60px' }}
       >
         <div className="p-4 space-y-4 h-full overflow-y-auto">
@@ -158,7 +169,10 @@ const Header: React.FC = () => {
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full pl-10 pr-4 py-3 text-base bg-secondary-100 dark:bg-secondary-900 border border-transparent focus:border-primary-500 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500/20"
             />
-            <SearchIcon size={20} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-secondary-400" />
+            <SearchIcon
+              size={20}
+              className="absolute left-3.5 top-1/2 -translate-y-1/2 text-secondary-400"
+            />
           </form>
 
           <div className="space-y-1">
@@ -167,9 +181,10 @@ const Header: React.FC = () => {
                 key={link.path}
                 to={link.path}
                 className={({ isActive }) =>
-                  `block px-4 py-3 rounded-xl text-base font-medium transition-colors ${isActive
-                    ? 'bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400'
-                    : 'text-secondary-600 dark:text-secondary-300 hover:bg-secondary-50 dark:hover:bg-secondary-900'
+                  `block px-4 py-3 rounded-xl text-base font-medium transition-colors relative ${
+                    isActive
+                      ? 'bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400 border-l-4 border-primary-600 dark:border-primary-400'
+                      : 'text-secondary-600 dark:text-secondary-300 hover:bg-secondary-50 dark:hover:bg-secondary-900'
                   }`
                 }
               >
