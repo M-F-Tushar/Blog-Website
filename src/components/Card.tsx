@@ -67,7 +67,7 @@ const Card: React.FC<CardProps> = ({ post, viewMode = 'grid', highlight, feature
       transition={{ type: 'spring', stiffness: 300 }}
       onHoverStart={() => setIsHovered(true)}
       onHoverEnd={() => setIsHovered(false)}
-      className={`bg-white dark:bg-gray-800 rounded-xl shadow-md hover:shadow-xl overflow-hidden flex group border border-transparent hover:border-gray-200 dark:hover:border-gray-700 transition-all duration-300 relative ${containerClasses[viewMode]} ${featured ? 'md:flex-row md:h-96' : ''}`}
+      className={`bg-white dark:bg-gray-800 rounded-xl shadow-md hover:shadow-xl overflow-hidden flex group border border-transparent hover:border-gray-200 dark:hover:border-gray-700 transition-all duration-300 relative hover:scale-[1.02] ${containerClasses[viewMode]} ${featured ? 'md:flex-row md:h-96' : ''}`}
       aria-labelledby={`post-title-${post.id}`}
     >
       {/* Bookmark Button - Position varies by view */}

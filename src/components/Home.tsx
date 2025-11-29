@@ -15,7 +15,7 @@ import { EmptyState } from './common/EmptyState';
 const Home: React.FC = () => {
   const { posts, featuredPostId, loading, error } = usePosts();
   const { authorName, authorTagline, siteDescription } = useSiteSettings();
-  const typedTagline = useTypingEffect(authorTagline, 50, 1000);
+  const { displayedText: typedTagline, isTyping } = useTypingEffect(authorTagline, 50, 1000);
 
   const schema = useMemo(() => generateWebSiteSchema(), []);
 
@@ -112,7 +112,9 @@ const Home: React.FC = () => {
 
             <p className="text-xl md:text-2xl text-secondary-600 dark:text-secondary-300 mb-10 max-w-2xl mx-auto leading-relaxed h-20 md:h-auto">
               {typedTagline}
-              <span className="opacity-75 text-primary-500 animate-[fade_1s_ease-in-out_infinite]">
+              <span
+                className={`opacity-75 text-primary-500 animate-[fade_1s_ease-in-out_infinite] ${!isTyping ? 'hidden' : ''}`}
+              >
                 |
               </span>
             </p>
@@ -166,7 +168,7 @@ const Home: React.FC = () => {
                 <Link
                   key={tag}
                   to={`/tags/${tag}`}
-                  className="px-4 py-2 bg-white dark:bg-secondary-800 border border-secondary-200 dark:border-secondary-700 rounded-full text-secondary-600 dark:text-secondary-300 hover:border-primary-500 hover:text-primary-500 dark:hover:text-primary-400 transition-colors whitespace-nowrap flex-shrink-0"
+                  className="px-4 py-2 bg-white dark:bg-secondary-800 border border-secondary-200 dark:border-secondary-700 rounded-full text-secondary-600 dark:text-secondary-300 hover:border-primary-500 hover:text-primary-500 dark:hover:text-primary-400 hover:scale-105 transition-all duration-200 whitespace-nowrap flex-shrink-0"
                 >
                   #{tag}
                 </Link>
