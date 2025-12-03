@@ -15,6 +15,9 @@ import { ProfileProvider } from './hooks/useProfile';
 import { RecommendationsProvider } from './hooks/useRecommendations';
 import { AuthProvider } from './hooks/useAuth';
 import { BookmarksProvider } from './context/BookmarksContext';
+import { ToastProvider } from './context/ToastContext';
+import { useToast } from './hooks/useToast';
+import { ToastContainer } from './components/ui/Toast';
 
 // Lazy load components
 const Home = lazy(() => import('./components/Home'));
@@ -42,6 +45,12 @@ const RecommendationForm = lazy(() => import('./components/admin/RecommendationF
 const AdminSiteSettings = lazy(() => import('./components/admin/AdminSiteSettings'));
 const AdminProfileSettings = lazy(() => import('./components/admin/AdminProfileSettings'));
 const DataMigration = lazy(() => import('./components/admin/DataMigration'));
+
+// Toast Container Wrapper to consume context
+const ToastContainerWrapper: React.FC = () => {
+  const { toasts, dismissToast } = useToast();
+  return <ToastContainer toasts={toasts} onDismiss={dismissToast} />;
+};
 
 const MainLayout: React.FC = () => {
   const location = useLocation();
@@ -84,68 +93,74 @@ function App() {
     <ErrorBoundary>
       <AuthProvider>
         <ThemeProvider>
-          <SiteSettingsProvider>
-            <PostsProvider>
-              <ProfileProvider>
-                <RecommendationsProvider>
-                  <BookmarksProvider>
-                    <HashRouter>
-                      <Routes>
-                        <Route path="/*" element={<MainLayout />} />
-                        <Route
-                          path="/admin/login"
-                          element={
-                            <Suspense
-                              fallback={
-                                <div className="flex justify-center items-center min-h-screen">
-                                  <LoadingSpinner />
-                                </div>
-                              }
-                            >
-                              <AdminLogin />
-                            </Suspense>
-                          }
-                        />
-                        <Route
-                          path="/admin"
-                          element={
-                            <Suspense
-                              fallback={
-                                <div className="flex justify-center items-center min-h-screen">
-                                  <LoadingSpinner />
-                                </div>
-                              }
-                            >
-                              <AdminLayout />
-                            </Suspense>
-                          }
-                        >
-                          <Route element={<AdminRootLayout />}>
-                            <Route path="dashboard" element={<AdminDashboard />} />
-                            <Route path="posts/create" element={<CreatePost />} />
-                            <Route path="posts/edit/:postId" element={<CreatePost />} />
-                            <Route
-                              path="recommendations"
-                              element={<AdminRecommendationsDashboard />}
-                            />
-                            <Route path="recommendations/create" element={<RecommendationForm />} />
-                            <Route
-                              path="recommendations/edit/:recId"
-                              element={<RecommendationForm />}
-                            />
-                            <Route path="settings/site" element={<AdminSiteSettings />} />
-                            <Route path="settings/profile" element={<AdminProfileSettings />} />
-                            <Route path="migrate" element={<DataMigration />} />
+          <ToastProvider>
+            <SiteSettingsProvider>
+              <PostsProvider>
+                <ProfileProvider>
+                  <RecommendationsProvider>
+                    <BookmarksProvider>
+                      <HashRouter>
+                        <Routes>
+                          <Route path="/*" element={<MainLayout />} />
+                          <Route
+                            path="/admin/login"
+                            element={
+                              <Suspense
+                                fallback={
+                                  <div className="flex justify-center items-center min-h-screen">
+                                    <LoadingSpinner />
+                                  </div>
+                                }
+                              >
+                                <AdminLogin />
+                              </Suspense>
+                            }
+                          />
+                          <Route
+                            path="/admin"
+                            element={
+                              <Suspense
+                                fallback={
+                                  <div className="flex justify-center items-center min-h-screen">
+                                    <LoadingSpinner />
+                                  </div>
+                                }
+                              >
+                                <AdminLayout />
+                              </Suspense>
+                            }
+                          >
+                            <Route element={<AdminRootLayout />}>
+                              <Route path="dashboard" element={<AdminDashboard />} />
+                              <Route path="posts/create" element={<CreatePost />} />
+                              <Route path="posts/edit/:postId" element={<CreatePost />} />
+                              <Route
+                                path="recommendations"
+                                element={<AdminRecommendationsDashboard />}
+                              />
+                              <Route
+                                path="recommendations/create"
+                                element={<RecommendationForm />}
+                              />
+                              <Route
+                                path="recommendations/edit/:recId"
+                                element={<RecommendationForm />}
+                              />
+                              <Route path="settings/site" element={<AdminSiteSettings />} />
+                              <Route path="settings/profile" element={<AdminProfileSettings />} />
+                              <Route path="migrate" element={<DataMigration />} />
+                            </Route>
                           </Route>
-                        </Route>
-                      </Routes>
-                      <ScrollToTop />
-                    </HashRouter>
-                  </BookmarksProvider>
-                </RecommendationsProvider>
-              </ProfileProvider>
-            </PostsProvider>
-          </SiteSettingsProvider>
+                        </Routes>
+                        <ScrollToTop />
+                      </HashRouter>
+                      <ToastContainerWrapper />
+                    </BookmarksProvider>
+                  </RecommendationsProvider>
+                </ProfileProvider>
+              </PostsProvider>
+            </SiteSettingsProvider>
+          </ToastProvider>
         </ThemeProvider>
       </AuthProvider>
     </ErrorBoundary>
