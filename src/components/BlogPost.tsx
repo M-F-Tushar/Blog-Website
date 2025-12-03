@@ -1,5 +1,5 @@
-import React, { useMemo, useEffect } from 'react';
-import { useParams, Link, Navigate } from 'react-router-dom';
+import React, { useMemo, useEffect, useState } from 'react';
+import { useParams, Link } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import remarkMath from 'remark-math';
@@ -19,13 +19,15 @@ import { EmptyState } from './common/EmptyState';
 import { generateBlogPostSchema } from '../utils/seo';
 import { calculateReadingTime, formatReadingTime, getWordCount } from '../utils/readingTime';
 import ShareButtons from './common/ShareButtons';
-import ScrollProgress from './common/ScrollProgress';
+import ReadingProgress from './common/ReadingProgress';
 import ReadingControls from './common/ReadingControls';
 import RelatedPosts from './common/RelatedPosts';
 import PostNavigation from './common/PostNavigation';
 import { useReadingPreferences } from '../hooks/useReadingPreferences';
 import CommentSection from './comments/CommentSection';
 import TableOfContents from './blog/TableOfContents';
+import { useReadingPosition } from '../hooks/useReadingPosition';
+import ContinueReadingPrompt from './common/ContinueReadingPrompt';
 
 const BlogPost: React.FC = () => {
   const { postId } = useParams<{ postId: string }>();
@@ -34,8 +36,19 @@ const BlogPost: React.FC = () => {
   useReadingPreferences();
 
   const post = useMemo(() => {
-    return posts.find(p => p.id === postId);
+    return posts.find((p) => p.id === postId);
   }, [postId, posts]);
+
+  const readingTime = useMemo(() => (post ? calculateReadingTime(post.content) : 0), [post]);
+  const totalWords = useMemo(() => (post ? getWordCount(post.content) : 0), [post]);
+
+  // Reading position hook
+  const { position, restorePosition, clearPosition } = useReadingPosition(postId || '', totalWords);
+
+  // Derive showContinuePrompt from position instead of using state
+  const showContinuePrompt =
+    position && position.scrollPercentage > 5 && position.scrollPercentage < 95;
+  const [promptDismissed, setPromptDismissed] = useState(false);
 
   const schema = useMemo(() => {
     if (post) {
@@ -53,7 +66,7 @@ const BlogPost: React.FC = () => {
     publishedTime: post?.date,
     tags: post?.tags,
     canonicalUrl: `https://m-f-tushar.github.io/Blog-Website/#/blog/${postId}`,
-    schema
+    schema,
   });
 
   if (loading) {
@@ -72,14 +85,32 @@ const BlogPost: React.FC = () => {
     );
   }
 
-  const readingTime = calculateReadingTime(post.content);
-  const totalWords = getWordCount(post.content);
   const currentUrl = window.location.href;
+
+  const handleContinueReading = () => {
+    restorePosition();
+    setPromptDismissed(true);
+  };
+
+  const handleStartOver = () => {
+    clearPosition();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    setPromptDismissed(true);
+  };
 
   return (
     <>
-      <ScrollProgress totalWords={totalWords} />
+      <ReadingProgress totalWords={totalWords} showPercentage={true} />
       <ReadingControls />
+
+      {/* Continue Reading Prompt */}
+      {showContinuePrompt && !promptDismissed && position && (
+        <ContinueReadingPrompt
+          percentage={position.scrollPercentage}
+          onContinue={handleContinueReading}
+          onStartOver={handleStartOver}
+        />
+      )}
 
       <article className="min-h-screen pb-20">
         {/* Hero Section */}
@@ -87,11 +118,7 @@ const BlogPost: React.FC = () => {
           {post.coverImage ? (
             <>
               <div className="absolute inset-0 bg-black/50 z-10" />
-              <img
-                src={post.coverImage}
-                alt={post.title}
-                className="w-full h-full object-cover"
-              />
+              <img src={post.coverImage} alt={post.title} className="w-full h-full object-cover" />
             </>
           ) : (
             <div className="absolute inset-0 bg-gradient-to-br from-primary-900 via-secondary-900 to-black z-10" />
@@ -113,7 +140,11 @@ const BlogPost: React.FC = () => {
                 </span>
                 <span className="flex items-center gap-1">
                   <Calendar size={14} />
-                  {new Date(post.date).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' })}
+                  {new Date(post.date).toLocaleDateString(undefined, {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric',
+                  })}
                 </span>
                 <span className="flex items-center gap-1">
                   <Clock size={14} />
@@ -150,19 +181,36 @@ const BlogPost: React.FC = () => {
                     rehypeHighlight,
                     rehypeRaw,
                     rehypeSlug,
-                    [rehypeAutolinkHeadings, { behavior: 'wrap' }]
+                    [rehypeAutolinkHeadings, { behavior: 'wrap' }],
                   ]}
                   components={{
-                    img: ({ node, ...props }) => (
+                    img: ({ ...props }) => (
                       <img {...props} className="rounded-xl shadow-lg my-8 w-full" loading="lazy" />
                     ),
-                    a: ({ node, ...props }) => (
-                      <a {...props} target="_blank" rel="noopener noreferrer" className="text-primary-600 dark:text-primary-400 hover:underline decoration-2 decoration-primary-200 dark:decoration-primary-800 underline-offset-2 transition-all" />
+                    a: ({ ...props }) => (
+                      <a
+                        {...props}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-primary-600 dark:text-primary-400 hover:underline decoration-2 decoration-primary-200 dark:decoration-primary-800 underline-offset-2 transition-all"
+                      />
                     ),
-                    blockquote: ({ node, ...props }) => (
-                      <blockquote {...props} className="border-l-4 border-primary-500 bg-primary-50 dark:bg-primary-900/20 p-4 rounded-r-lg italic" />
+                    blockquote: ({ ...props }) => (
+                      <blockquote
+                        {...props}
+                        className="border-l-4 border-primary-500 bg-primary-50 dark:bg-primary-900/20 p-4 rounded-r-lg italic"
+                      />
                     ),
-                    code: ({ node, inline, className, children, ...props }: any) => {
+                    code: ({
+                      inline,
+                      className,
+                      children,
+                      ...props
+                    }: {
+                      inline?: boolean;
+                      className?: string;
+                      children?: React.ReactNode;
+                    }) => {
                       const match = /language-(\w+)/.exec(className || '');
                       return !inline && match ? (
                         <div className="relative group">
@@ -171,11 +219,14 @@ const BlogPost: React.FC = () => {
                           </code>
                         </div>
                       ) : (
-                        <code className="bg-secondary-100 dark:bg-secondary-800 px-1.5 py-0.5 rounded text-sm font-mono text-secondary-800 dark:text-secondary-200" {...props}>
+                        <code
+                          className="bg-secondary-100 dark:bg-secondary-800 px-1.5 py-0.5 rounded text-sm font-mono text-secondary-800 dark:text-secondary-200"
+                          {...props}
+                        >
                           {children}
                         </code>
                       );
-                    }
+                    },
                   }}
                 >
                   {post.content}
@@ -185,7 +236,7 @@ const BlogPost: React.FC = () => {
               {/* Tags */}
               <div className="mt-12 pt-8 border-t border-secondary-200 dark:border-secondary-800">
                 <div className="flex flex-wrap gap-2">
-                  {post.tags.map(tag => (
+                  {post.tags.map((tag) => (
                     <Link
                       key={tag}
                       to={`/tags/${tag}`}
@@ -199,11 +250,7 @@ const BlogPost: React.FC = () => {
               </div>
 
               <div className="mt-8">
-                <ShareButtons
-                  url={currentUrl}
-                  title={post.title}
-                  description={post.excerpt}
-                />
+                <ShareButtons url={currentUrl} title={post.title} description={post.excerpt} />
               </div>
 
               <PostNavigation currentPostId={post.id} allPosts={posts} />
@@ -215,7 +262,9 @@ const BlogPost: React.FC = () => {
             <aside className="hidden lg:block space-y-8">
               <div className="sticky top-24 space-y-8">
                 <div className="bg-white dark:bg-secondary-900 rounded-xl shadow-lg p-6 border border-secondary-200 dark:border-secondary-800">
-                  <h3 className="text-lg font-bold font-serif mb-4 text-secondary-900 dark:text-white">Table of Contents</h3>
+                  <h3 className="text-lg font-bold font-serif mb-4 text-secondary-900 dark:text-white">
+                    Table of Contents
+                  </h3>
                   <TableOfContents content={post.content} />
                 </div>
 

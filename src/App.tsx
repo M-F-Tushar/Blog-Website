@@ -1,5 +1,5 @@
 // FIX: Replaced BrowserRouter with HashRouter to solve persistent routing issues in the preview environment.
-import React, { Suspense, lazy } from 'react';
+import React, { Suspense, lazy, useState } from 'react';
 import { HashRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import Header from './components/Header';
@@ -16,8 +16,13 @@ import { RecommendationsProvider } from './hooks/useRecommendations';
 import { AuthProvider } from './hooks/useAuth';
 import { BookmarksProvider } from './context/BookmarksContext';
 import { ToastProvider } from './context/ToastContext';
+import { CommandPaletteProvider } from './context/CommandPaletteContext';
 import { useToast } from './hooks/useToast';
 import { ToastContainer } from './components/ui/Toast';
+import CommandPalette from './components/common/CommandPalette';
+import KeyboardShortcutsHelp from './components/common/KeyboardShortcutsHelp';
+import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
+import { useTheme } from './hooks/useTheme';
 
 // Lazy load components with prefetch routes
 const Home = lazy(() => import('./components/Home'));
@@ -66,6 +71,47 @@ const ToastContainerWrapper: React.FC = () => {
 
 const MainLayout: React.FC = () => {
   const location = useLocation();
+  const { toggleTheme } = useTheme();
+  const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
+  const [isShortcutsHelpOpen, setIsShortcutsHelpOpen] = useState(false);
+
+  // Global keyboard shortcuts
+  useKeyboardShortcuts([
+    {
+      key: 'k',
+      metaKey: true,
+      action: () => setIsCommandPaletteOpen(true),
+      description: 'Open command palette',
+      category: 'navigation',
+    },
+    {
+      key: 'k',
+      ctrlKey: true,
+      action: () => setIsCommandPaletteOpen(true),
+      description: 'Open command palette',
+      category: 'navigation',
+    },
+    {
+      key: '/',
+      metaKey: true,
+      action: () => setIsShortcutsHelpOpen(true),
+      description: 'Show keyboard shortcuts',
+      category: 'help',
+    },
+    {
+      key: '/',
+      ctrlKey: true,
+      action: () => setIsShortcutsHelpOpen(true),
+      description: 'Show keyboard shortcuts',
+      category: 'help',
+    },
+    {
+      key: 't',
+      action: () => toggleTheme(),
+      description: 'Toggle theme',
+      category: 'action',
+    },
+  ]);
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-200">
@@ -96,6 +142,18 @@ const MainLayout: React.FC = () => {
         </AnimatePresence>
       </main>
       <Footer />
+
+      {/* Command Palette */}
+      <CommandPalette
+        isOpen={isCommandPaletteOpen}
+        onClose={() => setIsCommandPaletteOpen(false)}
+      />
+
+      {/* Keyboard Shortcuts Help */}
+      <KeyboardShortcutsHelp
+        isOpen={isShortcutsHelpOpen}
+        onClose={() => setIsShortcutsHelpOpen(false)}
+      />
     </div>
   );
 };
@@ -106,72 +164,74 @@ function App() {
       <AuthProvider>
         <ThemeProvider>
           <ToastProvider>
-            <SiteSettingsProvider>
-              <PostsProvider>
-                <ProfileProvider>
-                  <RecommendationsProvider>
-                    <BookmarksProvider>
-                      <HashRouter>
-                        <Routes>
-                          <Route path="/*" element={<MainLayout />} />
-                          <Route
-                            path="/admin/login"
-                            element={
-                              <Suspense
-                                fallback={
-                                  <div className="flex justify-center items-center min-h-screen">
-                                    <LoadingSpinner />
-                                  </div>
-                                }
-                              >
-                                <AdminLogin />
-                              </Suspense>
-                            }
-                          />
-                          <Route
-                            path="/admin"
-                            element={
-                              <Suspense
-                                fallback={
-                                  <div className="flex justify-center items-center min-h-screen">
-                                    <LoadingSpinner />
-                                  </div>
-                                }
-                              >
-                                <AdminLayout />
-                              </Suspense>
-                            }
-                          >
-                            <Route element={<AdminRootLayout />}>
-                              <Route path="dashboard" element={<AdminDashboard />} />
-                              <Route path="posts/create" element={<CreatePost />} />
-                              <Route path="posts/edit/:postId" element={<CreatePost />} />
-                              <Route
-                                path="recommendations"
-                                element={<AdminRecommendationsDashboard />}
-                              />
-                              <Route
-                                path="recommendations/create"
-                                element={<RecommendationForm />}
-                              />
-                              <Route
-                                path="recommendations/edit/:recId"
-                                element={<RecommendationForm />}
-                              />
-                              <Route path="settings/site" element={<AdminSiteSettings />} />
-                              <Route path="settings/profile" element={<AdminProfileSettings />} />
-                              <Route path="migrate" element={<DataMigration />} />
+            <CommandPaletteProvider>
+              <SiteSettingsProvider>
+                <PostsProvider>
+                  <ProfileProvider>
+                    <RecommendationsProvider>
+                      <BookmarksProvider>
+                        <HashRouter>
+                          <Routes>
+                            <Route path="/*" element={<MainLayout />} />
+                            <Route
+                              path="/admin/login"
+                              element={
+                                <Suspense
+                                  fallback={
+                                    <div className="flex justify-center items-center min-h-screen">
+                                      <LoadingSpinner />
+                                    </div>
+                                  }
+                                >
+                                  <AdminLogin />
+                                </Suspense>
+                              }
+                            />
+                            <Route
+                              path="/admin"
+                              element={
+                                <Suspense
+                                  fallback={
+                                    <div className="flex justify-center items-center min-h-screen">
+                                      <LoadingSpinner />
+                                    </div>
+                                  }
+                                >
+                                  <AdminLayout />
+                                </Suspense>
+                              }
+                            >
+                              <Route element={<AdminRootLayout />}>
+                                <Route path="dashboard" element={<AdminDashboard />} />
+                                <Route path="posts/create" element={<CreatePost />} />
+                                <Route path="posts/edit/:postId" element={<CreatePost />} />
+                                <Route
+                                  path="recommendations"
+                                  element={<AdminRecommendationsDashboard />}
+                                />
+                                <Route
+                                  path="recommendations/create"
+                                  element={<RecommendationForm />}
+                                />
+                                <Route
+                                  path="recommendations/edit/:recId"
+                                  element={<RecommendationForm />}
+                                />
+                                <Route path="settings/site" element={<AdminSiteSettings />} />
+                                <Route path="settings/profile" element={<AdminProfileSettings />} />
+                                <Route path="migrate" element={<DataMigration />} />
+                              </Route>
                             </Route>
-                          </Route>
-                        </Routes>
-                        <ScrollToTop />
-                      </HashRouter>
-                      <ToastContainerWrapper />
-                    </BookmarksProvider>
-                  </RecommendationsProvider>
-                </ProfileProvider>
-              </PostsProvider>
-            </SiteSettingsProvider>
+                          </Routes>
+                          <ScrollToTop />
+                        </HashRouter>
+                        <ToastContainerWrapper />
+                      </BookmarksProvider>
+                    </RecommendationsProvider>
+                  </ProfileProvider>
+                </PostsProvider>
+              </SiteSettingsProvider>
+            </CommandPaletteProvider>
           </ToastProvider>
         </ThemeProvider>
       </AuthProvider>
