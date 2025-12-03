@@ -35,8 +35,6 @@ const BlogPost: React.FC = () => {
   const { authorName } = useSiteSettings();
   useReadingPreferences();
 
-  const [showContinuePrompt, setShowContinuePrompt] = useState(false);
-
   const post = useMemo(() => {
     return posts.find((p) => p.id === postId);
   }, [postId, posts]);
@@ -46,6 +44,11 @@ const BlogPost: React.FC = () => {
 
   // Reading position hook
   const { position, restorePosition, clearPosition } = useReadingPosition(postId || '', totalWords);
+
+  // Derive showContinuePrompt from position instead of using state
+  const showContinuePrompt =
+    position && position.scrollPercentage > 5 && position.scrollPercentage < 95;
+  const [promptDismissed, setPromptDismissed] = useState(false);
 
   const schema = useMemo(() => {
     if (post) {
@@ -65,24 +68,6 @@ const BlogPost: React.FC = () => {
     canonicalUrl: `https://m-f-tushar.github.io/Blog-Website/#/blog/${postId}`,
     schema,
   });
-
-  // Show continue reading prompt if there's a saved position
-  useEffect(() => {
-    // Using a flag to ensure we only set this once on mount
-    let isMounted = true;
-
-    if (isMounted && position && position.scrollPercentage > 5 && position.scrollPercentage < 95) {
-      // Defer the state update to avoid synchronous setState in effect
-      const timer = setTimeout(() => {
-        setShowContinuePrompt(true);
-      }, 100);
-
-      return () => {
-        isMounted = false;
-        clearTimeout(timer);
-      };
-    }
-  }, [position]);
 
   if (loading) {
     return <SkeletonPost />;
@@ -104,13 +89,13 @@ const BlogPost: React.FC = () => {
 
   const handleContinueReading = () => {
     restorePosition();
-    setShowContinuePrompt(false);
+    setPromptDismissed(true);
   };
 
   const handleStartOver = () => {
     clearPosition();
     window.scrollTo({ top: 0, behavior: 'smooth' });
-    setShowContinuePrompt(false);
+    setPromptDismissed(true);
   };
 
   return (
@@ -119,7 +104,7 @@ const BlogPost: React.FC = () => {
       <ReadingControls />
 
       {/* Continue Reading Prompt */}
-      {showContinuePrompt && position && (
+      {showContinuePrompt && !promptDismissed && position && (
         <ContinueReadingPrompt
           percentage={position.scrollPercentage}
           onContinue={handleContinueReading}

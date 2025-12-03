@@ -27,22 +27,24 @@ export function useKeyboardShortcuts(shortcuts: KeyboardShortcut[]): void {
           continue;
         }
 
-        // Check modifier keys
-        const ctrlMatch = shortcut.ctrlKey ? event.ctrlKey : true;
-        const metaMatch = shortcut.metaKey ? event.metaKey : true;
-        const shiftMatch = shortcut.shiftKey ? event.shiftKey : true;
-
-        // If any modifier is specified, only trigger if exact match
+        // Check if modifiers match exactly
         const hasModifier = shortcut.ctrlKey || shortcut.metaKey || shortcut.shiftKey;
-        const modifiersMatch =
-          hasModifier &&
-          (shortcut.ctrlKey === event.ctrlKey || shortcut.metaKey === event.metaKey) &&
-          (!shortcut.shiftKey || shortcut.shiftKey === event.shiftKey);
 
-        if (hasModifier ? modifiersMatch : ctrlMatch && metaMatch && shiftMatch) {
-          // For shortcuts with modifiers, don't check if in input
-          // For shortcuts without modifiers, check if in input
-          if (hasModifier || !isInput) {
+        // For shortcuts with modifiers, check exact match
+        if (hasModifier) {
+          const ctrlMatches = (shortcut.ctrlKey || false) === event.ctrlKey;
+          const metaMatches = (shortcut.metaKey || false) === event.metaKey;
+          const shiftMatches = (shortcut.shiftKey || false) === event.shiftKey;
+
+          if (ctrlMatches && metaMatches && shiftMatches) {
+            event.preventDefault();
+            shortcut.action();
+            break;
+          }
+        } else {
+          // For shortcuts without modifiers, only trigger if no modifiers are pressed
+          // and not in an input field
+          if (!event.ctrlKey && !event.metaKey && !event.shiftKey && !isInput) {
             event.preventDefault();
             shortcut.action();
             break;

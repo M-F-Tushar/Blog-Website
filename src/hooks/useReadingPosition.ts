@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useLocalStorage } from './useLocalStorage';
 
 export interface ReadingPosition {
@@ -18,32 +18,37 @@ export function useReadingPosition(postId: string, totalWords: number = 0) {
     'reading-positions',
     {}
   );
-  const [currentPosition, setCurrentPosition] = useState<ReadingPosition | null>(null);
+  // Derive current position from positions and postId
+  const currentPosition = useMemo(() => {
+    const position = positions[postId];
+    if (!position) return null;
 
-  // Load position on mount - using useMemo to avoid synchronous setState in effect
+    // Check if position is expired (older than 30 days)
+    const thirtyDaysAgo = Date.now() - 30 * 24 * 60 * 60 * 1000;
+    if (new Date(position.lastRead).getTime() < thirtyDaysAgo) {
+      return null;
+    }
+
+    return position;
+  }, [positions, postId]);
+
+  // Clean up expired positions on mount
   useEffect(() => {
     const position = positions[postId];
     if (!position) return;
 
-    // Clean up old positions (older than 30 days)
     const thirtyDaysAgo = Date.now() - 30 * 24 * 60 * 60 * 1000;
-
-    // Defer state update to next tick to avoid synchronous setState
-    const timer = setTimeout(() => {
-      if (new Date(position.lastRead).getTime() < thirtyDaysAgo) {
-        setPositions((prev) => {
-          const newPositions = { ...prev };
-          delete newPositions[postId];
-          return newPositions;
-        });
-        setCurrentPosition(null);
-      } else {
-        setCurrentPosition(position);
-      }
-    }, 0);
-
-    return () => clearTimeout(timer);
-  }, [postId, positions, setPositions]);
+    if (new Date(position.lastRead).getTime() < thirtyDaysAgo) {
+      // Remove expired position
+      setPositions((prev) => {
+        const newPositions = { ...prev };
+        delete newPositions[postId];
+        return newPositions;
+      });
+    }
+    // Only run once on mount
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Clear position function
   const clearPosition = useCallback(() => {
@@ -52,7 +57,6 @@ export function useReadingPosition(postId: string, totalWords: number = 0) {
       delete newPositions[postId];
       return newPositions;
     });
-    setCurrentPosition(null);
   }, [postId, setPositions]);
 
   // Calculate estimated time left
@@ -91,8 +95,6 @@ export function useReadingPosition(postId: string, totalWords: number = 0) {
         ...prev,
         [postId]: newPosition,
       }));
-
-      setCurrentPosition(newPosition);
     }
   }, [postId, setPositions, calculateTimeLeft]);
 

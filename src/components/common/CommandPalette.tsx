@@ -167,20 +167,25 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose }) => {
     [theme, toggleTheme, onClose]
   );
 
-  // Post commands - not using useMemo to avoid compiler warnings
-  const postCommands: Command[] = posts.slice(0, 10).map((post) => ({
-    id: `post-${post.id}`,
-    title: post.title,
-    subtitle: post.excerpt,
-    icon: <BookOpen size={18} />,
-    action: () => {
-      addRecentSearch(post.title);
-      navigate(`/blog/${post.id}`);
-      onClose();
-    },
-    category: 'post' as const,
-    keywords: [post.title, ...(post.tags || []), post.excerpt || ''],
-  }));
+  // Post commands
+  const postCommands: Command[] = useMemo(
+    () =>
+      posts.slice(0, 10).map((post) => ({
+        id: `post-${post.id}`,
+        title: post.title,
+        subtitle: post.excerpt,
+        icon: <BookOpen size={18} />,
+        action: () => {
+          addRecentSearch(post.title);
+          navigate(`/blog/${post.id}`);
+          onClose();
+        },
+        category: 'post' as const,
+        keywords: [post.title, ...(post.tags || []), post.excerpt || ''],
+      })),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [posts]
+  );
 
   // Recent searches commands
   const recentCommands: Command[] = useMemo(
@@ -239,10 +244,8 @@ const CommandPalette: React.FC<CommandPaletteProps> = ({ isOpen, onClose }) => {
 
   // Reset selected index when filtered commands change
   useEffect(() => {
-    // Defer state update to next tick to avoid synchronous setState in effect
-    const timer = setTimeout(() => setSelectedIndex(0), 0);
-    return () => clearTimeout(timer);
-  }, [filteredCommands]);
+    setSelectedIndex(0);
+  }, [filteredCommands.length]); // Use length to avoid re-running on every content change
 
   // Keyboard navigation
   const handleKeyDown = (e: React.KeyboardEvent) => {
