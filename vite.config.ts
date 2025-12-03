@@ -17,8 +17,8 @@ export default defineConfig(({ mode }) => {
     plugins: [
       react({
         babel: {
-          plugins: [['babel-plugin-react-compiler', {}]]
-        }
+          plugins: [['babel-plugin-react-compiler', {}]],
+        },
       }),
       VitePWA({
         registerType: 'autoUpdate',
@@ -32,14 +32,14 @@ export default defineConfig(({ mode }) => {
             {
               src: 'pwa-192x192.png',
               sizes: '192x192',
-              type: 'image/png'
+              type: 'image/png',
             },
             {
               src: 'pwa-512x512.png',
               sizes: '512x512',
-              type: 'image/png'
-            }
-          ]
+              type: 'image/png',
+            },
+          ],
         },
         workbox: {
           runtimeCaching: [
@@ -50,12 +50,12 @@ export default defineConfig(({ mode }) => {
                 cacheName: 'google-fonts-cache',
                 expiration: {
                   maxEntries: 10,
-                  maxAgeSeconds: 60 * 60 * 24 * 365 // <== 365 days
+                  maxAgeSeconds: 60 * 60 * 24 * 365, // 365 days
                 },
                 cacheableResponse: {
-                  statuses: [0, 200]
-                }
-              }
+                  statuses: [0, 200],
+                },
+              },
             },
             {
               urlPattern: /^https:\/\/fonts\.gstatic\.com\/.*/i,
@@ -64,34 +64,73 @@ export default defineConfig(({ mode }) => {
                 cacheName: 'gstatic-fonts-cache',
                 expiration: {
                   maxEntries: 10,
-                  maxAgeSeconds: 60 * 60 * 24 * 365 // <== 365 days
+                  maxAgeSeconds: 60 * 60 * 24 * 365, // 365 days
                 },
                 cacheableResponse: {
-                  statuses: [0, 200]
-                }
-              }
-            }
-          ]
-        }
+                  statuses: [0, 200],
+                },
+              },
+            },
+            // Image caching
+            {
+              urlPattern: /\.(?:png|jpg|jpeg|svg|gif|webp|avif)$/,
+              handler: 'CacheFirst',
+              options: {
+                cacheName: 'images-cache',
+                expiration: {
+                  maxEntries: 100,
+                  maxAgeSeconds: 60 * 60 * 24 * 30, // 30 days
+                },
+              },
+            },
+            // API caching with network-first strategy
+            {
+              urlPattern: /^https:\/\/.*supabase.*\/rest\/v1\/.*/,
+              handler: 'NetworkFirst',
+              options: {
+                cacheName: 'api-cache',
+                expiration: {
+                  maxEntries: 50,
+                  maxAgeSeconds: 60 * 5, // 5 minutes
+                },
+                networkTimeoutSeconds: 10,
+              },
+            },
+            // Static assets caching
+            {
+              urlPattern: /\.(?:js|css)$/,
+              handler: 'StaleWhileRevalidate',
+              options: {
+                cacheName: 'static-resources',
+                expiration: {
+                  maxEntries: 50,
+                  maxAgeSeconds: 60 * 60 * 24 * 7, // 7 days
+                },
+              },
+            },
+          ],
+          // Precache critical assets
+          globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
+        },
       }),
       viteCompression({
         algorithm: 'gzip',
-        ext: '.gz'
+        ext: '.gz',
       }),
       viteCompression({
         algorithm: 'brotliCompress',
-        ext: '.br'
+        ext: '.br',
       }),
-      visualizer({ open: true, gzipSize: true })
+      visualizer({ open: true, gzipSize: true }),
     ],
     define: {
       'process.env.API_KEY': JSON.stringify(env.GEMINI_API_KEY),
-      'process.env.GEMINI_API_KEY': JSON.stringify(env.GEMINI_API_KEY)
+      'process.env.GEMINI_API_KEY': JSON.stringify(env.GEMINI_API_KEY),
     },
     resolve: {
       alias: {
         '@': path.resolve(__dirname, './src'),
-      }
+      },
     },
     optimizeDeps: {
       include: [
@@ -102,22 +141,37 @@ export default defineConfig(({ mode }) => {
         '@supabase/postgrest-js',
         '@supabase/realtime-js',
         '@supabase/storage-js',
-        '@supabase/functions-js'
-      ]
+        '@supabase/functions-js',
+      ],
     },
     build: {
       rollupOptions: {
         treeshake: {
           moduleSideEffects: false,
-          propertyReadSideEffects: false
+          propertyReadSideEffects: false,
         },
         output: {
           manualChunks: {
             vendor: ['react', 'react-dom', 'react-router-dom'],
             supabase: ['@supabase/supabase-js'],
-            ui: ['framer-motion', 'lucide-react']
-          }
-        }
+            ui: ['framer-motion', 'lucide-react'],
+            // Enhanced code splitting for better bundle optimization
+            markdown: [
+              'react-markdown',
+              'remark-gfm',
+              'remark-math',
+              'rehype-highlight',
+              'rehype-katex',
+              'rehype-slug',
+              'rehype-autolink-headings',
+              'rehype-raw',
+              'remark-directive',
+            ],
+            charts: ['mermaid'],
+            math: ['katex'],
+            lightbox: ['yet-another-react-lightbox'],
+          },
+        },
       },
       chunkSizeWarningLimit: 500, // Warn if chunk exceeds 500KB
       reportCompressedSize: true,
@@ -128,9 +182,11 @@ export default defineConfig(({ mode }) => {
       terserOptions: {
         compress: {
           drop_console: mode === 'production',
-          drop_debugger: mode === 'production'
-        }
-      }
-    }
+          drop_debugger: mode === 'production',
+        },
+      },
+      // Add source map for production debugging
+      sourcemap: 'hidden',
+    },
   };
 });
