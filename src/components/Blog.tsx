@@ -6,7 +6,7 @@ import { usePosts } from '../hooks/usePosts';
 import { PostStatus } from '../types/types';
 import Pagination from './Pagination';
 import useSEO from '../hooks/useSEO';
-import { SkeletonCard } from './common/LoadingSpinner';
+import { CardSkeleton } from './ui/CardSkeleton';
 import { EmptyState } from './common/EmptyState';
 import ViewToggle, { ViewMode, SortOption } from './common/ViewToggle';
 import { useLocalStorage } from '../hooks/useLocalStorage';
@@ -16,7 +16,7 @@ const POSTS_PER_PAGE = 9;
 const Blog: React.FC = () => {
   useSEO({
     title: 'Blog',
-    description: 'Read my latest articles about web development, programming, and technology.'
+    description: 'Read my latest articles about web development, programming, and technology.',
   });
 
   const { posts, loading, error } = usePosts();
@@ -28,14 +28,15 @@ const Blog: React.FC = () => {
   const [sortBy, setSortBy] = useLocalStorage<SortOption>('blog-sort-by', 'newest');
 
   const publishedPosts = useMemo(() => {
-    let filtered = posts.filter(p => p.status === PostStatus.PUBLISHED);
+    let filtered = posts.filter((p) => p.status === PostStatus.PUBLISHED);
 
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
-      filtered = filtered.filter(p =>
-        p.title.toLowerCase().includes(query) ||
-        p.excerpt.toLowerCase().includes(query) ||
-        p.tags.some(t => t.toLowerCase().includes(query))
+      filtered = filtered.filter(
+        (p) =>
+          p.title.toLowerCase().includes(query) ||
+          p.excerpt.toLowerCase().includes(query) ||
+          p.tags.some((t) => t.toLowerCase().includes(query))
       );
     }
 
@@ -47,7 +48,7 @@ const Blog: React.FC = () => {
         case 'oldest':
           return new Date(a.date).getTime() - new Date(b.date).getTime();
         case 'popular':
-          return (b.content.length) - (a.content.length);
+          return b.content.length - a.content.length;
         case 'alphabetical':
           return a.title.localeCompare(b.title);
         default:
@@ -70,9 +71,9 @@ const Blog: React.FC = () => {
 
   // Container classes based on ViewMode
   const gridClasses = {
-    grid: "grid gap-8 md:grid-cols-2 lg:grid-cols-3",
-    list: "flex flex-col gap-8 max-w-4xl mx-auto",
-    compact: "flex flex-col gap-4 max-w-3xl mx-auto"
+    grid: 'grid gap-8 md:grid-cols-2 lg:grid-cols-3',
+    list: 'flex flex-col gap-8 max-w-4xl mx-auto',
+    compact: 'flex flex-col gap-4 max-w-3xl mx-auto',
   };
 
   if (loading) {
@@ -82,23 +83,15 @@ const Blog: React.FC = () => {
           <div className="h-12 w-48 bg-secondary-200 dark:bg-secondary-800 rounded-full mx-auto animate-pulse" />
           <div className="h-6 w-96 bg-secondary-100 dark:bg-secondary-800 rounded-full mx-auto animate-pulse" />
         </div>
-        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-          <SkeletonCard />
-          <SkeletonCard />
-          <SkeletonCard />
+        <div className={gridClasses[viewMode]}>
+          <CardSkeleton viewMode={viewMode} count={POSTS_PER_PAGE} />
         </div>
       </div>
     );
   }
 
   if (error) {
-    return (
-      <EmptyState
-        icon="⚠️"
-        title="Error Loading Posts"
-        description={error}
-      />
-    );
+    return <EmptyState icon="⚠️" title="Error Loading Posts" description={error} />;
   }
 
   return (
@@ -113,7 +106,9 @@ const Blog: React.FC = () => {
           >
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white dark:bg-secondary-800 border border-secondary-200 dark:border-secondary-700 mb-6 shadow-sm">
               <Sparkles size={16} className="text-accent-500" />
-              <span className="text-sm font-medium text-secondary-600 dark:text-secondary-300">Explore my thoughts & tutorials</span>
+              <span className="text-sm font-medium text-secondary-600 dark:text-secondary-300">
+                Explore my thoughts & tutorials
+              </span>
             </div>
 
             <h1 className="text-4xl md:text-6xl font-bold font-serif text-secondary-900 dark:text-white mb-6">
@@ -121,7 +116,8 @@ const Blog: React.FC = () => {
             </h1>
 
             <p className="text-lg md:text-xl text-secondary-600 dark:text-secondary-300 max-w-2xl mx-auto leading-relaxed">
-              Discover articles on web development, software engineering, and the latest tech trends.
+              Discover articles on web development, software engineering, and the latest tech
+              trends.
             </p>
 
             {/* Search Bar */}
@@ -133,7 +129,10 @@ const Blog: React.FC = () => {
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full pl-12 pr-4 py-4 rounded-full bg-white dark:bg-secondary-800 border border-secondary-200 dark:border-secondary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 shadow-lg shadow-secondary-200/50 dark:shadow-none transition-all"
               />
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-secondary-400" size={20} />
+              <Search
+                className="absolute left-4 top-1/2 -translate-y-1/2 text-secondary-400"
+                size={20}
+              />
             </div>
           </motion.div>
         </div>
@@ -179,10 +178,14 @@ const Blog: React.FC = () => {
           <EmptyState
             icon="🔍"
             title="No posts found"
-            description={searchQuery ? `No results found for "${searchQuery}"` : "No posts available at the moment."}
-            actionLabel={searchQuery ? "Clear Search" : "Go Home"}
+            description={
+              searchQuery
+                ? `No results found for "${searchQuery}"`
+                : 'No posts available at the moment.'
+            }
+            actionLabel={searchQuery ? 'Clear Search' : 'Go Home'}
             onAction={searchQuery ? () => setSearchQuery('') : undefined}
-            actionLink={!searchQuery ? "/" : undefined}
+            actionLink={!searchQuery ? '/' : undefined}
           />
         )}
 

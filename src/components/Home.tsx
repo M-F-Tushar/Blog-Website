@@ -9,7 +9,7 @@ import { PostStatus } from '../types/types';
 import Card from './Card';
 import useSEO from '../hooks/useSEO';
 import { generateWebSiteSchema } from '../utils/seo';
-import { SkeletonCard } from './common/LoadingSpinner';
+import { CardSkeleton } from './ui/CardSkeleton';
 import { EmptyState } from './common/EmptyState';
 
 const Home: React.FC = () => {
@@ -60,12 +60,22 @@ const Home: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="space-y-16 container-padding">
+      <div className="space-y-16 container-padding py-12">
+        {/* Hero skeleton */}
         <div className="h-96 bg-secondary-100 dark:bg-secondary-800 rounded-3xl animate-pulse" />
-        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-          <SkeletonCard />
-          <SkeletonCard />
-          <SkeletonCard />
+
+        {/* Featured post skeleton */}
+        <div className="space-y-6">
+          <div className="h-8 w-48 bg-secondary-200 dark:bg-secondary-800 rounded-full animate-pulse" />
+          <CardSkeleton viewMode="grid" count={1} />
+        </div>
+
+        {/* Recent posts skeleton */}
+        <div className="space-y-6">
+          <div className="h-8 w-48 bg-secondary-200 dark:bg-secondary-800 rounded-full animate-pulse" />
+          <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+            <CardSkeleton viewMode="grid" count={6} />
+          </div>
         </div>
       </div>
     );
