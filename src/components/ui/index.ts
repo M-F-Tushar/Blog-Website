@@ -10,3 +10,6 @@ export { HeaderSkeleton } from './HeaderSkeleton';
 
 export { ToastContainer } from './Toast';
 export type { ToastData, ToastType } from './Toast';
+
+export { OptimizedImage } from './OptimizedImage';
+export type { OptimizedImageProps } from './OptimizedImage';
