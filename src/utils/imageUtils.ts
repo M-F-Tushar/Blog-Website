@@ -78,11 +78,17 @@ export function generateSrcSet(src: string, widths: number[]): string {
  * Get resized image URL (adjust based on your image CDN/service)
  */
 function getResizedImageUrl(src: string, width: number): string {
-  // If using a CDN with resize support, modify the URL
-  // For now, return original URL (can be enhanced with CDN parameters)
-  const url = new URL(src, window.location.origin);
-  url.searchParams.set('w', width.toString());
-  return url.toString();
+  // If src is already an absolute URL, return as-is with width param
+  try {
+    const url = new URL(src);
+    url.searchParams.set('w', width.toString());
+    return url.toString();
+  } catch {
+    // Relative URL - construct with origin
+    const url = new URL(src, window.location.origin);
+    url.searchParams.set('w', width.toString());
+    return url.toString();
+  }
 }
 
 /**

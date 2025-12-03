@@ -13,6 +13,7 @@ export interface OptimizedImageProps {
   className?: string;
   onLoad?: () => void;
   onError?: () => void;
+  srcSetMultipliers?: number[]; // Custom multipliers for srcSet generation
 }
 
 /**
@@ -29,6 +30,7 @@ export const OptimizedImage: React.FC<OptimizedImageProps> = ({
   className = '',
   onLoad,
   onError,
+  srcSetMultipliers = [1, 1.5, 2],
 }) => {
   const [isInView, setIsInView] = useState(priority);
   const imgRef = useRef<HTMLImageElement>(null);
@@ -80,8 +82,13 @@ export const OptimizedImage: React.FC<OptimizedImageProps> = ({
     }
   }, [isError, onError]);
 
-  // Generate responsive srcset
-  const srcSet = width ? generateSrcSet(src, [width, width * 1.5, width * 2]) : undefined;
+  // Generate responsive srcset with custom multipliers
+  const srcSet = width
+    ? generateSrcSet(
+        src,
+        srcSetMultipliers.map((mult) => width * mult)
+      )
+    : undefined;
 
   return (
     <div

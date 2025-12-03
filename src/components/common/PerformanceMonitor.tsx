@@ -17,21 +17,29 @@ const PerformanceMonitor: React.FC = () => {
     // Only show in development
     if (!import.meta.env.DEV) return;
 
-    // Update metrics every second
-    const interval = setInterval(() => {
-      const currentMetrics = new Map(webVitalsMonitor.getMetrics());
-      setMetrics(currentMetrics);
+    let previousMetricsSize = 0;
 
-      // Calculate performance grade
-      const metricsObj: PerformanceMetrics = {
-        CLS: currentMetrics.get('CLS')?.value ?? null,
-        FID: currentMetrics.get('FID')?.value ?? null,
-        FCP: currentMetrics.get('FCP')?.value ?? null,
-        LCP: currentMetrics.get('LCP')?.value ?? null,
-        TTFB: currentMetrics.get('TTFB')?.value ?? null,
-        INP: currentMetrics.get('INP')?.value ?? null,
-      };
-      setGrade(getPerformanceGrade(metricsObj));
+    // Update metrics every second, but only if changed
+    const interval = setInterval(() => {
+      const currentMetrics = webVitalsMonitor.getMetrics();
+
+      // Only update state if metrics have changed
+      if (currentMetrics.size !== previousMetricsSize) {
+        previousMetricsSize = currentMetrics.size;
+        const newMetrics = new Map(currentMetrics);
+        setMetrics(newMetrics);
+
+        // Calculate performance grade
+        const metricsObj: PerformanceMetrics = {
+          CLS: newMetrics.get('CLS')?.value ?? null,
+          FID: newMetrics.get('FID')?.value ?? null,
+          FCP: newMetrics.get('FCP')?.value ?? null,
+          LCP: newMetrics.get('LCP')?.value ?? null,
+          TTFB: newMetrics.get('TTFB')?.value ?? null,
+          INP: newMetrics.get('INP')?.value ?? null,
+        };
+        setGrade(getPerformanceGrade(metricsObj));
+      }
     }, 1000);
 
     return () => clearInterval(interval);

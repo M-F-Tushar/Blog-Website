@@ -129,7 +129,9 @@ class PerformanceMonitor {
       byType[type] = (byType[type] || 0) + 1;
     });
 
-    const largest = resources.sort((a, b) => b.transferSize - a.transferSize).slice(0, 10);
+    const largest = resources
+      .sort((a, b) => (b.transferSize || 0) - (a.transferSize || 0))
+      .slice(0, 10);
 
     return {
       total: resources.length,

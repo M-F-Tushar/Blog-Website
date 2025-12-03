@@ -84,6 +84,7 @@ export default defineConfig(({ mode }) => {
               },
             },
             // API caching with network-first strategy
+            // Note: Update pattern for your specific backend/database provider
             {
               urlPattern: /^https:\/\/.*supabase.*\/rest\/v1\/.*/,
               handler: 'NetworkFirst',
