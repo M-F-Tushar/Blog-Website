@@ -19,7 +19,7 @@ import { ToastProvider } from './context/ToastContext';
 import { useToast } from './hooks/useToast';
 import { ToastContainer } from './components/ui/Toast';
 
-// Lazy load components
+// Lazy load components with prefetch routes
 const Home = lazy(() => import('./components/Home'));
 const About = lazy(() => import('./components/About'));
 const Blog = lazy(() => import('./components/Blog'));
@@ -31,6 +31,18 @@ const ReadingList = lazy(() => import('./components/ReadingList'));
 const Tags = lazy(() => import('./components/Tags'));
 const TagPage = lazy(() => import('./components/TagPage'));
 const NotFound = lazy(() => import('./components/NotFound'));
+
+// Route prefetching map
+export const prefetchRoutes = {
+  '/': () => import('./components/Home'),
+  '/blog': () => import('./components/Blog'),
+  '/about': () => import('./components/About'),
+  '/recommendations': () => import('./components/Recommendations'),
+  '/contact': () => import('./components/Contact'),
+  '/search': () => import('./components/Search'),
+  '/bookmarks': () => import('./components/ReadingList'),
+  '/tags': () => import('./components/Tags'),
+};
 
 // Admin components
 const AdminLogin = lazy(() => import('./components/admin/AdminLogin'));
