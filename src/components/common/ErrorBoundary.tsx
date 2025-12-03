@@ -86,7 +86,7 @@ export class ErrorBoundary extends Component<Props, State> {
 
   handleReportIssue = () => {
     const { error, errorInfo } = this.state;
-    const repoUrl = 'https://github.com/M-F-Tushar/Blog-Website';
+    const repoUrl = import.meta.env.VITE_REPO_URL || 'https://github.com/M-F-Tushar/Blog-Website';
     const issueTitle = encodeURIComponent(`Bug: ${error?.message || 'Error'}`);
     const issueBody = encodeURIComponent(
       `## Description\nAn error occurred in the application.\n\n` +
