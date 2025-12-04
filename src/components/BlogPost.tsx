@@ -28,6 +28,8 @@ import CommentSection from './comments/CommentSection';
 import TableOfContents from './blog/TableOfContents';
 import { useReadingPosition } from '../hooks/useReadingPosition';
 import ContinueReadingPrompt from './common/ContinueReadingPrompt';
+import StructuredData from './common/StructuredData';
+import { generateBlogPostingSchema } from '../utils/structuredData';
 
 const BlogPost: React.FC = () => {
   const { postId } = useParams<{ postId: string }>();
@@ -56,6 +58,18 @@ const BlogPost: React.FC = () => {
     }
     return undefined;
   }, [post]);
+
+  const structuredDataSchema = useMemo(() => {
+    if (post) {
+      return generateBlogPostingSchema(
+        post,
+        'https://m-f-tushar.github.io/Blog-Website',
+        'M-F-Tushar Blog',
+        { name: authorName }
+      );
+    }
+    return undefined;
+  }, [post, authorName]);
 
   useSEO({
     title: post?.title,
@@ -100,6 +114,7 @@ const BlogPost: React.FC = () => {
 
   return (
     <>
+      {structuredDataSchema && <StructuredData data={structuredDataSchema} />}
       <ReadingProgress totalWords={totalWords} showPercentage={true} />
       <ReadingControls />
 
