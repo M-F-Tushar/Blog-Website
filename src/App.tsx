@@ -24,6 +24,8 @@ import KeyboardShortcutsHelp from './components/common/KeyboardShortcutsHelp';
 import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
 import { useTheme } from './hooks/useTheme';
 import SkipLinks from './components/common/SkipLinks';
+import OfflineIndicator from './components/common/OfflineIndicator';
+import HealthCheck from './components/common/HealthCheck';
 
 // Lazy load components with prefetch routes
 const Home = lazy(() => import('./components/Home'));
@@ -75,6 +77,12 @@ const MainLayout: React.FC = () => {
   const { toggleTheme } = useTheme();
   const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
   const [isShortcutsHelpOpen, setIsShortcutsHelpOpen] = useState(false);
+  const [isHealthCheckOpen, setIsHealthCheckOpen] = useState(() => {
+    // Show health check if ?debug=true or in development
+    const isDev = import.meta.env.DEV;
+    const hasDebugParam = new URLSearchParams(window.location.search).get('debug') === 'true';
+    return isDev || hasDebugParam;
+  });
   // Reduced motion preference is respected via CSS media queries
   // const prefersReducedMotion = useReducedMotion();
 
@@ -114,10 +122,18 @@ const MainLayout: React.FC = () => {
       description: 'Toggle theme',
       category: 'action',
     },
+    {
+      key: 'h',
+      shiftKey: true,
+      action: () => setIsHealthCheckOpen(!isHealthCheckOpen),
+      description: 'Toggle health check',
+      category: 'debug',
+    },
   ]);
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-200">
+      <OfflineIndicator />
       <SkipLinks />
       <Header />
       <main id="main-content" className="flex-grow pt-20 md:pt-24">
@@ -158,6 +174,9 @@ const MainLayout: React.FC = () => {
         isOpen={isShortcutsHelpOpen}
         onClose={() => setIsShortcutsHelpOpen(false)}
       />
+
+      {/* Health Check - Development/Debug Mode */}
+      <HealthCheck isOpen={isHealthCheckOpen} onClose={() => setIsHealthCheckOpen(false)} />
     </div>
   );
 };

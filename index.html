@@ -43,23 +43,62 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="dns-prefetch" href="https://fonts.googleapis.com">
   
+  <!-- Preload critical fonts for faster rendering -->
+  <link 
+    rel="preload" 
+    href="https://fonts.gstatic.com/s/inter/v13/UcCO3FwrK3iLTeHuS_fvQtMwCp50KnMw2boKoduKmMEVuLyfAZ9hiA.woff2" 
+    as="font" 
+    type="font/woff2" 
+    crossorigin>
+  
   <!-- Font Optimization with font-display: swap -->
   <style>
-    /* Critical CSS for font loading */
+    /* Critical CSS for font loading - prevent FOUT */
     html:not(.fonts-loaded) body {
-      font-family: system-ui, -apple-system, sans-serif;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+    /* Ensure smooth font loading */
+    @font-face {
+      font-family: 'Inter';
+      font-style: normal;
+      font-weight: 400;
+      font-display: swap;
+      src: local('Inter');
     }
   </style>
   <link
     href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Playfair+Display:wght@700&display=swap"
     rel="stylesheet"
     media="print" 
-    onload="this.media='all'">
+    onload="this.media='all'; document.documentElement.classList.add('fonts-loaded')">
   <noscript>
     <link
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Playfair+Display:wght@700&display=swap"
       rel="stylesheet">
   </noscript>
+  
+  <!-- Single Page Apps for GitHub Pages - Handle redirects from 404.html -->
+  <script>
+    // Single Page Apps for GitHub Pages
+    // https://github.com/rafgraph/spa-github-pages
+    // This script checks to see if a redirect is present in the query string,
+    // converts it back into the correct url and adds it to the
+    // browser's history using window.history.replaceState(...),
+    // which won't cause the browser to attempt to load the new url.
+    // When the single page app is loaded further down in this file,
+    // the correct url will be waiting in the browser's history for
+    // the single page app to route accordingly.
+    (function(l) {
+      if (l.search[1] === '/' ) {
+        var decoded = l.search.slice(1).split('&').map(function(s) { 
+          return s.replace(/~and~/g, '&')
+        }).join('?');
+        window.history.replaceState(null, null,
+          l.pathname.slice(0, -1) + decoded + l.hash
+        );
+      }
+    }(window.location))
+  </script>
 </head>
 
 <body>

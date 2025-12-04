@@ -1,8 +1,13 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import '../index.css';
+import { logConfigurationStatus } from './config/environment';
 
+// eslint-disable-next-line no-console
 console.log('Loading app...');
+
+// Log environment configuration in development
+logConfigurationStatus();
 
 // Simple error boundary
 interface ErrorBoundaryProps {
@@ -44,31 +49,34 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
   }
 }
 
-const root = ReactDOM.createRoot(
-  document.getElementById('root') as HTMLElement
-);
+const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
 
 // Try to import and render App
-import('./App').then((module) => {
-  const App = module.default;
-  console.log('App loaded:', App);
+import('./App')
+  .then((module) => {
+    const App = module.default;
+    // eslint-disable-next-line no-console
+    console.log('App loaded:', App);
 
-  root.render(
-    <React.StrictMode>
-      <ErrorBoundary>
-        <App />
-      </ErrorBoundary>
-    </React.StrictMode>
-  );
-  console.log('App rendered');
-}).catch((error) => {
-  console.error('Failed to load App:', error);
-  root.render(
-    <div style={{ padding: '20px', fontFamily: 'Arial' }}>
-      <h1 style={{ color: 'red' }}>Failed to load App component!</h1>
-      <pre style={{ background: '#f5f5f5', padding: '10px', overflow: 'auto' }}>
-        {error.toString()}
-      </pre>
-    </div>
-  );
-});
+    root.render(
+      <React.StrictMode>
+        <ErrorBoundary>
+          <App />
+        </ErrorBoundary>
+      </React.StrictMode>
+    );
+    // eslint-disable-next-line no-console
+    console.log('App rendered');
+  })
+  .catch((error) => {
+    // eslint-disable-next-line no-console
+    console.error('Failed to load App:', error);
+    root.render(
+      <div style={{ padding: '20px', fontFamily: 'Arial' }}>
+        <h1 style={{ color: 'red' }}>Failed to load App component!</h1>
+        <pre style={{ background: '#f5f5f5', padding: '10px', overflow: 'auto' }}>
+          {error.toString()}
+        </pre>
+      </div>
+    );
+  });
