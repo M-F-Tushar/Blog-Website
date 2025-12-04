@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import { LiveRegionPoliteness } from '../components/common/LiveRegion';
 
 interface AnnounceOptions {
@@ -29,8 +29,15 @@ export const useAnnounce = () => {
     politeness: 'polite',
   });
 
+  const timeoutRef = React.useRef<NodeJS.Timeout | null>(null);
+
   const announce = useCallback((message: string, options: AnnounceOptions = {}) => {
     const { politeness = 'polite', timeout = 5000 } = options;
+
+    // Clear any existing timeout
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
 
     setAnnouncement({
       message,
@@ -39,16 +46,30 @@ export const useAnnounce = () => {
 
     // Auto-clear the announcement after timeout
     if (timeout > 0) {
-      setTimeout(() => {
+      timeoutRef.current = setTimeout(() => {
         setAnnouncement({
           message: '',
           politeness: 'polite',
         });
+        timeoutRef.current = null;
       }, timeout);
     }
   }, []);
 
+  // Cleanup on unmount
+  React.useEffect(() => {
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, []);
+
   const clearAnnouncement = useCallback(() => {
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
     setAnnouncement({
       message: '',
       politeness: 'polite',

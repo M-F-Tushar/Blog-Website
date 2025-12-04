@@ -35,7 +35,6 @@ const Footer: React.FC<FooterProps> = ({ id }) => {
     }
 
     // TODO: Integrate with actual newsletter service
-    // console.log('Newsletter signup:', email);
     setSubscribeStatus('success');
     setEmail('');
     setTimeout(() => setSubscribeStatus('idle'), 3000);

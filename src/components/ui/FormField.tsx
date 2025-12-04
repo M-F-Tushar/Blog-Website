@@ -52,8 +52,7 @@ const FormField: React.FC<FormFieldProps> = ({
     if (React.isValidElement(child)) {
       const describedBy = [error ? errorId : '', hint ? hintId : ''].filter(Boolean).join(' ');
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      return React.cloneElement(child as React.ReactElement<any>, {
+      return React.cloneElement(child as React.ReactElement<Record<string, unknown>>, {
         id: fieldId,
         'aria-invalid': error ? 'true' : 'false',
         'aria-describedby': describedBy || undefined,

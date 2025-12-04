@@ -136,12 +136,6 @@ const SEOHead: React.FC<SEOHeadProps> = ({
       }
       canonicalElement.setAttribute('href', canonicalUrl);
     }
-
-    // Cleanup function - remove meta tags on unmount
-    return () => {
-      // Note: We don't actually remove the tags as they should persist
-      // This is here for reference if needed in the future
-    };
   }, [
     title,
     description,

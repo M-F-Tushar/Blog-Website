@@ -13,10 +13,14 @@ import { useState, useEffect } from 'react';
  * </motion.div>
  */
 export const useReducedMotion = (): boolean => {
-  const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
-  const [prefersReducedMotion, setPrefersReducedMotion] = useState(mediaQuery.matches);
+  // Use function initializer for SSR safety
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(() => {
+    if (typeof window === 'undefined') return false;
+    return window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  });
 
   useEffect(() => {
+    if (typeof window === 'undefined') return;
     // Listen for changes
     const handleChange = (e: MediaQueryListEvent) => {
       setPrefersReducedMotion(e.matches);
