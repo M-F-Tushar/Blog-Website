@@ -23,6 +23,7 @@ import CommandPalette from './components/common/CommandPalette';
 import KeyboardShortcutsHelp from './components/common/KeyboardShortcutsHelp';
 import { useKeyboardShortcuts } from './hooks/useKeyboardShortcuts';
 import { useTheme } from './hooks/useTheme';
+import SkipLinks from './components/common/SkipLinks';
 
 // Lazy load components with prefetch routes
 const Home = lazy(() => import('./components/Home'));
@@ -74,6 +75,8 @@ const MainLayout: React.FC = () => {
   const { toggleTheme } = useTheme();
   const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
   const [isShortcutsHelpOpen, setIsShortcutsHelpOpen] = useState(false);
+  // Reduced motion preference is respected via CSS media queries
+  // const prefersReducedMotion = useReducedMotion();
 
   // Global keyboard shortcuts
   useKeyboardShortcuts([
@@ -115,6 +118,7 @@ const MainLayout: React.FC = () => {
 
   return (
     <div className="flex flex-col min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-200">
+      <SkipLinks />
       <Header />
       <main id="main-content" className="flex-grow pt-20 md:pt-24">
         <AnimatePresence mode="wait">
@@ -141,7 +145,7 @@ const MainLayout: React.FC = () => {
           </Suspense>
         </AnimatePresence>
       </main>
-      <Footer />
+      <Footer id="footer" />
 
       {/* Command Palette */}
       <CommandPalette

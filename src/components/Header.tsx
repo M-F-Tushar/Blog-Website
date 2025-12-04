@@ -79,7 +79,7 @@ const Header: React.FC = () => {
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-1">
+          <div className="hidden md:flex items-center space-x-1" id="navigation">
             {navLinks.map((link) => (
               <NavLink
                 key={link.path}
@@ -91,6 +91,7 @@ const Header: React.FC = () => {
                       : 'text-secondary-600 dark:text-secondary-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-secondary-50 dark:hover:bg-secondary-800/50 rounded-full'
                   }`
                 }
+                aria-current={({ isActive }) => (isActive ? 'page' : undefined)}
               >
                 {link.label}
               </NavLink>
@@ -100,8 +101,8 @@ const Header: React.FC = () => {
           {/* Actions */}
           <div className="flex items-center space-x-3">
             {/* Search Bar */}
-            <div className="relative hidden sm:block group">
-              <form onSubmit={handleSearch} className="relative">
+            <div className="relative hidden sm:block group" id="search">
+              <form onSubmit={handleSearch} className="relative" role="search">
                 <input
                   type="search"
                   placeholder="Search..."
@@ -114,6 +115,7 @@ const Header: React.FC = () => {
                 <SearchIcon
                   size={16}
                   className="absolute left-3.5 top-1/2 -translate-y-1/2 text-secondary-500 dark:text-secondary-400 group-focus-within:text-primary-500 transition-colors"
+                  aria-hidden="true"
                 />
               </form>
 
@@ -161,37 +163,42 @@ const Header: React.FC = () => {
         style={{ top: '60px' }}
       >
         <div className="p-4 space-y-4 h-full overflow-y-auto">
-          <form onSubmit={handleSearch} className="relative">
+          <form onSubmit={handleSearch} className="relative" role="search">
             <input
               type="search"
               placeholder="Search articles..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full pl-10 pr-4 py-3 text-base bg-secondary-100 dark:bg-secondary-900 border border-transparent focus:border-primary-500 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500/20"
+              aria-label="Search articles"
             />
             <SearchIcon
               size={20}
               className="absolute left-3.5 top-1/2 -translate-y-1/2 text-secondary-400"
+              aria-hidden="true"
             />
           </form>
 
-          <div className="space-y-1">
-            {navLinks.map((link) => (
-              <NavLink
-                key={link.path}
-                to={link.path}
-                className={({ isActive }) =>
-                  `block px-4 py-3 rounded-xl text-base font-medium transition-colors relative ${
-                    isActive
-                      ? 'bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400 border-l-4 border-primary-600 dark:border-primary-400'
-                      : 'text-secondary-600 dark:text-secondary-300 hover:bg-secondary-50 dark:hover:bg-secondary-900'
-                  }`
-                }
-              >
-                {link.label}
-              </NavLink>
-            ))}
-          </div>
+          <nav aria-label="Mobile navigation">
+            <div className="space-y-1">
+              {navLinks.map((link) => (
+                <NavLink
+                  key={link.path}
+                  to={link.path}
+                  className={({ isActive }) =>
+                    `block px-4 py-3 rounded-xl text-base font-medium transition-colors relative ${
+                      isActive
+                        ? 'bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400 border-l-4 border-primary-600 dark:border-primary-400'
+                        : 'text-secondary-600 dark:text-secondary-300 hover:bg-secondary-50 dark:hover:bg-secondary-900'
+                    }`
+                  }
+                  aria-current={({ isActive }) => (isActive ? 'page' : undefined)}
+                >
+                  {link.label}
+                </NavLink>
+              ))}
+            </div>
+          </nav>
         </div>
       </div>
     </header>
