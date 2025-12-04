@@ -174,8 +174,10 @@ export const SiteSettingsProvider: React.FC<{ children: React.ReactNode }> = ({ 
       }
 
       // Prepare the update data with snake_case field names
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const updateData: Record<string, any> = {};
+      const updateData: Record<
+        string,
+        string | string[] | Skill[] | TimelineItem[] | Achievement[]
+      > = {};
 
       if (newSettings.siteName !== undefined) updateData.site_name = newSettings.siteName;
       if (newSettings.siteDescription !== undefined)

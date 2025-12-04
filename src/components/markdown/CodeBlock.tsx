@@ -26,7 +26,12 @@ const CodeBlock: React.FC<CodeBlockProps> = ({ language, value }) => {
           setMermaidLoaded(true);
         })
         .catch((error) => {
-          console.error('Failed to load mermaid:', error);
+          // eslint-disable-next-line no-console
+          console.error(
+            'Failed to load Mermaid diagram library. The diagram cannot be rendered and will display as plain text instead. Error:',
+            error
+          );
+          // The diagram will gracefully fall back to displaying as a code block
         });
     }
   }, [language, value, mermaidLoaded]);

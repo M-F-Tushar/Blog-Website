@@ -54,7 +54,9 @@ export const getEnvironmentConfig = (): EnvironmentConfig => {
     },
     deployment: {
       baseUrl: env.BASE_URL || '/',
-      isGitHubPages: Boolean(process.env.GITHUB_ACTIONS),
+      // Detect GitHub Pages by checking if base URL contains github.io or if GITHUB_ACTIONS was set during build
+      isGitHubPages:
+        env.BASE_URL?.includes('github.io') || env.BASE_URL?.includes('/Blog-Website/') || false,
       isDevelopment: env.DEV === true,
       isProduction: env.PROD === true,
     },

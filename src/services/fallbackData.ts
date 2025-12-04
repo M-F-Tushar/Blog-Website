@@ -190,11 +190,5 @@ export const FALLBACK_SETTINGS: Omit<DatabaseSettings, 'id' | 'created_at' | 'up
   ],
 };
 
-/**
- * Check if Supabase is properly configured
- */
-export const isSupabaseAvailable = (): boolean => {
-  const supabaseUrl = (import.meta as any).env.VITE_SUPABASE_URL;
-  const supabaseAnonKey = (import.meta as any).env.VITE_SUPABASE_ANON_KEY;
-  return Boolean(supabaseUrl && supabaseAnonKey);
-};
+// Re-export isSupabaseConfigured for convenience
+export { isSupabaseConfigured as isSupabaseAvailable } from './supabase';
