@@ -1,4 +1,4 @@
-import React, { useMemo, useEffect, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -28,6 +28,8 @@ import CommentSection from './comments/CommentSection';
 import TableOfContents from './blog/TableOfContents';
 import { useReadingPosition } from '../hooks/useReadingPosition';
 import ContinueReadingPrompt from './common/ContinueReadingPrompt';
+import StructuredData from './common/StructuredData';
+import { generateBlogPostingSchema } from '../utils/structuredData';
 
 const BlogPost: React.FC = () => {
   const { postId } = useParams<{ postId: string }>();
@@ -56,6 +58,18 @@ const BlogPost: React.FC = () => {
     }
     return undefined;
   }, [post]);
+
+  const structuredDataSchema = useMemo(() => {
+    if (post) {
+      return generateBlogPostingSchema(
+        post,
+        'https://m-f-tushar.github.io/Blog-Website',
+        'M-F-Tushar Blog',
+        { name: authorName }
+      );
+    }
+    return undefined;
+  }, [post, authorName]);
 
   useSEO({
     title: post?.title,
@@ -100,6 +114,7 @@ const BlogPost: React.FC = () => {
 
   return (
     <>
+      {structuredDataSchema && <StructuredData data={structuredDataSchema} />}
       <ReadingProgress totalWords={totalWords} showPercentage={true} />
       <ReadingControls />
 
@@ -112,7 +127,7 @@ const BlogPost: React.FC = () => {
         />
       )}
 
-      <article className="min-h-screen pb-20">
+      <article className="min-h-screen pb-20" aria-labelledby="post-title">
         {/* Hero Section */}
         <div className="relative h-[60vh] min-h-[400px] w-full overflow-hidden">
           {post.coverImage ? (
@@ -152,7 +167,10 @@ const BlogPost: React.FC = () => {
                 </span>
               </div>
 
-              <h1 className="text-4xl md:text-6xl font-bold font-serif text-white mb-6 leading-tight">
+              <h1
+                id="post-title"
+                className="text-4xl md:text-6xl font-bold font-serif text-white mb-6 leading-tight"
+              >
                 {post.title}
               </h1>
 
@@ -172,7 +190,10 @@ const BlogPost: React.FC = () => {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 -mt-10 relative z-30">
           <div className="grid lg:grid-cols-[1fr_300px] gap-12">
             {/* Main Content */}
-            <div className="bg-white dark:bg-secondary-900 rounded-2xl shadow-xl p-8 md:p-12">
+            <div
+              className="bg-white dark:bg-secondary-900 rounded-2xl shadow-xl p-8 md:p-12"
+              id="main-content"
+            >
               <div className="prose dark:prose-invert prose-lg max-w-none prose-headings:font-serif prose-headings:font-bold prose-a:text-primary-600 dark:prose-a:text-primary-400 prose-img:rounded-xl prose-img:shadow-lg">
                 <ReactMarkdown
                   remarkPlugins={[remarkGfm, remarkMath]}

@@ -69,6 +69,7 @@ const Card: React.FC<CardProps> = ({ post, viewMode = 'grid', highlight, feature
       onHoverEnd={() => setIsHovered(false)}
       className={`bg-white dark:bg-gray-800 rounded-xl shadow-md hover:shadow-xl overflow-hidden flex group border border-transparent hover:border-gray-200 dark:hover:border-gray-700 transition-all duration-300 relative hover:scale-[1.02] ${containerClasses[viewMode]} ${featured ? 'md:flex-row md:h-96' : ''}`}
       aria-labelledby={`post-title-${post.id}`}
+      aria-describedby={`post-excerpt-${post.id}`}
     >
       {/* Bookmark Button - Position varies by view */}
       <div
@@ -153,7 +154,10 @@ const Card: React.FC<CardProps> = ({ post, viewMode = 'grid', highlight, feature
           </h2>
 
           {viewMode !== 'compact' && (
-            <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed line-clamp-3 mb-4">
+            <p
+              id={`post-excerpt-${post.id}`}
+              className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed line-clamp-3 mb-4"
+            >
               <Highlighter text={post.excerpt} highlight={highlight || ''} />
             </p>
           )}

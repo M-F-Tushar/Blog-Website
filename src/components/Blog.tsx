@@ -128,10 +128,12 @@ const Blog: React.FC = () => {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full pl-12 pr-4 py-4 rounded-full bg-white dark:bg-secondary-800 border border-secondary-200 dark:border-secondary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 shadow-lg shadow-secondary-200/50 dark:shadow-none transition-all"
+                aria-label="Search blog posts"
               />
               <Search
                 className="absolute left-4 top-1/2 -translate-y-1/2 text-secondary-400"
                 size={20}
+                aria-hidden="true"
               />
             </div>
           </motion.div>
@@ -169,6 +171,9 @@ const Blog: React.FC = () => {
             animate={{ opacity: 1 }}
             transition={{ duration: 0.5 }}
             className={gridClasses[viewMode]}
+            role="feed"
+            aria-busy={loading}
+            aria-label="Blog posts"
           >
             {currentPosts.map((post) => (
               <Card key={post.id} post={post} viewMode={viewMode} />
@@ -191,7 +196,7 @@ const Blog: React.FC = () => {
 
         {/* Pagination */}
         {totalPages > 1 && (
-          <div className="mt-16">
+          <nav className="mt-16" aria-label="Blog posts pagination">
             <Pagination
               currentPage={currentPage}
               totalPages={totalPages}
@@ -199,7 +204,7 @@ const Blog: React.FC = () => {
               totalResults={publishedPosts.length}
               resultsPerPage={POSTS_PER_PAGE}
             />
-          </div>
+          </nav>
         )}
       </div>
     </div>

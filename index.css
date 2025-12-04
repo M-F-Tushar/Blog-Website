@@ -60,6 +60,21 @@
     -moz-osx-font-smoothing: grayscale;
   }
 
+  /* Respect user's reduced motion preference */
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+
   body {
     @apply bg-white dark:bg-secondary-950 text-secondary-900 dark:text-secondary-50 antialiased min-h-screen flex flex-col;
     font-feature-settings:
@@ -171,6 +186,46 @@
 /* Enhanced focus indicators for keyboard navigation */
 @layer base {
   *:focus-visible {
-    @apply outline-2 outline-offset-2 outline-primary-500;
+    @apply outline-2 outline-offset-2 outline-primary-500 dark:outline-primary-400;
+  }
+
+  /* Ensure buttons and interactive elements have visible focus */
+  button:focus-visible,
+  a:focus-visible,
+  input:focus-visible,
+  select:focus-visible,
+  textarea:focus-visible {
+    @apply outline-2 outline-offset-2 outline-primary-500 dark:outline-primary-400;
+  }
+}
+
+/* High Contrast Mode Support */
+@media (forced-colors: active) {
+  /* Ensure focus indicators are visible in high contrast mode */
+  *:focus-visible {
+    outline: 2px solid Highlight;
+    outline-offset: 2px;
+  }
+
+  /* Ensure buttons and links have visible borders */
+  button,
+  a {
+    border: 1px solid ButtonText;
+  }
+
+  /* Ensure disabled elements are distinguishable */
+  button:disabled,
+  input:disabled,
+  select:disabled,
+  textarea:disabled {
+    opacity: 1;
+    color: GrayText;
+  }
+
+  /* Ensure proper color contrasts */
+  .glass,
+  .glass-card {
+    background: Canvas;
+    border-color: ButtonText;
   }
 }
