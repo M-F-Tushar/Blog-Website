@@ -125,8 +125,13 @@ export default defineConfig(({ mode }) => {
       visualizer({ open: true, gzipSize: true }),
     ],
     define: {
-      'process.env.API_KEY': JSON.stringify(env.GEMINI_API_KEY),
-      'process.env.GEMINI_API_KEY': JSON.stringify(env.GEMINI_API_KEY),
+      // WARNING: These environment variables will be exposed in the client-side bundle.
+      // NEVER put sensitive API keys here that should remain secret.
+      // For client-side API keys (like Google Maps, etc.), ensure they are restricted
+      // by domain/referrer in the service's console.
+      //
+      // REMOVED: GEMINI_API_KEY should not be exposed in client bundle
+      // If you need to use AI features, implement a backend proxy service
     },
     resolve: {
       alias: {

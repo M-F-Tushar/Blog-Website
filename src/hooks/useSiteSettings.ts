@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useMemo, useCallback, useEffect } from 'react';
-import { supabase } from '../services/supabase';
+import { supabase, isSupabaseConfigured } from '../services/supabase';
+import { FALLBACK_SETTINGS } from '../services/fallbackData';
 
 interface SocialLinks {
   github: string;
@@ -51,20 +52,20 @@ const SiteSettingsContext = createContext<SiteSettingsContextType | undefined>(u
 
 const getSettingsFromStorage = (): SiteSettings => {
   const defaults: SiteSettings = {
-    siteName: '',
-    authorName: '',
-    authorTagline: '',
-    authorBio: '',
-    siteDescription: '',
+    siteName: FALLBACK_SETTINGS.site_name,
+    authorName: FALLBACK_SETTINGS.author_name,
+    authorTagline: FALLBACK_SETTINGS.author_tagline,
+    authorBio: FALLBACK_SETTINGS.author_bio,
+    siteDescription: FALLBACK_SETTINGS.site_description,
     socialLinks: {
-      github: '',
-      linkedin: '',
-      email: '',
+      github: FALLBACK_SETTINGS.social_github,
+      linkedin: FALLBACK_SETTINGS.social_linkedin,
+      email: FALLBACK_SETTINGS.social_email,
     },
-    categories: ['Life', 'Technology', 'Reflections'],
-    skills: [],
-    timeline: [],
-    achievements: [],
+    categories: FALLBACK_SETTINGS.categories,
+    skills: FALLBACK_SETTINGS.skills,
+    timeline: FALLBACK_SETTINGS.timeline,
+    achievements: FALLBACK_SETTINGS.achievements,
   };
   try {
     const savedSettings = window.localStorage.getItem('siteSettings');
@@ -90,11 +91,12 @@ export const SiteSettingsProvider: React.FC<{ children: React.ReactNode }> = ({ 
   // Fetch settings from Supabase on mount
   useEffect(() => {
     const fetchSettings = async () => {
+      /* eslint-disable no-console */
       console.log('🔍 Fetching site settings from Supabase...');
       setLoading(true);
 
-      if (!supabase) {
-        console.warn('⚠️ Supabase is not configured, using localStorage settings');
+      if (!isSupabaseConfigured() || !supabase) {
+        console.warn('⚠️ Supabase is not configured, using fallback/localStorage settings');
         setLoading(false);
         return;
       }
@@ -111,43 +113,47 @@ export const SiteSettingsProvider: React.FC<{ children: React.ReactNode }> = ({ 
 
         if (data && !error) {
           const fetchedSettings: SiteSettings = {
-            siteName: data.site_name || '',
-            siteDescription: data.site_description || '',
-            authorName: data.author_name || '',
-            authorTagline: data.author_tagline || '',
-            authorBio: data.author_bio || '',
+            siteName: data.site_name || FALLBACK_SETTINGS.site_name,
+            siteDescription: data.site_description || FALLBACK_SETTINGS.site_description,
+            authorName: data.author_name || FALLBACK_SETTINGS.author_name,
+            authorTagline: data.author_tagline || FALLBACK_SETTINGS.author_tagline,
+            authorBio: data.author_bio || FALLBACK_SETTINGS.author_bio,
             socialLinks: {
-              github: data.social_github || '',
-              linkedin: data.social_linkedin || '',
-              email: data.social_email || '',
+              github: data.social_github || FALLBACK_SETTINGS.social_github,
+              linkedin: data.social_linkedin || FALLBACK_SETTINGS.social_linkedin,
+              email: data.social_email || FALLBACK_SETTINGS.social_email,
             },
-            categories: data.categories || settings.categories,
-            skills: data.skills || [],
-            timeline: data.timeline || [],
-            achievements: data.achievements || [],
+            categories: data.categories || FALLBACK_SETTINGS.categories,
+            skills: data.skills || FALLBACK_SETTINGS.skills,
+            timeline: data.timeline || FALLBACK_SETTINGS.timeline,
+            achievements: data.achievements || FALLBACK_SETTINGS.achievements,
           };
           console.log('✅ Settings fetched successfully:', fetchedSettings);
           setSettings(fetchedSettings);
           saveSettingsToStorage(fetchedSettings);
         } else if (error) {
           console.error('❌ Error fetching site settings:', error);
+          console.log('Using fallback settings due to error');
         }
       } catch (error) {
         console.error('❌ Exception fetching site settings:', error);
+        console.log('Using fallback settings due to exception');
       } finally {
         setLoading(false);
       }
+      /* eslint-enable no-console */
     };
 
     fetchSettings();
   }, []);
 
   const updateSettings = useCallback(async (newSettings: Partial<SiteSettings>) => {
+    /* eslint-disable no-console */
     console.log('💾 Updating site settings...', newSettings);
 
     if (!supabase) {
       console.warn('⚠️ Supabase is not configured, only saving to localStorage');
-      setSettings(prev => {
+      setSettings((prev) => {
         const updated = { ...prev, ...newSettings };
         saveSettingsToStorage(updated);
         return updated;
@@ -168,24 +174,33 @@ export const SiteSettingsProvider: React.FC<{ children: React.ReactNode }> = ({ 
       }
 
       // Prepare the update data with snake_case field names
-      const updateData: Record<string, any> = {};
+      const updateData: Record<
+        string,
+        string | string[] | Skill[] | TimelineItem[] | Achievement[]
+      > = {};
 
       if (newSettings.siteName !== undefined) updateData.site_name = newSettings.siteName;
-      if (newSettings.siteDescription !== undefined) updateData.site_description = newSettings.siteDescription;
+      if (newSettings.siteDescription !== undefined)
+        updateData.site_description = newSettings.siteDescription;
       if (newSettings.authorName !== undefined) updateData.author_name = newSettings.authorName;
-      if (newSettings.authorTagline !== undefined) updateData.author_tagline = newSettings.authorTagline;
+      if (newSettings.authorTagline !== undefined)
+        updateData.author_tagline = newSettings.authorTagline;
       if (newSettings.authorBio !== undefined) updateData.author_bio = newSettings.authorBio;
 
       if (newSettings.socialLinks) {
-        if (newSettings.socialLinks.github !== undefined) updateData.social_github = newSettings.socialLinks.github;
-        if (newSettings.socialLinks.linkedin !== undefined) updateData.social_linkedin = newSettings.socialLinks.linkedin;
-        if (newSettings.socialLinks.email !== undefined) updateData.social_email = newSettings.socialLinks.email;
+        if (newSettings.socialLinks.github !== undefined)
+          updateData.social_github = newSettings.socialLinks.github;
+        if (newSettings.socialLinks.linkedin !== undefined)
+          updateData.social_linkedin = newSettings.socialLinks.linkedin;
+        if (newSettings.socialLinks.email !== undefined)
+          updateData.social_email = newSettings.socialLinks.email;
       }
 
       if (newSettings.categories !== undefined) updateData.categories = newSettings.categories;
       if (newSettings.skills !== undefined) updateData.skills = newSettings.skills;
       if (newSettings.timeline !== undefined) updateData.timeline = newSettings.timeline;
-      if (newSettings.achievements !== undefined) updateData.achievements = newSettings.achievements;
+      if (newSettings.achievements !== undefined)
+        updateData.achievements = newSettings.achievements;
 
       console.log('📤 Sending update to Supabase:', updateData);
 
@@ -204,9 +219,7 @@ export const SiteSettingsProvider: React.FC<{ children: React.ReactNode }> = ({ 
         console.log('✅ Site settings updated successfully in Supabase');
       } else {
         // Insert new row if none exists
-        const { error: insertError } = await supabase
-          .from('site_settings')
-          .insert(updateData);
+        const { error: insertError } = await supabase.from('site_settings').insert(updateData);
 
         if (insertError) {
           console.error('❌ Error inserting site settings:', insertError);
@@ -217,36 +230,45 @@ export const SiteSettingsProvider: React.FC<{ children: React.ReactNode }> = ({ 
       }
 
       // After successful Supabase update, update local state and localStorage
-      setSettings(prev => {
+      setSettings((prev) => {
         const updated = { ...prev, ...newSettings };
         saveSettingsToStorage(updated);
         return updated;
       });
-
     } catch (error) {
       console.error('❌ Exception updating site settings:', error);
       // Still update localStorage even if Supabase fails
-      setSettings(prev => {
+      setSettings((prev) => {
         const updated = { ...prev, ...newSettings };
         saveSettingsToStorage(updated);
         return updated;
       });
       throw error;
     }
+    /* eslint-enable no-console */
   }, []);
 
-  const addCategory = useCallback((category: string) => {
-    if (!category.trim() || settings.categories.includes(category.trim())) return;
-    const newCategories = [...settings.categories, category.trim()];
-    updateSettings({ categories: newCategories });
-  }, [settings.categories, updateSettings]);
+  const addCategory = useCallback(
+    (category: string) => {
+      if (!category.trim() || settings.categories.includes(category.trim())) return;
+      const newCategories = [...settings.categories, category.trim()];
+      updateSettings({ categories: newCategories });
+    },
+    [settings.categories, updateSettings]
+  );
 
-  const deleteCategory = useCallback((categoryToDelete: string) => {
-    const newCategories = settings.categories.filter(c => c !== categoryToDelete);
-    updateSettings({ categories: newCategories });
-  }, [settings.categories, updateSettings]);
+  const deleteCategory = useCallback(
+    (categoryToDelete: string) => {
+      const newCategories = settings.categories.filter((c) => c !== categoryToDelete);
+      updateSettings({ categories: newCategories });
+    },
+    [settings.categories, updateSettings]
+  );
 
-  const value = useMemo(() => ({ ...settings, updateSettings, addCategory, deleteCategory, loading }), [settings, updateSettings, addCategory, deleteCategory, loading]);
+  const value = useMemo(
+    () => ({ ...settings, updateSettings, addCategory, deleteCategory, loading }),
+    [settings, updateSettings, addCategory, deleteCategory, loading]
+  );
 
   return React.createElement(SiteSettingsContext.Provider, { value }, children);
 };
