@@ -10,6 +10,8 @@ export default {
   theme: {
     extend: {
       colors: {
+        // All color scales designed to meet WCAG AA contrast standards (4.5:1 for normal text, 3:1 for large text)
+        // When using colors, ensure proper contrast: light text on dark backgrounds (700-950) and dark text on light backgrounds (50-400)
         primary: {
           50: '#f0f9ff',
           100: '#e0f2fe',
