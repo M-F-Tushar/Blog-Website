@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState, useMemo } from 'react';
 import { CheckCircle2, XCircle, AlertCircle } from 'lucide-react';
 import { isSupabaseConfigured } from '../../services/supabase';
 
@@ -23,16 +23,18 @@ interface StatusItem {
 export default function ConfigStatus() {
   // Determine visibility based on environment
   const isDev = import.meta.env.DEV;
-  const urlParams = new URLSearchParams(window.location.search);
-  const debugMode = urlParams.get('debug') === 'true';
+  const debugMode = useMemo(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get('debug') === 'true';
+  }, []);
   const shouldShow = isDev || debugMode;
 
   const [visible, setVisible] = useState(shouldShow);
-  const [statuses, setStatuses] = useState<StatusItem[]>([]);
 
-  useEffect(() => {
+  // Compute statuses directly without using an effect
+  const statuses = useMemo<StatusItem[]>(() => {
     if (!shouldShow) {
-      return;
+      return [];
     }
 
     // Check Supabase configuration
@@ -73,7 +75,7 @@ export default function ConfigStatus() {
       message: supabaseConfigured ? 'Production mode' : 'Demo mode (fallback data)',
     };
 
-    setStatuses([supabaseStatus, formspreeStatus, pwaStatus, demoModeStatus]);
+    return [supabaseStatus, formspreeStatus, pwaStatus, demoModeStatus];
   }, [shouldShow]);
 
   if (!visible) {

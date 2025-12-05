@@ -21,11 +21,15 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-// Configuration
+// Configuration constants
+const KB = 1024;
+const TARGET_SIZE_SMALL = 20 * KB; // 20KB for small icons
+const TARGET_SIZE_LARGE = 50 * KB; // 50KB for large icons
+
 const ICON_SIZES = [
-  { size: 192, name: 'pwa-192x192.png', maxSize: 20 * 1024 },
-  { size: 512, name: 'pwa-512x512.png', maxSize: 50 * 1024 },
-  { size: 180, name: 'apple-touch-icon.png', maxSize: 20 * 1024 }
+  { size: 192, name: 'pwa-192x192.png', maxSize: TARGET_SIZE_SMALL },
+  { size: 512, name: 'pwa-512x512.png', maxSize: TARGET_SIZE_LARGE },
+  { size: 180, name: 'apple-touch-icon.png', maxSize: TARGET_SIZE_SMALL }
 ];
 
 const OUTPUT_DIR = join(__dirname, '..', 'public');

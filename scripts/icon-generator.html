@@ -310,12 +310,13 @@
     }
     
     function downloadAll() {
+      const DOWNLOAD_STAGGER_DELAY_MS = 500; // Delay between downloads to avoid browser blocking
       const canvases = document.querySelectorAll('.preview-canvas');
       canvases.forEach((canvas, index) => {
         setTimeout(() => {
           const name = canvas.getAttribute('data-name');
           downloadCanvas(canvas, name);
-        }, index * 500); // Stagger downloads
+        }, index * DOWNLOAD_STAGGER_DELAY_MS);
       });
     }
     
