@@ -26,6 +26,7 @@ import { useTheme } from './hooks/useTheme';
 import SkipLinks from './components/common/SkipLinks';
 import OfflineIndicator from './components/common/OfflineIndicator';
 import HealthCheck from './components/common/HealthCheck';
+import ConfigStatus from './components/common/ConfigStatus';
 
 // Lazy load components with prefetch routes
 const Home = lazy(() => import('./components/Home'));
@@ -177,6 +178,9 @@ const MainLayout: React.FC = () => {
 
       {/* Health Check - Development/Debug Mode */}
       <HealthCheck isOpen={isHealthCheckOpen} onClose={() => setIsHealthCheckOpen(false)} />
+
+      {/* Configuration Status - Development/Debug Mode */}
+      <ConfigStatus />
     </div>
   );
 };

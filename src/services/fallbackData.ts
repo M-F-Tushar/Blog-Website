@@ -150,13 +150,13 @@ export const FALLBACK_SETTINGS: Omit<DatabaseSettings, 'id' | 'created_at' | 'up
   featured_post_id: 'welcome-post',
   site_name: 'My Blog',
   site_description: 'A modern personal blog built with React and TypeScript',
-  author_name: 'Blog Author',
+  author_name: 'Your Name',
   author_tagline: 'Web Developer & Technology Enthusiast',
   author_bio:
     'Passionate about building modern web applications and sharing knowledge through writing.',
-  social_github: 'https://github.com',
-  social_linkedin: 'https://linkedin.com',
-  social_email: 'contact@example.com',
+  social_github: 'https://github.com/yourusername',
+  social_linkedin: 'https://linkedin.com/in/yourprofile',
+  social_email: 'your-email@example.com',
   categories: ['Technology', 'General', 'Reflections'],
   skills: [
     { name: 'React', level: 4, iconName: 'react' },

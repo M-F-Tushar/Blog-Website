@@ -291,6 +291,43 @@ Blog-Website/
    - Go to Settings → Profile Settings
    - Update author bio, skills, and social links
 
+### Customize PWA Icons
+
+The blog comes with optimized PWA icons, but you can customize them to match your brand:
+
+#### Option 1: Using Node.js Script (Recommended)
+
+```bash
+npm run generate-icons
+```
+
+This will generate three optimized icons:
+- `pwa-192x192.png` (< 20KB) - Standard PWA icon
+- `pwa-512x512.png` (< 50KB) - High-resolution PWA icon  
+- `apple-touch-icon.png` (< 20KB) - Apple Touch Icon
+
+You can customize the icon design by editing `scripts/generate-pwa-icons.js`.
+
+#### Option 2: Using Browser-Based Generator
+
+1. Open `scripts/icon-generator.html` in your browser
+2. Customize the icon text and colors
+3. Click "Download All Icons"
+4. Place the downloaded files in the `public/` directory
+
+The browser-based generator is perfect if you:
+- Don't want to run Node scripts
+- Want a visual, interactive way to design icons
+- Need quick icon generation without dependencies
+
+#### Icon Requirements
+
+- **192x192**: Should be under 20KB for optimal performance
+- **512x512**: Should be under 50KB for optimal performance
+- **180x180**: Apple Touch Icon, should be under 20KB
+
+All generated icons are automatically optimized for web use.
+
 ### Customize Theme
 
 Edit `tailwind.config.js` to customize:
