@@ -3,7 +3,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const baseUrl = 'https://m-f-tushar.github.io/Blog-Website';
+const baseUrl = process.env.SITE_URL || 'https://m-f-tushar.github.io/Blog-Website';
 
 const staticPages = [
   { url: '/', changefreq: 'daily', priority: 1.0 },
@@ -22,12 +22,16 @@ const generateSitemap = () => {
         xmlns:mobile="http://www.google.com/schemas/sitemap-mobile/1.0"
         xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"
         xmlns:video="http://www.google.com/schemas/sitemap-video/1.1">
-${staticPages.map(page => `  <url>
+${staticPages
+  .map(
+    (page) => `  <url>
     <loc>${baseUrl}${page.url}</loc>
     <changefreq>${page.changefreq}</changefreq>
     <priority>${page.priority}</priority>
     <lastmod>${new Date().toISOString()}</lastmod>
-  </url>`).join('\n')}
+  </url>`
+  )
+  .join('\n')}
 </urlset>`;
 
   const publicDir = path.join(__dirname, '../public');
@@ -35,11 +39,8 @@ ${staticPages.map(page => `  <url>
     fs.mkdirSync(publicDir, { recursive: true });
   }
 
-  fs.writeFileSync(
-    path.join(publicDir, 'sitemap.xml'),
-    sitemap
-  );
-  
+  fs.writeFileSync(path.join(publicDir, 'sitemap.xml'), sitemap);
+
   console.log('✅ Sitemap generated successfully at public/sitemap.xml');
 };
 
