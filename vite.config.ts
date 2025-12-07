@@ -158,24 +158,28 @@ export default defineConfig(({ mode }) => {
         },
         output: {
           manualChunks: {
-            vendor: ['react', 'react-dom', 'react-router-dom'],
-            supabase: ['@supabase/supabase-js'],
-            ui: ['framer-motion', 'lucide-react'],
-            // Enhanced code splitting for better bundle optimization
-            markdown: [
-              'react-markdown',
-              'remark-gfm',
-              'remark-math',
-              'rehype-highlight',
-              'rehype-katex',
+            // Core vendor chunks
+            'vendor-react': ['react', 'react-dom'],
+            'vendor-router': ['react-router-dom'],
+            'vendor-animation': ['framer-motion'],
+            'vendor-icons': ['lucide-react'],
+            'vendor-supabase': ['@supabase/supabase-js'],
+            // Markdown rendering
+            'vendor-markdown': ['react-markdown', 'remark-gfm'],
+            'vendor-syntax': ['rehype-highlight'],
+            // Math rendering - heavy library
+            'vendor-math': ['katex', 'rehype-katex', 'remark-math'],
+            // Charts - very heavy library, separate chunk
+            'vendor-charts': ['mermaid'],
+            // Additional markdown utilities
+            'vendor-markdown-utils': [
               'rehype-slug',
               'rehype-autolink-headings',
               'rehype-raw',
               'remark-directive',
             ],
-            charts: ['mermaid'],
-            math: ['katex'],
-            lightbox: ['yet-another-react-lightbox'],
+            // Lightbox
+            'vendor-lightbox': ['yet-another-react-lightbox'],
           },
         },
       },

@@ -111,7 +111,10 @@ const Home: React.FC = () => {
       <StructuredData data={structuredDataSchema} />
       <div className="space-y-16 pb-12">
         {/* Hero Section */}
-        <section className="relative -mt-8 py-12 md:py-16 px-4 overflow-hidden">
+        <section
+          className="hero-container relative -mt-8 py-12 md:py-16 px-4 overflow-hidden"
+          style={{ minHeight: '500px' }}
+        >
           {/* Background Elements */}
           <div className="absolute inset-0 -z-10">
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[600px] bg-primary-200/30 dark:bg-primary-900/20 rounded-full blur-3xl opacity-50 mix-blend-multiply dark:mix-blend-screen animate-blob" />
@@ -135,7 +138,10 @@ const Home: React.FC = () => {
                 Hi, I&apos;m <span className="text-gradient">{authorName}</span>
               </h1>
 
-              <p className="text-xl md:text-2xl text-secondary-600 dark:text-secondary-300 mb-10 max-w-2xl mx-auto leading-relaxed h-20 md:h-auto">
+              <p
+                className="text-xl md:text-2xl text-secondary-600 dark:text-secondary-300 mb-10 max-w-2xl mx-auto leading-relaxed"
+                style={{ minHeight: '5rem' }}
+              >
                 {typedTagline}
                 <span
                   className={`opacity-75 text-primary-500 animate-[fade_1s_ease-in-out_infinite] ${!isTyping ? 'hidden' : ''}`}
