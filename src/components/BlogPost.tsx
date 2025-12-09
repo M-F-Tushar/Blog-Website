@@ -7,7 +7,6 @@ import rehypeKatex from 'rehype-katex';
 import rehypeHighlight from 'rehype-highlight';
 import rehypeRaw from 'rehype-raw';
 import rehypeSlug from 'rehype-slug';
-import rehypeAutolinkHeadings from 'rehype-autolink-headings';
 import 'katex/dist/katex.min.css';
 import 'highlight.js/styles/github-dark.css';
 import { Calendar, Clock, Tag, ChevronLeft, User } from 'lucide-react';
@@ -199,13 +198,7 @@ const BlogPost: React.FC = () => {
               <div className="prose dark:prose-invert prose-lg max-w-none prose-headings:font-serif prose-headings:font-bold prose-a:text-primary-600 dark:prose-a:text-primary-400 prose-img:rounded-xl prose-img:shadow-lg">
                 <ReactMarkdown
                   remarkPlugins={[remarkGfm, remarkMath]}
-                  rehypePlugins={[
-                    rehypeKatex,
-                    rehypeHighlight,
-                    rehypeRaw,
-                    rehypeSlug,
-                    [rehypeAutolinkHeadings, { behavior: 'wrap' }],
-                  ]}
+                  rehypePlugins={[rehypeKatex, rehypeHighlight, rehypeRaw, rehypeSlug]}
                   components={{
                     img: ({ ...props }) => (
                       <img {...props} className="rounded-xl shadow-lg my-8 w-full" loading="lazy" />
