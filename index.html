@@ -6,8 +6,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#0f172a" media="(prefers-color-scheme: dark)">
-  <link rel="icon" type="image/png" href="/pwa-192x192.png">
-  <link rel="apple-touch-icon" href="/pwa-192x192.png">
+  <link rel="icon" type="image/png" href="./pwa-192x192.png">
+  <link rel="apple-touch-icon" href="./pwa-192x192.png">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
 
   <!-- Primary Meta Tags -->
@@ -63,9 +63,6 @@
     "inLanguage": "en-US"
   }
   </script>
-
-  <!-- Preload key resources for faster LCP -->
-  <link rel="modulepreload" href="/src/main.tsx">
 
   <!-- Resource Hints -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -140,7 +137,7 @@
           return s.replace(/~and~/g, '&')
         }).join('?');
         window.history.replaceState(null, null,
-          l.pathname.slice(0, -1) + decoded + l.hash
+          l.pathname + decoded + l.hash
         );
       }
     }(window.location))
@@ -149,7 +146,7 @@
 
 <body>
   <div id="root"></div>
-  <script type="module" src="/src/main.tsx"></script>
+  <script type="module" src="./src/main.tsx"></script>
 </body>
 
 </html>
