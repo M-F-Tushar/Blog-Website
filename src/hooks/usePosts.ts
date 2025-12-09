@@ -104,14 +104,14 @@ export const PostsProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     // Fetch initial featured post ID
     const fetchFeaturedPost = async () => {
       try {
-        const { data, error } = await supabase
+        const { data, error } = await supabase!
           .from('site_settings')
           .select('featured_post_id')
           .limit(1)
           .single();
 
         if (data) {
-          setFeaturedPostIdState(data.featured_post_id);
+          setFeaturedPostIdState((data as Record<string, any>).featured_post_id);
         }
       } catch (err) {
         console.error('Error fetching featured post:', err);
@@ -140,7 +140,7 @@ export const PostsProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     return () => {
       mounted = false;
       unsubscribePosts();
-      supabase.removeChannel(settingsChannel);
+      supabase!.removeChannel(settingsChannel);
     };
   }, [useSupabase]);
 
@@ -156,16 +156,19 @@ export const PostsProvider: React.FC<{ children: React.ReactNode }> = ({ childre
             .single();
 
           if (existingData) {
+            const settingsId = (existingData as Record<string, any>).id;
             const { error } = await supabase
               .from('site_settings')
+              // @ts-expect-error - Supabase type inference issue
               .update({ featured_post_id: postId })
-              .eq('id', existingData.id);
+              .eq('id', settingsId);
 
             if (error) throw error;
           } else {
             // Create if not exists (though unlikely if site settings are initialized)
             const { error } = await supabase
               .from('site_settings')
+              // @ts-expect-error - Supabase type inference issue
               .insert({ featured_post_id: postId });
 
             if (error) throw error;

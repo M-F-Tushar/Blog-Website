@@ -123,7 +123,7 @@ export const generateBlogPostingSchema = (
     },
     mainEntityOfPage: {
       '@type': 'WebPage',
-      '@id': `${siteUrl}/blog/${post.slug}`,
+      '@id': `${siteUrl}/blog/${post.id}`,
     },
   };
 
@@ -131,9 +131,7 @@ export const generateBlogPostingSchema = (
     schema.image = post.coverImage;
   }
 
-  if (post.updatedAt) {
-    schema.dateModified = post.updatedAt;
-  }
+  // Note: Post type doesn't have updatedAt, so we skip dateModified
 
   if (post.tags && post.tags.length > 0) {
     schema.keywords = post.tags;

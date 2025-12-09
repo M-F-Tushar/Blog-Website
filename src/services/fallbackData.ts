@@ -3,7 +3,7 @@
  * This ensures the site still works in demo mode without a backend
  */
 
-import { Post, Recommendation, PostStatus } from '../types/types';
+import { Post, Recommendation, PostStatus, RecommendationType } from '../types/types';
 import type { DatabaseSettings } from './supabase';
 
 /**
@@ -114,7 +114,7 @@ export const FALLBACK_RECOMMENDATIONS: Recommendation[] = [
     title: 'React Documentation',
     url: 'https://react.dev',
     description: 'The official React documentation with guides and API reference.',
-    type: 'website',
+    type: RecommendationType.WEBSITE,
     isInitial: true,
   },
   {
@@ -122,7 +122,7 @@ export const FALLBACK_RECOMMENDATIONS: Recommendation[] = [
     title: 'TypeScript Handbook',
     url: 'https://www.typescriptlang.org/docs/handbook/intro.html',
     description: 'Comprehensive guide to TypeScript fundamentals and advanced features.',
-    type: 'documentation',
+    type: RecommendationType.DOCUMENTATION,
     isInitial: true,
   },
   {
@@ -130,7 +130,7 @@ export const FALLBACK_RECOMMENDATIONS: Recommendation[] = [
     title: 'MDN Web Docs',
     url: 'https://developer.mozilla.org',
     description: 'The most comprehensive web development documentation resource.',
-    type: 'website',
+    type: RecommendationType.WEBSITE,
     isInitial: true,
   },
   {
@@ -138,7 +138,7 @@ export const FALLBACK_RECOMMENDATIONS: Recommendation[] = [
     title: 'Vite Guide',
     url: 'https://vitejs.dev/guide/',
     description: 'Next generation frontend tooling for fast development.',
-    type: 'documentation',
+    type: RecommendationType.DOCUMENTATION,
     isInitial: true,
   },
 ];
@@ -148,6 +148,7 @@ export const FALLBACK_RECOMMENDATIONS: Recommendation[] = [
  */
 export const FALLBACK_SETTINGS: Omit<DatabaseSettings, 'id' | 'created_at' | 'updated_at'> = {
   featured_post_id: 'welcome-post',
+  site_title: 'My Blog',
   site_name: 'My Blog',
   site_description: 'A modern personal blog built with React and TypeScript',
   author_name: 'Your Name',

@@ -24,6 +24,8 @@ export enum RecommendationType {
   TOOL = 'Tool',
   VIDEO = 'Video',
   COURSE = 'Course',
+  WEBSITE = 'website',
+  DOCUMENTATION = 'documentation',
 }
 
 export interface Recommendation {

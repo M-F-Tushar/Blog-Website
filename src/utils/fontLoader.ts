@@ -11,14 +11,14 @@ export function waitForFonts(): Promise<void> {
     return Promise.resolve();
   }
 
-  return document.fonts.ready;
+  return document.fonts.ready.then(() => {});
 }
 
 /**
  * Prevent FOUT (Flash of Unstyled Text) by adding a class when fonts are loaded
  */
 export function preventFOUT(): void {
-  if (!('fonts' in document)) {
+  if (!document.fonts) {
     // Font Loading API not supported
     document.documentElement.classList.add('fonts-loaded');
     return;

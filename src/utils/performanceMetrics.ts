@@ -1,4 +1,4 @@
-import { onCLS, onFID, onFCP, onLCP, onTTFB, onINP, type Metric } from 'web-vitals';
+import { onCLS, onFCP, onLCP, onTTFB, onINP, type Metric } from 'web-vitals';
 
 export interface PerformanceMetrics {
   CLS: number | null;
@@ -33,7 +33,6 @@ class PerformanceMonitor {
 
     // Collect all Core Web Vitals
     onCLS(this.handleMetric.bind(this));
-    onFID(this.handleMetric.bind(this));
     onFCP(this.handleMetric.bind(this));
     onLCP(this.handleMetric.bind(this));
     onTTFB(this.handleMetric.bind(this));

@@ -103,12 +103,13 @@ export const updateRecommendation = async (
 
   try {
     const updateData: any = {};
-    
+
     if (recommendation.title !== undefined) updateData.title = recommendation.title;
     if (recommendation.url !== undefined) updateData.url = recommendation.url;
-    if (recommendation.description !== undefined) updateData.description = recommendation.description;
+    if (recommendation.description !== undefined)
+      updateData.description = recommendation.description;
     if (recommendation.type !== undefined) updateData.type = recommendation.type;
-    
+
     updateData.updated_at = new Date().toISOString();
 
     const { error } = await supabase
@@ -136,10 +137,7 @@ export const deleteRecommendation = async (id: string): Promise<void> => {
   }
 
   try {
-    const { error } = await supabase
-      .from(RECOMMENDATIONS_TABLE)
-      .delete()
-      .eq('id', id);
+    const { error } = await supabase.from(RECOMMENDATIONS_TABLE).delete().eq('id', id);
 
     if (error) {
       console.error('Error deleting recommendation:', error);
@@ -200,6 +198,6 @@ export const subscribeToRecommendationsUpdates = (
 
   // Return unsubscribe function
   return () => {
-    supabase.removeChannel(channel);
+    supabase!.removeChannel(channel);
   };
 };

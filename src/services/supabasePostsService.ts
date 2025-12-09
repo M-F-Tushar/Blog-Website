@@ -38,11 +38,7 @@ export const getPostById = async (id: string): Promise<Post | null> => {
   }
 
   try {
-    const { data, error } = await supabase
-      .from(POSTS_TABLE)
-      .select('*')
-      .eq('id', id)
-      .single();
+    const { data, error } = await supabase.from(POSTS_TABLE).select('*').eq('id', id).single();
 
     if (error) {
       if (error.code === 'PGRST116') {
@@ -98,7 +94,7 @@ export const updatePost = async (id: string, post: Partial<Post>): Promise<void>
 
   try {
     const updateData: any = {};
-    
+
     if (post.title !== undefined) updateData.title = post.title;
     if (post.date !== undefined) updateData.date = post.date;
     if (post.category !== undefined) updateData.category = post.category;
@@ -107,7 +103,7 @@ export const updatePost = async (id: string, post: Partial<Post>): Promise<void>
     if (post.status !== undefined) updateData.status = post.status;
     if (post.coverImage !== undefined) updateData.cover_image = post.coverImage || null;
     if (post.content !== undefined) updateData.content = post.content;
-    
+
     updateData.updated_at = new Date().toISOString();
 
     const { error } = await supabase
@@ -135,10 +131,7 @@ export const deletePost = async (id: string): Promise<void> => {
   }
 
   try {
-    const { error } = await supabase
-      .from(POSTS_TABLE)
-      .delete()
-      .eq('id', id);
+    const { error } = await supabase.from(POSTS_TABLE).delete().eq('id', id);
 
     if (error) {
       console.error('Error deleting post:', error);
@@ -199,6 +192,6 @@ export const subscribeToPostsUpdates = (
 
   // Return unsubscribe function
   return () => {
-    supabase.removeChannel(channel);
+    supabase!.removeChannel(channel);
   };
 };

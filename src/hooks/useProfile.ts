@@ -43,7 +43,7 @@ export const ProfileProvider: React.FC<{ children: React.ReactNode }> = ({ child
         console.log('❌ Supabase error:', error);
 
         if (data && !error) {
-          const url = data.photo_url || '';
+          const url = (data as Record<string, any>).photo_url || '';
           console.log('✅ Profile photo fetched successfully:', url);
           setPhotoUrl(url);
           // Also save to localStorage
@@ -73,7 +73,7 @@ export const ProfileProvider: React.FC<{ children: React.ReactNode }> = ({ child
       console.error('Failed to save profile photo URL to localStorage', error);
     }
   };
-  
+
   const value = useMemo(() => ({ photoUrl, updateProfilePhoto, loading }), [photoUrl, loading]);
 
   return React.createElement(ProfileContext.Provider, { value }, children);

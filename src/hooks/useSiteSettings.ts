@@ -112,21 +112,22 @@ export const SiteSettingsProvider: React.FC<{ children: React.ReactNode }> = ({ 
         console.log('📦 Supabase site_settings data:', data);
 
         if (data && !error) {
+          const settingsData = data as Record<string, any>;
           const fetchedSettings: SiteSettings = {
-            siteName: data.site_name || FALLBACK_SETTINGS.site_name,
-            siteDescription: data.site_description || FALLBACK_SETTINGS.site_description,
-            authorName: data.author_name || FALLBACK_SETTINGS.author_name,
-            authorTagline: data.author_tagline || FALLBACK_SETTINGS.author_tagline,
-            authorBio: data.author_bio || FALLBACK_SETTINGS.author_bio,
+            siteName: settingsData.site_name || FALLBACK_SETTINGS.site_name,
+            siteDescription: settingsData.site_description || FALLBACK_SETTINGS.site_description,
+            authorName: settingsData.author_name || FALLBACK_SETTINGS.author_name,
+            authorTagline: settingsData.author_tagline || FALLBACK_SETTINGS.author_tagline,
+            authorBio: settingsData.author_bio || FALLBACK_SETTINGS.author_bio,
             socialLinks: {
-              github: data.social_github || FALLBACK_SETTINGS.social_github,
-              linkedin: data.social_linkedin || FALLBACK_SETTINGS.social_linkedin,
-              email: data.social_email || FALLBACK_SETTINGS.social_email,
+              github: settingsData.social_github || FALLBACK_SETTINGS.social_github,
+              linkedin: settingsData.social_linkedin || FALLBACK_SETTINGS.social_linkedin,
+              email: settingsData.social_email || FALLBACK_SETTINGS.social_email,
             },
-            categories: data.categories || FALLBACK_SETTINGS.categories,
-            skills: data.skills || FALLBACK_SETTINGS.skills,
-            timeline: data.timeline || FALLBACK_SETTINGS.timeline,
-            achievements: data.achievements || FALLBACK_SETTINGS.achievements,
+            categories: settingsData.categories || FALLBACK_SETTINGS.categories,
+            skills: settingsData.skills || FALLBACK_SETTINGS.skills,
+            timeline: settingsData.timeline || FALLBACK_SETTINGS.timeline,
+            achievements: settingsData.achievements || FALLBACK_SETTINGS.achievements,
           };
           console.log('✅ Settings fetched successfully:', fetchedSettings);
           setSettings(fetchedSettings);
@@ -204,12 +205,14 @@ export const SiteSettingsProvider: React.FC<{ children: React.ReactNode }> = ({ 
 
       console.log('📤 Sending update to Supabase:', updateData);
 
-      if (existingSettings?.id) {
+      if (existingSettings) {
+        const settingsId = (existingSettings as Record<string, any>).id;
         // Update existing row
         const { error: updateError } = await supabase
           .from('site_settings')
+          // @ts-expect-error - Supabase type inference issue
           .update(updateData)
-          .eq('id', existingSettings.id);
+          .eq('id', settingsId);
 
         if (updateError) {
           console.error('❌ Error updating site settings:', updateError);
@@ -219,6 +222,7 @@ export const SiteSettingsProvider: React.FC<{ children: React.ReactNode }> = ({ 
         console.log('✅ Site settings updated successfully in Supabase');
       } else {
         // Insert new row if none exists
+        // @ts-expect-error - Supabase type inference issue
         const { error: insertError } = await supabase.from('site_settings').insert(updateData);
 
         if (insertError) {

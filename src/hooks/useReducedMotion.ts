@@ -21,6 +21,9 @@ export const useReducedMotion = (): boolean => {
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
+
+    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+
     // Listen for changes
     const handleChange = (e: MediaQueryListEvent) => {
       setPrefersReducedMotion(e.matches);
@@ -33,9 +36,9 @@ export const useReducedMotion = (): boolean => {
     }
     // Older browsers (deprecated but still supported)
     else {
-      // @ts-expect-error - addListener is deprecated but we keep for backwards compatibility
+      // eslint-disable-next-line @typescript-eslint/no-deprecated
       mediaQuery.addListener(handleChange);
-      // @ts-expect-error - removeListener is deprecated but we keep for backwards compatibility
+      // eslint-disable-next-line @typescript-eslint/no-deprecated
       return () => mediaQuery.removeListener(handleChange);
     }
   }, []);
