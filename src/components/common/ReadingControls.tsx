@@ -6,8 +6,8 @@ const ReadingControls: React.FC = () => {
   const { preferences, setFontSize, setLineHeight } = useReadingPreferences();
 
   return (
-    <div className="sticky top-28 z-30 bg-white dark:bg-secondary-900 border-b border-gray-200 dark:border-gray-700 py-3 shadow-sm">
-      <div className="container mx-auto px-4 flex items-center justify-between gap-4">
+    <div className="w-full relative bg-white/95 backdrop-blur dark:bg-secondary-900/95 border-b border-gray-200 dark:border-gray-700 py-3 shadow-sm transition-all duration-300">
+      <div className="px-6 flex items-center justify-between gap-4">
         <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
           <Type size={18} />
           <span className="hidden sm:inline">Reading Settings</span>

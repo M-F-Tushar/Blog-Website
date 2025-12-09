@@ -116,7 +116,6 @@ const BlogPost: React.FC = () => {
     <>
       {structuredDataSchema && <StructuredData data={structuredDataSchema} />}
       <ReadingProgress totalWords={totalWords} showPercentage={true} />
-      <ReadingControls />
 
       {/* Continue Reading Prompt */}
       {showContinuePrompt && !promptDismissed && position && (
@@ -194,6 +193,9 @@ const BlogPost: React.FC = () => {
               className="bg-white dark:bg-secondary-900 rounded-2xl shadow-xl p-8 md:p-12"
               id="main-content"
             >
+              <div className="sticky top-20 z-30 -mx-8 -mt-8 md:-mx-12 md:-mt-12 mb-8 rounded-t-2xl overflow-hidden">
+                <ReadingControls />
+              </div>
               <div className="prose dark:prose-invert prose-lg max-w-none prose-headings:font-serif prose-headings:font-bold prose-a:text-primary-600 dark:prose-a:text-primary-400 prose-img:rounded-xl prose-img:shadow-lg">
                 <ReactMarkdown
                   remarkPlugins={[remarkGfm, remarkMath]}

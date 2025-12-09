@@ -196,7 +196,7 @@ function App() {
                   <ProfileProvider>
                     <RecommendationsProvider>
                       <BookmarksProvider>
-                        <BrowserRouter basename="/Blog-Website">
+                        <BrowserRouter basename={import.meta.env.BASE_URL}>
                           <Routes>
                             <Route path="/*" element={<MainLayout />} />
                             <Route
