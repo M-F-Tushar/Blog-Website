@@ -6,6 +6,21 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#0f172a" media="(prefers-color-scheme: dark)">
+  
+  <!-- Redirect old hash-based URLs to clean URLs -->
+  <!-- e.g., /Blog-Website/#/about -> /Blog-Website/about -->
+  <script>
+    (function() {
+      var hash = window.location.hash;
+      // Check if hash starts with #/ (old HashRouter format)
+      if (hash && hash.startsWith('#/')) {
+        var path = hash.slice(1); // Remove the # to get /about
+        var newUrl = window.location.pathname + path;
+        // Replace current URL with clean URL
+        window.location.replace(newUrl);
+      }
+    })();
+  </script>
   <link rel="icon" type="image/png" href="./pwa-192x192.png">
   <link rel="apple-touch-icon" href="./pwa-192x192.png">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
