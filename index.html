@@ -38,18 +38,48 @@
   <!-- Canonical URL -->
   <link rel="canonical" href="https://m-f-tushar.github.io/Blog-Website/">
 
+  <!-- Security Headers -->
+  <meta http-equiv="X-Content-Type-Options" content="nosniff">
+  <meta http-equiv="X-Frame-Options" content="SAMEORIGIN">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+
+  <!-- Structured Data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Blog",
+    "name": "M-F-Tushar Blog",
+    "description": "Personal blog about web development, computer science, and technology.",
+    "url": "https://m-f-tushar.github.io/Blog-Website/",
+    "author": {
+      "@type": "Person",
+      "name": "M-F-Tushar",
+      "url": "https://github.com/M-F-Tushar"
+    },
+    "publisher": {
+      "@type": "Person",
+      "name": "M-F-Tushar"
+    },
+    "inLanguage": "en-US"
+  }
+  </script>
+
+  <!-- Preload key resources for faster LCP -->
+  <link rel="modulepreload" href="/src/main.tsx">
+
   <!-- Resource Hints -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="dns-prefetch" href="https://fonts.googleapis.com">
-  
+
   <!-- Font Optimization with font-display: swap -->
   <style>
     /* Critical CSS for font loading - prevent FOUT */
     html:not(.fonts-loaded) body {
       font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     }
-    /* Ensure smooth font loading */
+
+    /* Ensure smooth font loading with font-display: swap */
     @font-face {
       font-family: 'Inter';
       font-style: normal;
@@ -57,18 +87,42 @@
       font-display: swap;
       src: local('Inter');
     }
+
+    /* Critical above-the-fold styles for CLS prevention */
+    #root {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* Reserve space for hero section to prevent CLS */
+    .hero-container {
+      min-height: 500px;
+    }
+
+    /* Prevent layout shift for images */
+    img {
+      max-width: 100%;
+      height: auto;
+    }
   </style>
   <link
     href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Playfair+Display:wght@700&display=swap"
-    rel="stylesheet"
-    media="print" 
-    onload="this.media='all'; document.documentElement.classList.add('fonts-loaded')">
+    rel="stylesheet" media="print" onload="this.media='all'; document.documentElement.classList.add('fonts-loaded')">
   <noscript>
     <link
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Playfair+Display:wght@700&display=swap"
       rel="stylesheet">
   </noscript>
-  
+
   <!-- Single Page Apps for GitHub Pages - Handle redirects from 404.html -->
   <script>
     // Single Page Apps for GitHub Pages
@@ -80,9 +134,9 @@
     // When the single page app is loaded further down in this file,
     // the correct url will be waiting in the browser's history for
     // the single page app to route accordingly.
-    (function(l) {
-      if (l.search[1] === '/' ) {
-        var decoded = l.search.slice(1).split('&').map(function(s) { 
+    (function (l) {
+      if (l.search[1] === '/') {
+        var decoded = l.search.slice(1).split('&').map(function (s) {
           return s.replace(/~and~/g, '&')
         }).join('?');
         window.history.replaceState(null, null,

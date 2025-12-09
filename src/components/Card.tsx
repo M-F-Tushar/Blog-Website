@@ -93,11 +93,16 @@ const Card: React.FC<CardProps> = ({ post, viewMode = 'grid', highlight, feature
           to={`/blog/${post.id}`}
           className={`block overflow-hidden relative ${featured ? 'w-full md:w-1/2 h-64 md:h-full' : imageContainerClasses[viewMode]}`}
           aria-label={`View ${post.title}`}
+          style={{ aspectRatio: viewMode === 'compact' ? '1/1' : featured ? '16/9' : '16/9' }}
         >
           <img
             src={post.coverImage}
             alt={`Cover image for ${post.title}`}
             className="w-full h-full object-cover object-center transform group-hover:scale-110 transition-transform duration-500"
+            loading={featured ? 'eager' : 'lazy'}
+            decoding="async"
+            width={featured ? 800 : viewMode === 'compact' ? 80 : 400}
+            height={featured ? 450 : viewMode === 'compact' ? 80 : 225}
           />
           <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300" />
 
