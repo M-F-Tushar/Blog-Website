@@ -22,7 +22,7 @@ export default defineConfig(({ mode }) => {
       }),
       VitePWA({
         registerType: 'autoUpdate',
-        includeAssets: ['favicon.ico', 'robots.txt', 'apple-touch-icon.png'],
+        includeAssets: ['robots.txt', 'apple-touch-icon.png'],
         manifest: {
           name: 'M-F-Tushar Blog',
           short_name: 'TusharBlog',
