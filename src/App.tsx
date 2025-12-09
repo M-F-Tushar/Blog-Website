@@ -1,6 +1,5 @@
-// FIX: Replaced BrowserRouter with HashRouter to solve persistent routing issues in the preview environment.
 import React, { Suspense, lazy, useState } from 'react';
-import { HashRouter, Routes, Route, useLocation } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 import Header from './components/Header';
 import Footer from './components/Footer';
@@ -197,7 +196,7 @@ function App() {
                   <ProfileProvider>
                     <RecommendationsProvider>
                       <BookmarksProvider>
-                        <HashRouter>
+                        <BrowserRouter basename="/Blog-Website">
                           <Routes>
                             <Route path="/*" element={<MainLayout />} />
                             <Route
@@ -251,7 +250,7 @@ function App() {
                             </Route>
                           </Routes>
                           <ScrollToTop />
-                        </HashRouter>
+                        </BrowserRouter>
                         <ToastContainerWrapper />
                       </BookmarksProvider>
                     </RecommendationsProvider>
