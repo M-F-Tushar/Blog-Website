@@ -112,6 +112,7 @@ export const SiteSettingsProvider: React.FC<{ children: React.ReactNode }> = ({ 
         console.log('📦 Supabase site_settings data:', data);
 
         if (data && !error) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           const settingsData = data as Record<string, any>;
           const fetchedSettings: SiteSettings = {
             siteName: settingsData.site_name || FALLBACK_SETTINGS.site_name,
@@ -206,6 +207,7 @@ export const SiteSettingsProvider: React.FC<{ children: React.ReactNode }> = ({ 
       console.log('📤 Sending update to Supabase:', updateData);
 
       if (existingSettings) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const settingsId = (existingSettings as Record<string, any>).id;
         // Update existing row
         const { error: updateError } = await supabase

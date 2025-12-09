@@ -218,7 +218,7 @@ const Card: React.FC<CardProps> = ({ post, viewMode = 'grid', highlight, feature
               transition={{ duration: 0.2 }}
               onClick={handleShareClick}
             >
-              <ShareMenu url={postUrl} title={post.title} description={post.excerpt} />
+              <ShareMenu url={postUrl} title={post.title} />
             </motion.div>
           </footer>
         )}

@@ -23,11 +23,13 @@ interface AccessibleIconProps {
 const AccessibleIcon: React.FC<AccessibleIconProps> = ({ icon, label, decorative = false }) => {
   const isDecorative = decorative || !label;
 
-  return cloneElement(icon, {
+  const props: Record<string, string | undefined> = {
     'aria-hidden': isDecorative ? 'true' : undefined,
     'aria-label': !isDecorative && label ? label : undefined,
     role: !isDecorative && label ? 'img' : undefined,
-  });
+  };
+
+  return cloneElement(icon, props);
 };
 
 export default AccessibleIcon;

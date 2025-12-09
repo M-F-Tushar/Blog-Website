@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useCallback, useMemo, useEffect } from 'react';
-import { Post, PostStatus } from '../types/types';
+import { Post } from '../types/types';
 import { POSTS as initialPostsData } from '../constants/constants';
 import { isSupabaseConfigured, supabase } from '../services/supabase';
 import {
@@ -104,13 +104,14 @@ export const PostsProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     // Fetch initial featured post ID
     const fetchFeaturedPost = async () => {
       try {
-        const { data, error } = await supabase!
+        const { data } = await supabase!
           .from('site_settings')
           .select('featured_post_id')
           .limit(1)
           .single();
 
         if (data) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           setFeaturedPostIdState((data as Record<string, any>).featured_post_id);
         }
       } catch (err) {
@@ -131,6 +132,7 @@ export const PostsProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         },
         (payload) => {
           if (payload.new && 'featured_post_id' in payload.new) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             setFeaturedPostIdState((payload.new as any).featured_post_id);
           }
         }
@@ -156,6 +158,7 @@ export const PostsProvider: React.FC<{ children: React.ReactNode }> = ({ childre
             .single();
 
           if (existingData) {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const settingsId = (existingData as Record<string, any>).id;
             const { error } = await supabase
               .from('site_settings')

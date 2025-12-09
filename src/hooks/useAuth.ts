@@ -1,4 +1,12 @@
-import React, { createContext, useContext, useState, useEffect, useCallback, useMemo, ReactNode } from 'react';
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+  useMemo,
+  ReactNode,
+} from 'react';
 import { authService } from '../services/authService';
 import type { User, Session } from '@supabase/supabase-js';
 
@@ -29,14 +37,14 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     });
 
     // Listen for auth changes
-    const { data: { subscription } } = authService.onAuthStateChange(
-      async (event, session) => {
-        setSession(session);
-        setUser(session?.user ?? null);
-        setIsAuthenticated(!!session);
-        setLoading(false);
-      }
-    );
+    const {
+      data: { subscription },
+    } = authService.onAuthStateChange(async (event, session) => {
+      setSession(session);
+      setUser(session?.user ?? null);
+      setIsAuthenticated(!!session);
+      setLoading(false);
+    });
 
     return () => {
       subscription.unsubscribe();
@@ -46,11 +54,15 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const signIn = useCallback(async (email: string, password: string) => {
     setLoading(true);
     try {
-      const data = await authService.signIn(email, password);
-      setSession(data.session);
-      setUser(data.user);
-      setIsAuthenticated(true);
-      return { success: true };
+      const result = await authService.signIn(email, password);
+      if ('session' in result && 'user' in result) {
+        setSession(result.session);
+        setUser(result.user);
+        setIsAuthenticated(true);
+        return { success: true };
+      }
+      return { success: false, error: 'Invalid response from auth service' };
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       return { success: false, error: error.message };
     } finally {
@@ -66,6 +78,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       setUser(null);
       setIsAuthenticated(false);
       return { success: true };
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       return { success: false, error: error.message };
     } finally {
@@ -73,14 +86,17 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   }, []);
 
-  const value = useMemo(() => ({
-    user,
-    session,
-    loading,
-    isAuthenticated,
-    signIn,
-    signOut,
-  }), [user, session, loading, isAuthenticated, signIn, signOut]);
+  const value = useMemo(
+    () => ({
+      user,
+      session,
+      loading,
+      isAuthenticated,
+      signIn,
+      signOut,
+    }),
+    [user, session, loading, isAuthenticated, signIn, signOut]
+  );
 
   return React.createElement(AuthContext.Provider, { value }, children);
 };

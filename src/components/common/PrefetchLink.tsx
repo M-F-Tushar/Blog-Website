@@ -2,7 +2,7 @@ import React, { useCallback, useRef } from 'react';
 import { Link, LinkProps } from 'react-router-dom';
 import { preloadComponent } from '../../utils/lazyImports';
 
-export interface PrefetchLinkProps extends LinkProps {
+export interface PrefetchLinkProps extends Omit<LinkProps, 'prefetch'> {
   prefetch?: 'hover' | 'visible' | 'none';
   prefetchRoute?: () => Promise<unknown>;
 }

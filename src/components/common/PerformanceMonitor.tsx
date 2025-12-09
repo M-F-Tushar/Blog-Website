@@ -174,7 +174,7 @@ const PerformanceMonitor: React.FC = () => {
               {Object.entries(navigationTiming).map(([key, value]) => (
                 <div key={key} className="flex justify-between items-center text-xs font-mono">
                   <span className="font-semibold capitalize">{key}:</span>
-                  <span className="text-gray-300">{Math.round(value)}ms</span>
+                  <span className="text-gray-300">{Math.round(value as number)}ms</span>
                 </div>
               ))}
             </div>
@@ -191,7 +191,7 @@ const PerformanceMonitor: React.FC = () => {
                   {Object.entries(resourceTiming.byType).map(([type, count]) => (
                     <div key={type} className="flex justify-between items-center text-xs font-mono">
                       <span className="font-semibold">{type}:</span>
-                      <span className="text-gray-300">{count}</span>
+                      <span className="text-gray-300">{count as React.ReactNode}</span>
                     </div>
                   ))}
                 </div>

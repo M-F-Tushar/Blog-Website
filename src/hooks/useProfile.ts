@@ -43,6 +43,7 @@ export const ProfileProvider: React.FC<{ children: React.ReactNode }> = ({ child
         console.log('❌ Supabase error:', error);
 
         if (data && !error) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
           const url = (data as Record<string, any>).photo_url || '';
           console.log('✅ Profile photo fetched successfully:', url);
           setPhotoUrl(url);

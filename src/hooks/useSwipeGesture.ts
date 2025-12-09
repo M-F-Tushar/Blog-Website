@@ -13,7 +13,7 @@ export interface SwipeOptions {
  * @param ref Reference to the element to detect swipes on
  * @param options Swipe handlers and configuration
  */
-export function useSwipeGesture(ref: RefObject<HTMLElement>, options: SwipeOptions): void {
+export function useSwipeGesture(ref: RefObject<HTMLElement | null>, options: SwipeOptions): void {
   const { onSwipeLeft, onSwipeRight, onSwipeUp, onSwipeDown, threshold = 50 } = options;
 
   useEffect(() => {

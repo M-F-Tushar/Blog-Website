@@ -91,7 +91,6 @@ const Header: React.FC = () => {
                       : 'text-secondary-600 dark:text-secondary-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-secondary-50 dark:hover:bg-secondary-800/50 rounded-full'
                   }`
                 }
-                aria-current={({ isActive }) => (isActive ? 'page' : undefined)}
               >
                 {link.label}
               </NavLink>
@@ -192,7 +191,6 @@ const Header: React.FC = () => {
                         : 'text-secondary-600 dark:text-secondary-300 hover:bg-secondary-50 dark:hover:bg-secondary-900'
                     }`
                   }
-                  aria-current={({ isActive }) => (isActive ? 'page' : undefined)}
                 >
                   {link.label}
                 </NavLink>

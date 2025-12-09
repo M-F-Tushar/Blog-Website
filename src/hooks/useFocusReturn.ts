@@ -5,7 +5,7 @@ import { useRef, useEffect, RefObject } from 'react';
  * @param isOpen Whether the modal/drawer is currently open
  * @returns Ref to attach to the trigger element
  */
-export function useFocusReturn<T extends HTMLElement>(isOpen: boolean): RefObject<T> {
+export function useFocusReturn<T extends HTMLElement>(isOpen: boolean): RefObject<T | null> {
   const triggerRef = useRef<T>(null);
   const previouslyFocusedElement = useRef<HTMLElement | null>(null);
 
