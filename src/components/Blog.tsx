@@ -148,7 +148,7 @@ const Blog: React.FC = () => {
 
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         {/* Controls */}
-        <div className="flex flex-col md:flex-row justify-between items-center gap-6 mb-10 sticky top-20 z-30 bg-white/80 dark:bg-secondary-950/80 backdrop-blur-md p-4 rounded-2xl border border-secondary-200 dark:border-secondary-800 shadow-sm">
+        <div className="flex flex-col md:flex-row justify-between items-center gap-6 mb-10 bg-white/80 dark:bg-secondary-950/80 backdrop-blur-md p-4 rounded-2xl border border-secondary-200 dark:border-secondary-800 shadow-sm">
           <div className="flex items-center gap-2 text-secondary-600 dark:text-secondary-400">
             <Filter size={18} />
             <span className="font-medium">
