@@ -93,10 +93,18 @@ export const PostsProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         // eslint-disable-next-line no-console
         console.error('Error loading posts from Supabase, falling back to local data:', err);
         if (mounted) {
-          setError(err.message);
           setLoading(false);
           // On error, fall back to fallback posts if no posts loaded
-          setPosts((prev) => (prev.length === 0 ? FALLBACK_POSTS : prev));
+          setPosts((prev) => {
+            if (prev.length === 0) {
+              // Successfully fell back to fallback data - clear the error
+              setError(null);
+              return FALLBACK_POSTS;
+            }
+            // Keep the error since we're using potentially stale data
+            setError(err.message);
+            return prev;
+          });
         }
       }
     );
