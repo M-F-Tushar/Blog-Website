@@ -65,6 +65,7 @@ const RecommendationForm = lazy(() => import('./components/admin/RecommendationF
 const AdminSiteSettings = lazy(() => import('./components/admin/AdminSiteSettings'));
 const AdminProfileSettings = lazy(() => import('./components/admin/AdminProfileSettings'));
 const AdminUITextSettings = lazy(() => import('./components/admin/AdminUITextSettings'));
+const AdminHomepageLayout = lazy(() => import('./components/admin/AdminHomepageLayout'));
 const DataMigration = lazy(() => import('./components/admin/DataMigration'));
 
 // Toast Container Wrapper to consume context
@@ -246,6 +247,7 @@ function App() {
                                 />
                                 <Route path="settings/site" element={<AdminSiteSettings />} />
                                 <Route path="settings/ui-text" element={<AdminUITextSettings />} />
+                                <Route path="settings/layout" element={<AdminHomepageLayout />} />
                                 <Route path="settings/profile" element={<AdminProfileSettings />} />
                                 <Route path="migrate" element={<DataMigration />} />
                               </Route>

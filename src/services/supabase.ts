@@ -178,6 +178,13 @@ export interface DatabaseSettings {
       searchPlaceholder: string;
     };
   };
+  homepage_layout?: {
+    showHero: boolean;
+    showFeaturedPost: boolean;
+    showTrendingTopics: boolean;
+    showLatestArticles: boolean;
+    showNewsletter: boolean;
+  };
   created_at?: string;
   updated_at?: string;
 }

@@ -16,7 +16,7 @@ import { generateWebSiteSchema as generateJsonLdWebSite } from '../utils/structu
 
 const Home: React.FC = () => {
   const { posts, featuredPostId, loading, error } = usePosts();
-  const { authorName, authorTagline, siteDescription, siteName, uiText } = useSiteSettings();
+  const { authorName, authorTagline, siteDescription, siteName, uiText, homepageLayout } = useSiteSettings();
   const { displayedText: typedTagline, isTyping } = useTypingEffect(authorTagline, 50, 1000);
 
   const schema = useMemo(() => generateWebSiteSchema(), []);
@@ -140,65 +140,67 @@ const Home: React.FC = () => {
         animate="visible"
       >
         {/* Hero Section */}
-        <section
-          className="hero-container relative -mt-8 py-12 md:py-16 px-4 overflow-hidden"
-          style={{ minHeight: '500px' }}
-        >
-          {/* Background Elements */}
-          <div className="absolute inset-0 -z-10">
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[600px] bg-primary-200/30 dark:bg-primary-900/20 rounded-full blur-3xl opacity-50 mix-blend-multiply dark:mix-blend-screen animate-blob" />
-            <div className="absolute top-0 right-0 w-[800px] h-[600px] bg-accent-200/30 dark:bg-accent-900/20 rounded-full blur-3xl opacity-50 mix-blend-multiply dark:mix-blend-screen animate-blob animation-delay-2000" />
-            <div className="absolute top-40 left-20 w-[600px] h-[600px] bg-purple-200/20 dark:bg-purple-900/10 rounded-full blur-3xl opacity-40 mix-blend-multiply dark:mix-blend-screen animate-blob animation-delay-4000" />
-          </div>
+        {homepageLayout?.showHero !== false && (
+          <section
+            className="hero-container relative -mt-8 py-12 md:py-16 px-4 overflow-hidden"
+            style={{ minHeight: '500px' }}
+          >
+            {/* Background Elements */}
+            <div className="absolute inset-0 -z-10">
+              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[600px] bg-primary-200/30 dark:bg-primary-900/20 rounded-full blur-3xl opacity-50 mix-blend-multiply dark:mix-blend-screen animate-blob" />
+              <div className="absolute top-0 right-0 w-[800px] h-[600px] bg-accent-200/30 dark:bg-accent-900/20 rounded-full blur-3xl opacity-50 mix-blend-multiply dark:mix-blend-screen animate-blob animation-delay-2000" />
+              <div className="absolute top-40 left-20 w-[600px] h-[600px] bg-purple-200/20 dark:bg-purple-900/10 rounded-full blur-3xl opacity-40 mix-blend-multiply dark:mix-blend-screen animate-blob animation-delay-4000" />
+            </div>
 
-          <div className="container mx-auto max-w-5xl text-center relative z-10">
-            <motion.div
-              variants={itemVariants}
-            >
-              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/50 dark:bg-secondary-800/50 backdrop-blur-sm border border-secondary-200 dark:border-secondary-700 mb-8 hover:scale-105 transition-transform duration-300 cursor-default shadow-sm hover:shadow-md">
-                <Sparkles size={16} className="text-accent-500 animate-pulse" />
-                <span className="text-sm font-medium text-secondary-600 dark:text-secondary-300">
-                  {uiText.home.welcomeBadge}
-                </span>
-              </div>
-
-              <h1 className="text-5xl md:text-7xl font-bold font-serif text-secondary-900 dark:text-white mb-8 tracking-tight leading-tight drop-shadow-sm">
-                Hi, I&apos;m <span className="text-gradient bg-clip-text text-transparent bg-gradient-to-r from-primary-600 to-accent-600 dark:from-primary-400 dark:to-accent-400">{authorName}</span>
-              </h1>
-
-              <p
-                className="text-xl md:text-2xl text-secondary-600 dark:text-secondary-300 mb-10 max-w-2xl mx-auto leading-relaxed"
-                style={{ minHeight: '5rem' }}
+            <div className="container mx-auto max-w-5xl text-center relative z-10">
+              <motion.div
+                variants={itemVariants}
               >
-                {typedTagline}
-                <span
-                  className={`opacity-75 text-primary-500 animate-[fade_1s_ease-in-out_infinite] ${!isTyping ? 'hidden' : ''}`}
-                >
-                  |
-                </span>
-              </p>
+                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/50 dark:bg-secondary-800/50 backdrop-blur-sm border border-secondary-200 dark:border-secondary-700 mb-8 hover:scale-105 transition-transform duration-300 cursor-default shadow-sm hover:shadow-md">
+                  <Sparkles size={16} className="text-accent-500 animate-pulse" />
+                  <span className="text-sm font-medium text-secondary-600 dark:text-secondary-300">
+                    {uiText.home.welcomeBadge}
+                  </span>
+                </div>
 
-              <div className="flex flex-col sm:flex-row justify-center gap-4">
-                <Link
-                  to="/blog"
-                  className="group px-8 py-4 bg-primary-600 text-white font-semibold rounded-full shadow-lg shadow-primary-500/30 hover:bg-primary-700 hover:shadow-primary-500/40 hover:-translate-y-1 transition-all duration-300 flex items-center justify-center gap-2"
+                <h1 className="text-5xl md:text-7xl font-bold font-serif text-secondary-900 dark:text-white mb-8 tracking-tight leading-tight drop-shadow-sm">
+                  Hi, I&apos;m <span className="text-gradient bg-clip-text text-transparent bg-gradient-to-r from-primary-600 to-accent-600 dark:from-primary-400 dark:to-accent-400">{authorName}</span>
+                </h1>
+
+                <p
+                  className="text-xl md:text-2xl text-secondary-600 dark:text-secondary-300 mb-10 max-w-2xl mx-auto leading-relaxed"
+                  style={{ minHeight: '5rem' }}
                 >
-                  {uiText.home.startReading}
-                  <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
-                </Link>
-                <Link
-                  to="/about"
-                  className="px-8 py-4 bg-white/80 dark:bg-secondary-800/80 backdrop-blur-sm text-secondary-900 dark:text-white font-semibold rounded-full shadow-md hover:shadow-lg border border-secondary-200 dark:border-secondary-700 hover:-translate-y-1 transition-all duration-300"
-                >
-                  {uiText.home.moreAboutMe}
-                </Link>
-              </div>
-            </motion.div>
-          </div>
-        </section>
+                  {typedTagline}
+                  <span
+                    className={`opacity-75 text-primary-500 animate-[fade_1s_ease-in-out_infinite] ${!isTyping ? 'hidden' : ''}`}
+                  >
+                    |
+                  </span>
+                </p>
+
+                <div className="flex flex-col sm:flex-row justify-center gap-4">
+                  <Link
+                    to="/blog"
+                    className="group px-8 py-4 bg-primary-600 text-white font-semibold rounded-full shadow-lg shadow-primary-500/30 hover:bg-primary-700 hover:shadow-primary-500/40 hover:-translate-y-1 transition-all duration-300 flex items-center justify-center gap-2"
+                  >
+                    {uiText.home.startReading}
+                    <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
+                  </Link>
+                  <Link
+                    to="/about"
+                    className="px-8 py-4 bg-white/80 dark:bg-secondary-800/80 backdrop-blur-sm text-secondary-900 dark:text-white font-semibold rounded-full shadow-md hover:shadow-lg border border-secondary-200 dark:border-secondary-700 hover:-translate-y-1 transition-all duration-300"
+                  >
+                    {uiText.home.moreAboutMe}
+                  </Link>
+                </div>
+              </motion.div>
+            </div>
+          </section>
+        )}
 
         {/* Featured Post */}
-        {featuredPost && (
+        {homepageLayout?.showFeaturedPost !== false && featuredPost && (
           <motion.section
             className="container mx-auto px-4 sm:px-6 lg:px-8"
             variants={itemVariants}
@@ -216,7 +218,7 @@ const Home: React.FC = () => {
         )}
 
         {/* Popular Tags */}
-        {popularTags.length > 0 && (
+        {homepageLayout?.showTrendingTopics !== false && popularTags.length > 0 && (
           <motion.section
             className="container mx-auto px-4 sm:px-6 lg:px-8"
             variants={itemVariants}
@@ -246,7 +248,7 @@ const Home: React.FC = () => {
         )}
 
         {/* Recent Posts */}
-        {recentPosts.length > 0 && (
+        {homepageLayout?.showLatestArticles !== false && recentPosts.length > 0 && (
           <motion.section
             className="container mx-auto px-4 sm:px-6 lg:px-8"
             variants={itemVariants}
@@ -284,48 +286,50 @@ const Home: React.FC = () => {
         )}
 
         {/* Newsletter CTA */}
-        <motion.section
-          className="container mx-auto px-4 sm:px-6 lg:px-8"
-          variants={itemVariants}
-        >
-          <div className="relative rounded-3xl overflow-hidden bg-secondary-900 px-6 py-16 md:px-16 md:py-20 text-center shadow-2xl shadow-secondary-900/50">
-            {/* Background Pattern */}
-            <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:20px_20px]" />
-            <div className="absolute -top-24 -left-24 w-64 h-64 bg-primary-500/20 rounded-full blur-3xl animate-pulse" />
-            <div className="absolute -bottom-24 -right-24 w-64 h-64 bg-accent-500/20 rounded-full blur-3xl animate-pulse animation-delay-1000" />
+        {homepageLayout?.showNewsletter !== false && (
+          <motion.section
+            className="container mx-auto px-4 sm:px-6 lg:px-8"
+            variants={itemVariants}
+          >
+            <div className="relative rounded-3xl overflow-hidden bg-secondary-900 px-6 py-16 md:px-16 md:py-20 text-center shadow-2xl shadow-secondary-900/50">
+              {/* Background Pattern */}
+              <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:20px_20px]" />
+              <div className="absolute -top-24 -left-24 w-64 h-64 bg-primary-500/20 rounded-full blur-3xl animate-pulse" />
+              <div className="absolute -bottom-24 -right-24 w-64 h-64 bg-accent-500/20 rounded-full blur-3xl animate-pulse animation-delay-1000" />
 
-            <div className="relative z-10 max-w-2xl mx-auto space-y-8">
-              <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-white/10 backdrop-blur-md text-white border border-white/20 mb-4 shadow-inner">
-                <Mail size={32} />
-              </div>
+              <div className="relative z-10 max-w-2xl mx-auto space-y-8">
+                <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-white/10 backdrop-blur-md text-white border border-white/20 mb-4 shadow-inner">
+                  <Mail size={32} />
+                </div>
 
-              <h2 className="text-3xl md:text-4xl font-bold font-serif text-white">
-                {uiText.home.newsletterTitle}
-              </h2>
+                <h2 className="text-3xl md:text-4xl font-bold font-serif text-white">
+                  {uiText.home.newsletterTitle}
+                </h2>
 
-              <p className="text-lg text-secondary-300 leading-relaxed">
-                {uiText.home.newsletterDescription}
-              </p>
+                <p className="text-lg text-secondary-300 leading-relaxed">
+                  {uiText.home.newsletterDescription}
+                </p>
 
-              <form
-                className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto relative"
-                onSubmit={(e) => e.preventDefault()}
-              >
-                <input
-                  type="email"
-                  placeholder="Enter your email"
-                  className="flex-1 px-6 py-3.5 rounded-full bg-white/10 border border-white/10 text-white placeholder-secondary-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent backdrop-blur-sm transition-all hover:bg-white/15"
-                />
-                <button
-                  type="submit"
-                  className="px-8 py-3.5 bg-primary-600 text-white font-semibold rounded-full hover:bg-primary-500 transition-all shadow-lg shadow-primary-900/30 hover:shadow-primary-600/40 hover:-translate-y-0.5 active:translate-y-0"
+                <form
+                  className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto relative"
+                  onSubmit={(e) => e.preventDefault()}
                 >
-                  {uiText.home.subscribeButton}
-                </button>
-              </form>
+                  <input
+                    type="email"
+                    placeholder="Enter your email"
+                    className="flex-1 px-6 py-3.5 rounded-full bg-white/10 border border-white/10 text-white placeholder-secondary-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent backdrop-blur-sm transition-all hover:bg-white/15"
+                  />
+                  <button
+                    type="submit"
+                    className="px-8 py-3.5 bg-primary-600 text-white font-semibold rounded-full hover:bg-primary-500 transition-all shadow-lg shadow-primary-900/30 hover:shadow-primary-600/40 hover:-translate-y-0.5 active:translate-y-0"
+                  >
+                    {uiText.home.subscribeButton}
+                  </button>
+                </form>
+              </div>
             </div>
-          </div>
-        </motion.section>
+          </motion.section>
+        )}
       </motion.div>
     </>
   );

@@ -70,6 +70,13 @@ interface SiteSettings {
       searchPlaceholder: string;
     };
   };
+  homepageLayout: {
+    showHero: boolean;
+    showFeaturedPost: boolean;
+    showTrendingTopics: boolean;
+    showLatestArticles: boolean;
+    showNewsletter: boolean;
+  };
 }
 
 interface SiteSettingsContextType extends SiteSettings {
@@ -127,6 +134,13 @@ const getSettingsFromStorage = (): SiteSettings => {
         contact: 'Contact',
         searchPlaceholder: 'Search...',
       },
+    },
+    homepageLayout: FALLBACK_SETTINGS.homepage_layout || {
+      showHero: true,
+      showFeaturedPost: true,
+      showTrendingTopics: true,
+      showLatestArticles: true,
+      showNewsletter: true,
     },
   };
   try {
@@ -192,6 +206,7 @@ export const SiteSettingsProvider: React.FC<{ children: React.ReactNode }> = ({ 
             timeline: (settingsData.timeline || FALLBACK_SETTINGS.timeline) as unknown as TimelineItem[],
             achievements: (settingsData.achievements || FALLBACK_SETTINGS.achievements) as unknown as Achievement[],
             uiText: settingsData.ui_text || settings.uiText,
+            homepageLayout: settingsData.homepage_layout || settings.homepageLayout,
           };
           console.log('✅ Settings fetched successfully:', fetchedSettings);
           setSettings(fetchedSettings);

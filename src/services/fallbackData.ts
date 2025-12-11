@@ -238,6 +238,13 @@ export const FALLBACK_SETTINGS: Omit<DatabaseSettings, 'id' | 'created_at' | 'up
       searchPlaceholder: 'Search...',
     },
   },
+  homepage_layout: {
+    showHero: true,
+    showFeaturedPost: true,
+    showTrendingTopics: true,
+    showLatestArticles: true,
+    showNewsletter: true,
+  },
 };
 
 // Re-export isSupabaseConfigured for convenience
