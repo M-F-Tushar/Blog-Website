@@ -143,6 +143,10 @@ export interface DatabaseSettings {
   social_github: string;
   social_linkedin: string;
   social_email: string;
+  social_twitter?: string;
+  social_instagram?: string;
+  social_youtube?: string;
+  social_discord?: string;
   categories: string[];
   skills: Json[];
   timeline: Json[];

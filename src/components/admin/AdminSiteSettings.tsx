@@ -168,6 +168,10 @@ const AdminSiteSettings: React.FC = () => {
             <div><label htmlFor="github" className={labelClasses}>GitHub URL</label><input type="url" name="github" value={formState.socialLinks.github} onChange={handleSocialChange} className={inputClasses} /></div>
             <div><label htmlFor="linkedin" className={labelClasses}>LinkedIn URL</label><input type="url" name="linkedin" value={formState.socialLinks.linkedin} onChange={handleSocialChange} className={inputClasses} /></div>
             <div><label htmlFor="email" className={labelClasses}>Email Address</label><input type="email" name="email" value={formState.socialLinks.email} onChange={handleSocialChange} className={inputClasses} /></div>
+            <div><label htmlFor="twitter" className={labelClasses}>Twitter/X URL</label><input type="url" name="twitter" value={formState.socialLinks.twitter || ''} onChange={handleSocialChange} className={inputClasses} placeholder="https://x.com/username" /></div>
+            <div><label htmlFor="instagram" className={labelClasses}>Instagram URL</label><input type="url" name="instagram" value={formState.socialLinks.instagram || ''} onChange={handleSocialChange} className={inputClasses} placeholder="https://instagram.com/username" /></div>
+            <div><label htmlFor="youtube" className={labelClasses}>YouTube URL</label><input type="url" name="youtube" value={formState.socialLinks.youtube || ''} onChange={handleSocialChange} className={inputClasses} placeholder="https://youtube.com/@channel" /></div>
+            <div><label htmlFor="discord" className={labelClasses}>Discord URL</label><input type="url" name="discord" value={formState.socialLinks.discord || ''} onChange={handleSocialChange} className={inputClasses} placeholder="https://discord.gg/invite" /></div>
           </div>
         </section>
 

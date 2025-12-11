@@ -176,6 +176,10 @@ export const FALLBACK_SETTINGS: Omit<DatabaseSettings, 'id' | 'created_at' | 'up
   social_github: 'https://github.com/yourusername',
   social_linkedin: 'https://linkedin.com/in/yourprofile',
   social_email: 'your-email@example.com',
+  social_twitter: '',
+  social_instagram: '',
+  social_youtube: '',
+  social_discord: '',
   categories: ['Technology', 'General', 'Reflections'],
   skills: [
     { name: 'React', level: 4, iconName: 'react' },

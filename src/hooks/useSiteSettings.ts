@@ -6,6 +6,10 @@ interface SocialLinks {
   github: string;
   linkedin: string;
   email: string;
+  twitter?: string;
+  instagram?: string;
+  youtube?: string;
+  discord?: string;
 }
 
 export interface Skill {
@@ -99,6 +103,10 @@ const getSettingsFromStorage = (): SiteSettings => {
       github: FALLBACK_SETTINGS.social_github,
       linkedin: FALLBACK_SETTINGS.social_linkedin,
       email: FALLBACK_SETTINGS.social_email,
+      twitter: FALLBACK_SETTINGS.social_twitter || '',
+      instagram: FALLBACK_SETTINGS.social_instagram || '',
+      youtube: FALLBACK_SETTINGS.social_youtube || '',
+      discord: FALLBACK_SETTINGS.social_discord || '',
     },
     categories: FALLBACK_SETTINGS.categories,
     skills: FALLBACK_SETTINGS.skills as unknown as Skill[],
@@ -200,6 +208,10 @@ export const SiteSettingsProvider: React.FC<{ children: React.ReactNode }> = ({ 
               github: settingsData.social_github || FALLBACK_SETTINGS.social_github,
               linkedin: settingsData.social_linkedin || FALLBACK_SETTINGS.social_linkedin,
               email: settingsData.social_email || FALLBACK_SETTINGS.social_email,
+              twitter: settingsData.social_twitter || '',
+              instagram: settingsData.social_instagram || '',
+              youtube: settingsData.social_youtube || '',
+              discord: settingsData.social_discord || '',
             },
             categories: settingsData.categories || FALLBACK_SETTINGS.categories,
             skills: (settingsData.skills || FALLBACK_SETTINGS.skills) as unknown as Skill[],
