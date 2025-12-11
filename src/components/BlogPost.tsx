@@ -196,7 +196,7 @@ const BlogPost: React.FC = () => {
               <div className="-mx-8 -mt-8 md:-mx-12 md:-mt-12 mb-8 rounded-t-2xl overflow-hidden">
                 <ReadingControls />
               </div>
-              <div className="prose dark:prose-invert prose-lg max-w-none prose-headings:font-serif prose-headings:font-bold prose-a:text-primary-600 dark:prose-a:text-primary-400 prose-img:rounded-xl prose-img:shadow-lg">
+              <div className="prose prose-reading-preferences dark:prose-invert prose-lg max-w-none prose-headings:font-serif prose-headings:font-bold prose-a:text-primary-600 dark:prose-a:text-primary-400 prose-img:rounded-xl prose-img:shadow-lg">
                 <ReactMarkdown
                   remarkPlugins={[remarkGfm, remarkMath]}
                   rehypePlugins={[rehypeKatex, rehypeHighlight, rehypeRaw, rehypeSlug]}
