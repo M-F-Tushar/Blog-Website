@@ -3,10 +3,6 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { motion } from 'framer-motion';
 import {
-  Code,
-  Database,
-  Globe,
-  Smartphone,
   Award,
   BookOpen,
   Calendar,

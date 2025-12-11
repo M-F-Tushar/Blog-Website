@@ -24,7 +24,11 @@ const Card: React.FC<CardProps> = ({ post, viewMode = 'grid', highlight, feature
   const [isHovered, setIsHovered] = useState(false);
 
   const bookmarked = isBookmarked(post.id);
-  const postUrl = `${window.location.origin}${window.location.pathname}#/blog/${post.id}`;
+
+  // Generate proper share URL for BrowserRouter (no hash)
+  // Detect if we're on GitHub Pages by checking pathname
+  const basePath = window.location.pathname.includes('/Blog-Website') ? '/Blog-Website' : '';
+  const postUrl = `${window.location.origin}${basePath}/blog/${post.id}`;
 
   const handleToggleBookmark = (e: React.MouseEvent) => {
     e.preventDefault();

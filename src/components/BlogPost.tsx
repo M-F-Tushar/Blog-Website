@@ -78,7 +78,8 @@ const BlogPost: React.FC = () => {
     author: authorName,
     publishedTime: post?.date,
     tags: post?.tags,
-    canonicalUrl: `https://m-f-tushar.github.io/Blog-Website/#/blog/${postId}`,
+    // Use clean URL without hash for proper SEO indexing
+    canonicalUrl: `https://m-f-tushar.github.io/Blog-Website/blog/${postId}`,
     schema,
   });
 
