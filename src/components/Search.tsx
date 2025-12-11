@@ -130,7 +130,7 @@ const Search: React.FC = () => {
           </div>
 
           <h1 className="text-4xl md:text-5xl font-bold font-serif text-secondary-900 dark:text-white mb-6">
-            Find what you're <span className="text-gradient">looking for</span>
+            Find what you&apos;re <span className="text-gradient">looking for</span>
           </h1>
 
           <div className="relative max-w-xl mx-auto mt-8">
@@ -157,15 +157,15 @@ const Search: React.FC = () => {
           <>
             <div className="flex flex-col md:flex-row justify-between items-center gap-6 mb-8">
               <p className="text-lg text-secondary-600 dark:text-secondary-300">
-                Found <span className="font-semibold text-primary-600 dark:text-primary-400">{sortedPosts.length}</span> results for "{query}"
+                Found <span className="font-semibold text-primary-600 dark:text-primary-400">{sortedPosts.length}</span> results for &quot;{query}&quot;
               </p>
 
               <div className="flex items-center gap-4">
                 <button
                   onClick={() => setShowFilters(!showFilters)}
                   className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg transition-colors font-medium text-sm ${showFilters
-                      ? 'bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300'
-                      : 'bg-secondary-100 dark:bg-secondary-800 text-secondary-700 dark:text-secondary-300 hover:bg-secondary-200 dark:hover:bg-secondary-700'
+                    ? 'bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300'
+                    : 'bg-secondary-100 dark:bg-secondary-800 text-secondary-700 dark:text-secondary-300 hover:bg-secondary-200 dark:hover:bg-secondary-700'
                     }`}
                 >
                   <SlidersHorizontal size={18} />
@@ -215,7 +215,7 @@ const Search: React.FC = () => {
             {sortedPosts.length > 0 ? (
               <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
                 {sortedPosts.map((post) => (
-                  <Card key={post.id} post={post} highlight={query} />
+                  <Card key={post.id} post={post} />
                 ))}
               </div>
             ) : (

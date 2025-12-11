@@ -38,6 +38,12 @@ To see your own content, configure Supabase following the setup guide in the rep
 
 Thank you for visiting!`,
     isInitial: true,
+    author: {
+      name: 'Admin',
+      avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
+    },
+    readTime: '2 min read',
+    commentCount: 0,
   },
   {
     id: 'demo-post-2',
@@ -65,6 +71,12 @@ Make sure to install the necessary extensions and configure your tools properly.
 
 Happy coding!`,
     isInitial: true,
+    author: {
+      name: 'Admin',
+      avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
+    },
+    readTime: '3 min read',
+    commentCount: 2,
   },
   {
     id: 'demo-post-3',
@@ -102,6 +114,12 @@ function greetUser(user: User): string {
 
 TypeScript helps you write more maintainable and robust code.`,
     isInitial: true,
+    author: {
+      name: 'Admin',
+      avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
+    },
+    readTime: '4 min read',
+    commentCount: 5,
   },
 ];
 
@@ -189,6 +207,37 @@ export const FALLBACK_SETTINGS: Omit<DatabaseSettings, 'id' | 'created_at' | 'up
       year: '2023',
     },
   ],
+  ui_text: {
+    home: {
+      welcomeBadge: 'Welcome to my digital garden',
+      startReading: 'Start Reading',
+      moreAboutMe: 'More About Me',
+      featuredStory: 'Featured Story',
+      trendingTopics: 'Trending Topics',
+      latestArticles: 'Latest Articles',
+      newsletterTitle: 'Subscribe to my newsletter',
+      newsletterDescription: 'Get the latest articles, tutorials, and insights delivered straight to your inbox. No spam, just quality content.',
+      subscribeButton: 'Subscribe',
+    },
+    footer: {
+      tagline: 'Exploring the frontiers of web development, computer science, and technology. Join me on this journey of continuous learning and creation.',
+      exploreTitle: 'Explore',
+      latestTitle: 'Latest Articles',
+      stayConnectedTitle: 'Stay Connected',
+      newsletterDescription: 'Get the latest posts and updates delivered straight to your inbox.',
+      subscribeButton: 'Subscribe',
+      copyrightText: 'Made with Heart in React.',
+    },
+    header: {
+      home: 'Home',
+      about: 'About',
+      blog: 'Blog',
+      recommendations: 'Recommendations',
+      bookmarks: 'Bookmarks',
+      contact: 'Contact',
+      searchPlaceholder: 'Search...',
+    },
+  },
 };
 
 // Re-export isSupabaseConfigured for convenience

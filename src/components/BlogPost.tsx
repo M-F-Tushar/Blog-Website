@@ -92,7 +92,7 @@ const BlogPost: React.FC = () => {
       <EmptyState
         icon="🔍"
         title="Post Not Found"
-        description="The blog post you're looking for doesn't exist or has been removed."
+        description="The blog post you&apos;re looking for doesn&apos;t exist or has been removed."
         actionLabel="Back to Blog"
         actionLink="/blog"
       />

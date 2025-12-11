@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowUp, Rss, Mail, Github, Linkedin, Send, Heart } from 'lucide-react';
+import { ArrowUp, Rss, Mail, Github, Linkedin, Send } from 'lucide-react';
 import { useSiteSettings } from '../hooks/useSiteSettings';
 import { usePosts } from '../hooks/usePosts';
 import { PostStatus } from '../types/types';
@@ -10,7 +10,7 @@ interface FooterProps {
 }
 
 const Footer: React.FC<FooterProps> = ({ id }) => {
-  const { authorName, socialLinks, siteName } = useSiteSettings();
+  const { authorName, socialLinks, siteName, uiText } = useSiteSettings();
   const { posts } = usePosts();
   const [email, setEmail] = useState('');
   const [subscribeStatus, setSubscribeStatus] = useState<'idle' | 'success' | 'error'>('idle');
@@ -56,19 +56,18 @@ const Footer: React.FC<FooterProps> = ({ id }) => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-12 mb-12">
           {/* Brand Column */}
           <div className="lg:col-span-4 space-y-6">
-            <Link to="/" className="text-2xl font-bold font-serif text-white tracking-tight">
+            <Link to="/" className="text-2xl font-bold font-serif text-white tracking-tight hover:opacity-90 transition-opacity">
               {siteName}
             </Link>
             <p className="text-secondary-400 leading-relaxed max-w-sm">
-              Exploring the frontiers of web development, computer science, and technology. Join me
-              on this journey of continuous learning and creation.
+              {uiText.footer.tagline}
             </p>
             <div className="flex items-center gap-4">
               <a
                 href={socialLinks.github}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="p-2.5 bg-secondary-800 hover:bg-primary-600 text-secondary-400 hover:text-white rounded-full transition-all duration-300"
+                className="p-2.5 bg-secondary-800 hover:bg-primary-600 text-secondary-400 hover:text-white rounded-full transition-all duration-300 hover:scale-110 hover:shadow-lg hover:shadow-primary-600/20"
                 aria-label="Visit GitHub profile"
               >
                 <Github size={20} />
@@ -77,14 +76,14 @@ const Footer: React.FC<FooterProps> = ({ id }) => {
                 href={socialLinks.linkedin}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="p-2.5 bg-secondary-800 hover:bg-primary-600 text-secondary-400 hover:text-white rounded-full transition-all duration-300"
+                className="p-2.5 bg-secondary-800 hover:bg-primary-600 text-secondary-400 hover:text-white rounded-full transition-all duration-300 hover:scale-110 hover:shadow-lg hover:shadow-primary-600/20"
                 aria-label="Visit LinkedIn profile"
               >
                 <Linkedin size={20} />
               </a>
               <a
                 href={`mailto:${socialLinks.email}`}
-                className="p-2.5 bg-secondary-800 hover:bg-primary-600 text-secondary-400 hover:text-white rounded-full transition-all duration-300"
+                className="p-2.5 bg-secondary-800 hover:bg-primary-600 text-secondary-400 hover:text-white rounded-full transition-all duration-300 hover:scale-110 hover:shadow-lg hover:shadow-primary-600/20"
                 aria-label="Send email"
               >
                 <Mail size={20} />
@@ -94,7 +93,7 @@ const Footer: React.FC<FooterProps> = ({ id }) => {
 
           {/* Quick Links */}
           <div className="lg:col-span-2">
-            <h3 className="text-white font-semibold text-lg mb-6">Explore</h3>
+            <h3 className="text-white font-semibold text-lg mb-6">{uiText.footer.exploreTitle}</h3>
             <nav className="space-y-3" aria-label="Footer navigation">
               {[
                 { path: '/', label: 'Home' },
@@ -116,7 +115,7 @@ const Footer: React.FC<FooterProps> = ({ id }) => {
 
           {/* Popular Posts */}
           <div className="lg:col-span-3">
-            <h3 className="text-white font-semibold text-lg mb-6">Latest Articles</h3>
+            <h3 className="text-white font-semibold text-lg mb-6">{uiText.footer.latestTitle}</h3>
             <div className="space-y-4">
               {popularPosts.length > 0 ? (
                 popularPosts.map((post) => (
@@ -141,9 +140,9 @@ const Footer: React.FC<FooterProps> = ({ id }) => {
 
           {/* Newsletter */}
           <div className="lg:col-span-3">
-            <h3 className="text-white font-semibold text-lg mb-6">Stay Connected</h3>
+            <h3 className="text-white font-semibold text-lg mb-6">{uiText.footer.stayConnectedTitle}</h3>
             <p className="text-sm text-secondary-400 mb-4">
-              Get the latest posts and updates delivered straight to your inbox.
+              {uiText.footer.newsletterDescription}
             </p>
             <form onSubmit={handleNewsletterSubmit} className="space-y-3">
               <div className="relative">
@@ -156,16 +155,16 @@ const Footer: React.FC<FooterProps> = ({ id }) => {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="your@email.com"
-                  className="w-full pl-10 pr-4 py-2.5 bg-secondary-800 border border-secondary-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent text-white placeholder-secondary-500 transition-all"
+                  className="w-full pl-10 pr-4 py-2.5 bg-secondary-800 border border-secondary-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent text-white placeholder-secondary-500 transition-all hover:bg-secondary-700/50"
                   aria-label="Email for newsletter"
                 />
               </div>
               <button
                 type="submit"
-                className="w-full px-4 py-2.5 bg-primary-600 hover:bg-primary-700 text-white rounded-lg text-sm font-medium transition-all duration-200 flex items-center justify-center gap-2 shadow-lg shadow-primary-900/20"
+                className="w-full px-4 py-2.5 bg-primary-600 hover:bg-primary-700 text-white rounded-lg text-sm font-medium transition-all duration-200 flex items-center justify-center gap-2 shadow-lg shadow-primary-900/20 hover:shadow-primary-600/30 hover:-translate-y-0.5 active:translate-y-0"
               >
                 <Send size={16} />
-                Subscribe
+                {uiText.footer.subscribeButton}
               </button>
               {subscribeStatus === 'success' && (
                 <p className="text-xs text-green-400 animate-fade-in">✓ Subscribed successfully!</p>
@@ -180,21 +179,25 @@ const Footer: React.FC<FooterProps> = ({ id }) => {
         {/* Bottom Bar */}
         <div className="border-t border-secondary-800 pt-8 mt-8 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-sm text-secondary-500 flex items-center gap-1">
-            © {currentYear} {authorName}. Made with{' '}
-            <Heart size={14} className="text-red-500 fill-red-500" /> in React.
+            © {currentYear} {authorName}. {uiText.footer.copyrightText || 'Made with Heart in React'}
+            {/* Fallback to hardcoded if empty, but keeping the heart icon logic separate requires parsing. 
+                 Simplifying to text for now as per plan, or I can re-add the icon if needed.
+                 The user asked for dynamic. Let's assume copyrightText contains the whole 'Made with Heart...' string. 
+                 For now, I'll append the dynamic text. 
+             */}
           </p>
 
           <div className="flex items-center gap-6">
             <a
               href="/rss.xml"
-              className="text-sm text-secondary-500 hover:text-primary-400 transition-colors flex items-center gap-2"
+              className="text-sm text-secondary-500 hover:text-primary-400 transition-colors flex items-center gap-2 hover:scale-105"
             >
               <Rss size={14} />
               <span>RSS</span>
             </a>
             <button
               onClick={scrollToTop}
-              className="text-sm text-secondary-500 hover:text-primary-400 transition-colors flex items-center gap-2"
+              className="text-sm text-secondary-500 hover:text-primary-400 transition-colors flex items-center gap-2 hover:scale-105"
             >
               <ArrowUp size={14} />
               <span>Back to Top</span>

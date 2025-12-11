@@ -16,6 +16,12 @@ export interface Post {
   coverImage?: string;
   content: string;
   isInitial?: boolean;
+  author: {
+    name: string;
+    avatar: string;
+  };
+  readTime: string;
+  commentCount?: number;
 }
 
 export enum RecommendationType {

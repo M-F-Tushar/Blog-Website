@@ -74,7 +74,7 @@ const Recommendations: React.FC = () => {
         <EmptyState
           icon="⭐"
           title="No Recommendations Yet"
-          description="I'll be adding my favorite tools, resources, and content soon!"
+          description="I&apos;ll be adding my favorite tools, resources, and content soon!"
           actionLabel="Go Home"
           actionLink="/"
         />
@@ -87,7 +87,7 @@ const Recommendations: React.FC = () => {
       <div className="text-center">
         <h1 className="text-4xl font-bold font-serif text-gray-900 dark:text-white">My Recommendations</h1>
         <p className="mt-2 text-lg text-gray-600 dark:text-gray-300">
-          A curated list of articles, tools, and resources I've found valuable.
+          A curated list of articles, tools, and resources I&apos;ve found valuable.
         </p>
       </div>
 

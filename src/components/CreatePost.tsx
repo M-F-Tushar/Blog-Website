@@ -13,7 +13,7 @@ const CreatePost: React.FC = () => {
   const { postId } = useParams<{ postId?: string }>();
   const isEditMode = Boolean(postId);
   const { posts, addPost, updatePost } = usePosts();
-  const { categories } = useSiteSettings();
+  const { categories, authorName } = useSiteSettings();
   const navigate = useNavigate();
   const supabaseEnabled = isSupabaseConfigured();
 
@@ -136,6 +136,11 @@ const CreatePost: React.FC = () => {
       status,
       coverImage,
       excerpt: content.substring(0, 150) + '...',
+      author: {
+        name: authorName || 'Admin',
+        avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
+      },
+      readTime: `${Math.ceil(content.split(' ').length / 200)} min read`,
     };
 
     try {

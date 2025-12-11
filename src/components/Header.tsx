@@ -1,34 +1,27 @@
 import React, { useState, useEffect } from 'react';
-import { Link, NavLink, useNavigate, useLocation } from 'react-router-dom';
-import { Menu, X, Search as SearchIcon, Sun, Moon } from 'lucide-react';
+import { Link, useLocation } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Menu, X, Search, Sun, Moon, Github, Linkedin, Mail } from 'lucide-react';
 import { useSiteSettings } from '../hooks/useSiteSettings';
-import { usePosts } from '../hooks/usePosts';
-import { useLocalStorage } from '../hooks/useLocalStorage';
 import { useTheme } from '../hooks/useTheme';
-import SearchSuggestions from './common/SearchSuggestions';
 
 const Header: React.FC = () => {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isScrolled, setIsScrolled] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [showSuggestions, setShowSuggestions] = useState(false);
-  const [recentSearches, setRecentSearches] = useLocalStorage<string[]>('recent-searches', []);
-  const navigate = useNavigate();
-  const location = useLocation();
-  const { siteName } = useSiteSettings();
-  const { posts } = usePosts();
+  const { siteName, socialLinks, uiText } = useSiteSettings();
   const { theme, toggleTheme } = useTheme();
+  const location = useLocation();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const searchInputRef = React.useRef<HTMLInputElement>(null);
 
-  // Handle scroll effect
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 10);
+      setScrolled(window.scrollY > 20);
     };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Close menu on route change
   useEffect(() => {
     if (isMenuOpen) {
       setIsMenuOpen(false);
@@ -36,170 +29,207 @@ const Header: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location.pathname]);
 
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (searchQuery.trim()) {
-      performSearch(searchQuery.trim());
-    }
-  };
-
-  const performSearch = (query: string) => {
-    const updatedSearches = [query, ...recentSearches.filter((s) => s !== query)].slice(0, 10);
-    setRecentSearches(updatedSearches);
-    navigate(`/search?q=${encodeURIComponent(query)}`);
-    setSearchQuery('');
-    setShowSuggestions(false);
-    setIsMenuOpen(false);
-  };
-
   const navLinks = [
-    { path: '/', label: 'Home' },
-    { path: '/about', label: 'About' },
-    { path: '/blog', label: 'Blog' },
-    { path: '/recommendations', label: 'Recommendations' },
-    { path: '/bookmarks', label: 'Bookmarks' },
-    { path: '/contact', label: 'Contact' },
+    { name: uiText.header.home, path: '/' },
+    { name: uiText.header.about, path: '/about' },
+    { name: uiText.header.blog, path: '/blog' },
+    { name: uiText.header.recommendations, path: '/recommendations' },
+    { name: uiText.header.contact, path: '/contact' },
   ];
 
   return (
-    <header
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        isScrolled || isMenuOpen ? 'glass shadow-sm py-3' : 'bg-transparent py-5'
-      }`}
-    >
-      <nav className="container mx-auto px-4 sm:px-6 lg:px-8" aria-label="Main navigation">
-        <div className="flex items-center justify-between">
-          {/* Logo */}
-          <Link
-            to="/"
-            className="text-2xl font-bold font-serif tracking-tight text-gradient hover:opacity-80 transition-opacity"
-            aria-label={`${siteName} - Home`}
-          >
-            {siteName}
-          </Link>
-
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-1" id="navigation">
-            {navLinks.map((link) => (
-              <NavLink
-                key={link.path}
-                to={link.path}
-                className={({ isActive }) =>
-                  `px-4 py-2 text-sm font-medium transition-all duration-200 relative ${
-                    isActive
-                      ? 'text-primary-600 dark:text-primary-400 after:absolute after:bottom-0 after:left-1/2 after:-translate-x-1/2 after:w-1/2 after:h-0.5 after:bg-primary-600 dark:after:bg-primary-400 after:rounded-full'
-                      : 'text-secondary-600 dark:text-secondary-300 hover:text-primary-600 dark:hover:text-primary-400 hover:bg-secondary-50 dark:hover:bg-secondary-800/50 rounded-full'
-                  }`
-                }
-              >
-                {link.label}
-              </NavLink>
-            ))}
-          </div>
-
-          {/* Actions */}
-          <div className="flex items-center space-x-3">
-            {/* Search Bar */}
-            <div className="relative hidden sm:block group" id="search">
-              <form onSubmit={handleSearch} className="relative" role="search">
-                <input
-                  type="search"
-                  placeholder="Search..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  onFocus={() => setShowSuggestions(true)}
-                  className="pl-10 pr-4 py-2 w-40 focus:w-60 text-sm bg-secondary-100 dark:bg-secondary-800 border border-secondary-200 dark:border-secondary-700 focus:border-primary-500 rounded-full focus:outline-none focus:ring-2 focus:ring-primary-500/20 transition-all duration-300 placeholder:text-secondary-500 dark:placeholder:text-secondary-400"
-                  aria-label="Search blog posts"
-                />
-                <SearchIcon
-                  size={16}
-                  className="absolute left-3.5 top-1/2 -translate-y-1/2 text-secondary-500 dark:text-secondary-400 group-focus-within:text-primary-500 transition-colors"
-                  aria-hidden="true"
-                />
-              </form>
-
-              <SearchSuggestions
-                query={searchQuery}
-                posts={posts}
-                recentSearches={recentSearches}
-                isOpen={showSuggestions && (searchQuery.length > 0 || recentSearches.length > 0)}
-                onSelect={performSearch}
-                onClose={() => setShowSuggestions(false)}
-              />
-            </div>
-
-            {/* Theme Toggle */}
-            <button
-              onClick={toggleTheme}
-              className={`p-2 rounded-full transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary-500/50 hover:scale-110 ${
-                theme === 'dark'
-                  ? 'bg-secondary-800 text-amber-400 hover:bg-secondary-700'
-                  : 'bg-secondary-100 text-indigo-600 hover:bg-secondary-200'
-              }`}
-              aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
+    <>
+      <motion.header
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? 'bg-white/80 dark:bg-secondary-900/80 backdrop-blur-md shadow-sm' : 'bg-transparent'
+          }`}
+        initial={{ y: -100 }}
+        animate={{ y: 0 }}
+        transition={{ duration: 0.5 }}
+      >
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-20">
+            {/* Logo */}
+            <Link
+              to="/"
+              className="text-2xl font-bold font-serif text-secondary-900 dark:text-white tracking-tight hover:scale-105 transition-transform duration-200"
             >
-              {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
-            </button>
+              {siteName}
+            </Link>
+
+            {/* Desktop Navigation */}
+            <nav className="hidden md:flex items-center gap-8">
+              {navLinks.map((link) => (
+                <Link
+                  key={link.path}
+                  to={link.path}
+                  className={`relative text-sm font-medium transition-colors hover:text-primary-600 dark:hover:text-primary-400 ${location.pathname === link.path
+                      ? 'text-primary-600 dark:text-primary-400'
+                      : 'text-secondary-600 dark:text-secondary-300'
+                    }`}
+                >
+                  {link.name}
+                  {location.pathname === link.path && (
+                    <motion.div
+                      layoutId="underline"
+                      className="absolute -bottom-1 left-0 right-0 h-0.5 bg-primary-600 dark:bg-primary-400 rounded-full"
+                    />
+                  )}
+                </Link>
+              ))}
+            </nav>
+
+            {/* Desktop Actions */}
+            <div className="hidden md:flex items-center gap-4">
+              {/* Search Bar */}
+              <div className={`relative transition-all duration-300 ${isSearchOpen ? 'w-64' : 'w-10'}`}>
+                {isSearchOpen ? (
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.9 }}
+                    className="relative"
+                  >
+                    <input
+                      ref={searchInputRef}
+                      type="text"
+                      placeholder={uiText.header.searchPlaceholder}
+                      className="w-full pl-10 pr-4 py-2 rounded-full bg-secondary-100 dark:bg-secondary-800 text-secondary-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500 text-sm"
+                      onBlur={() => setIsSearchOpen(false)}
+                      autoFocus
+                    />
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-secondary-500" size={16} />
+                  </motion.div>
+                ) : (
+                  <button
+                    onClick={() => {
+                      setIsSearchOpen(true);
+                      setTimeout(() => searchInputRef.current?.focus(), 100);
+                    }}
+                    className="p-2 hover:bg-secondary-100 dark:hover:bg-secondary-800 rounded-full text-secondary-600 dark:text-secondary-300 transition-colors"
+                    aria-label="Open search"
+                  >
+                    <Search size={20} />
+                  </button>
+                )}
+              </div>
+
+              {/* Theme Toggle */}
+              <button
+                onClick={toggleTheme}
+                className="p-2 hover:bg-secondary-100 dark:hover:bg-secondary-800 rounded-full text-secondary-600 dark:text-secondary-300 transition-colors"
+                aria-label="Toggle theme"
+              >
+                <AnimatePresence mode="wait" initial={false}>
+                  <motion.div
+                    key={theme}
+                    initial={{ y: -20, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    exit={{ y: 20, opacity: 0 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    {theme === 'dark' ? <Moon size={20} /> : <Sun size={20} />}
+                  </motion.div>
+                </AnimatePresence>
+              </button>
+
+              {/* Social Links */}
+              <div className="flex items-center gap-2 border-l border-secondary-200 dark:border-secondary-700 pl-4">
+                <a
+                  href={socialLinks.github}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="p-2 hover:bg-secondary-100 dark:hover:bg-secondary-800 rounded-full text-secondary-600 dark:text-secondary-300 transition-colors"
+                >
+                  <Github size={20} />
+                </a>
+                <a
+                  href={socialLinks.linkedin}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="p-2 hover:bg-secondary-100 dark:hover:bg-secondary-800 rounded-full text-secondary-600 dark:text-secondary-300 transition-colors"
+                >
+                  <Linkedin size={20} />
+                </a>
+              </div>
+            </div>
 
             {/* Mobile Menu Button */}
             <button
+              className="md:hidden p-2 text-secondary-600 dark:text-secondary-300 hover:bg-secondary-100 dark:hover:bg-secondary-800 rounded-full transition-colors"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="md:hidden p-2 rounded-full text-secondary-600 dark:text-secondary-300 hover:bg-secondary-100 dark:hover:bg-secondary-800 transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500/50"
-              aria-label={isMenuOpen ? 'Close menu' : 'Open menu'}
-              aria-expanded={isMenuOpen}
+              aria-label="Toggle menu"
             >
               {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
           </div>
         </div>
-      </nav>
+      </motion.header>
 
-      {/* Mobile Menu Overlay */}
-      <div
-        className={`md:hidden fixed inset-0 z-40 bg-white/95 dark:bg-secondary-950/95 backdrop-blur-xl transition-transform duration-300 ease-in-out ${
-          isMenuOpen ? 'translate-x-0' : 'translate-x-full'
-        }`}
-        style={{ top: '60px' }}
-      >
-        <div className="p-4 space-y-4 h-full overflow-y-auto">
-          <form onSubmit={handleSearch} className="relative" role="search">
-            <input
-              type="search"
-              placeholder="Search articles..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-3 text-base bg-secondary-100 dark:bg-secondary-900 border border-transparent focus:border-primary-500 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500/20"
-              aria-label="Search articles"
-            />
-            <SearchIcon
-              size={20}
-              className="absolute left-3.5 top-1/2 -translate-y-1/2 text-secondary-400"
-              aria-hidden="true"
-            />
-          </form>
+      {/* Mobile Menu */}
+      <AnimatePresence>
+        {isMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            className="fixed inset-x-0 top-20 bg-white dark:bg-secondary-900 border-b border-secondary-200 dark:border-secondary-800 z-40 md:hidden overflow-hidden"
+          >
+            <div className="container mx-auto px-4 py-8 space-y-6">
+              <nav className="flex flex-col gap-4">
+                {navLinks.map((link) => (
+                  <Link
+                    key={link.path}
+                    to={link.path}
+                    className={`text-lg font-medium transition-colors ${location.pathname === link.path
+                        ? 'text-primary-600 dark:text-primary-400 pl-4 border-l-4 border-primary-600 dark:border-primary-400'
+                        : 'text-secondary-600 dark:text-secondary-300 pl-4 border-l-4 border-transparent'
+                      }`}
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    {link.name}
+                  </Link>
+                ))}
+              </nav>
 
-          <nav aria-label="Mobile navigation">
-            <div className="space-y-1">
-              {navLinks.map((link) => (
-                <NavLink
-                  key={link.path}
-                  to={link.path}
-                  className={({ isActive }) =>
-                    `block px-4 py-3 rounded-xl text-base font-medium transition-colors relative ${
-                      isActive
-                        ? 'bg-primary-50 dark:bg-primary-900/20 text-primary-600 dark:text-primary-400 border-l-4 border-primary-600 dark:border-primary-400'
-                        : 'text-secondary-600 dark:text-secondary-300 hover:bg-secondary-50 dark:hover:bg-secondary-900'
-                    }`
-                  }
+              <div className="flex items-center justify-between pt-6 border-t border-secondary-100 dark:border-secondary-800">
+                <div className="flex items-center gap-4">
+                  <a
+                    href={socialLinks.github}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="p-2 bg-secondary-100 dark:bg-secondary-800 rounded-full text-secondary-600 dark:text-secondary-300"
+                  >
+                    <Github size={20} />
+                  </a>
+                  <a
+                    href={socialLinks.linkedin}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="p-2 bg-secondary-100 dark:bg-secondary-800 rounded-full text-secondary-600 dark:text-secondary-300"
+                  >
+                    <Linkedin size={20} />
+                  </a>
+                  <a
+                    href={`mailto:${socialLinks.email}`}
+                    className="p-2 bg-secondary-100 dark:bg-secondary-800 rounded-full text-secondary-600 dark:text-secondary-300"
+                  >
+                    <Mail size={20} />
+                  </a>
+                </div>
+
+                <button
+                  onClick={toggleTheme}
+                  className="flex items-center gap-2 px-4 py-2 bg-secondary-100 dark:bg-secondary-800 rounded-full text-secondary-600 dark:text-secondary-300"
                 >
-                  {link.label}
-                </NavLink>
-              ))}
+                  {theme === 'dark' ? <Moon size={18} /> : <Sun size={18} />}
+                  <span className="text-sm font-medium">{theme === 'dark' ? 'Dark' : 'Light'}</span>
+                </button>
+              </div>
             </div>
-          </nav>
-        </div>
-      </div>
-    </header>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
   );
 };
 

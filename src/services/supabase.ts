@@ -1,8 +1,10 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
-import { Post, Recommendation } from '../types/types';
+import { Post, Recommendation, PostStatus, RecommendationType } from '../types/types';
 
 // Supabase configuration from environment variables
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const supabaseUrl = (import.meta as any).env.VITE_SUPABASE_URL;
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const supabaseAnonKey = (import.meta as any).env.VITE_SUPABASE_ANON_KEY;
 
 // Check if Supabase is configured
@@ -93,7 +95,6 @@ if (isSupabaseConfigured()) {
         detectSessionInUrl: true
       }
     });
-    console.log('Supabase initialized successfully');
   } catch (error) {
     console.error('Error initializing Supabase:', error);
   }
@@ -143,9 +144,40 @@ export interface DatabaseSettings {
   social_linkedin: string;
   social_email: string;
   categories: string[];
-  skills: any[]; // Using any[] for complex JSON types to avoid circular deps or complex definitions here
-  timeline: any[];
-  achievements: any[];
+  skills: Json[];
+  timeline: Json[];
+  achievements: Json[];
+  ui_text?: {
+    home: {
+      welcomeBadge: string;
+      startReading: string;
+      moreAboutMe: string;
+      featuredStory: string;
+      trendingTopics: string;
+      latestArticles: string;
+      newsletterTitle: string;
+      newsletterDescription: string;
+      subscribeButton: string;
+    };
+    footer: {
+      tagline: string;
+      exploreTitle: string;
+      latestTitle: string;
+      stayConnectedTitle: string;
+      newsletterDescription: string;
+      subscribeButton: string;
+      copyrightText: string;
+    };
+    header: {
+      home: string;
+      about: string;
+      blog: string;
+      recommendations: string;
+      bookmarks: string;
+      contact: string;
+      searchPlaceholder: string;
+    };
+  };
   created_at?: string;
   updated_at?: string;
 }
@@ -173,10 +205,16 @@ export const postFromDatabase = (dbPost: DatabasePost): Post => {
     category: dbPost.category,
     tags: dbPost.tags,
     excerpt: dbPost.excerpt,
-    status: dbPost.status as any,
+    status: dbPost.status as PostStatus,
     coverImage: dbPost.cover_image || undefined,
     content: dbPost.content,
     isInitial: dbPost.is_initial,
+    author: {
+      name: 'Author',
+      avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
+    },
+    readTime: `${Math.ceil(dbPost.content.split(' ').length / 200)} min read`,
+    commentCount: 0,
   };
 };
 
@@ -196,7 +234,7 @@ export const recommendationFromDatabase = (dbRec: DatabaseRecommendation): Recom
     title: dbRec.title,
     url: dbRec.url,
     description: dbRec.description,
-    type: dbRec.type as any,
+    type: dbRec.type as RecommendationType,
     isInitial: dbRec.is_initial,
   };
 };

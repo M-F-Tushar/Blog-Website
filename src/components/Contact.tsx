@@ -41,7 +41,7 @@ const faqs: FAQ[] = [
   {
     question: 'Can you help with my project?',
     answer:
-      "I'd love to hear about your project! Send me an email with details about what you're building, your timeline, and how I can help.",
+      "I&apos;d love to hear about your project! Send me an email with details about what you&apos;re building, your timeline, and how I can help.",
   },
   {
     question: 'Do you accept guest posts?',

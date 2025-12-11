@@ -39,6 +39,37 @@ interface SiteSettings {
   skills: Skill[];
   timeline: TimelineItem[];
   achievements: Achievement[];
+  uiText: {
+    home: {
+      welcomeBadge: string;
+      startReading: string;
+      moreAboutMe: string;
+      featuredStory: string;
+      trendingTopics: string;
+      latestArticles: string;
+      newsletterTitle: string;
+      newsletterDescription: string;
+      subscribeButton: string;
+    };
+    footer: {
+      tagline: string;
+      exploreTitle: string;
+      latestTitle: string;
+      stayConnectedTitle: string;
+      newsletterDescription: string;
+      subscribeButton: string;
+      copyrightText: string;
+    };
+    header: {
+      home: string;
+      about: string;
+      blog: string;
+      recommendations: string;
+      bookmarks: string;
+      contact: string;
+      searchPlaceholder: string;
+    };
+  };
 }
 
 interface SiteSettingsContextType extends SiteSettings {
@@ -63,9 +94,40 @@ const getSettingsFromStorage = (): SiteSettings => {
       email: FALLBACK_SETTINGS.social_email,
     },
     categories: FALLBACK_SETTINGS.categories,
-    skills: FALLBACK_SETTINGS.skills,
-    timeline: FALLBACK_SETTINGS.timeline,
-    achievements: FALLBACK_SETTINGS.achievements,
+    skills: FALLBACK_SETTINGS.skills as unknown as Skill[],
+    timeline: FALLBACK_SETTINGS.timeline as unknown as TimelineItem[],
+    achievements: FALLBACK_SETTINGS.achievements as unknown as Achievement[],
+    uiText: FALLBACK_SETTINGS.ui_text || {
+      home: {
+        welcomeBadge: 'Welcome to my digital garden',
+        startReading: 'Start Reading',
+        moreAboutMe: 'More About Me',
+        featuredStory: 'Featured Story',
+        trendingTopics: 'Trending Topics',
+        latestArticles: 'Latest Articles',
+        newsletterTitle: 'Subscribe to my newsletter',
+        newsletterDescription: 'Get the latest articles, tutorials, and insights delivered straight to your inbox. No spam, just quality content.',
+        subscribeButton: 'Subscribe',
+      },
+      footer: {
+        tagline: 'Exploring the frontiers of web development, computer science, and technology. Join me on this journey of continuous learning and creation.',
+        exploreTitle: 'Explore',
+        latestTitle: 'Latest Articles',
+        stayConnectedTitle: 'Stay Connected',
+        newsletterDescription: 'Get the latest posts and updates delivered straight to your inbox.',
+        subscribeButton: 'Subscribe',
+        copyrightText: 'Made with Heart in React.',
+      },
+      header: {
+        home: 'Home',
+        about: 'About',
+        blog: 'Blog',
+        recommendations: 'Recommendations',
+        bookmarks: 'Bookmarks',
+        contact: 'Contact',
+        searchPlaceholder: 'Search...',
+      },
+    },
   };
   try {
     const savedSettings = window.localStorage.getItem('siteSettings');
@@ -126,9 +188,10 @@ export const SiteSettingsProvider: React.FC<{ children: React.ReactNode }> = ({ 
               email: settingsData.social_email || FALLBACK_SETTINGS.social_email,
             },
             categories: settingsData.categories || FALLBACK_SETTINGS.categories,
-            skills: settingsData.skills || FALLBACK_SETTINGS.skills,
-            timeline: settingsData.timeline || FALLBACK_SETTINGS.timeline,
-            achievements: settingsData.achievements || FALLBACK_SETTINGS.achievements,
+            skills: (settingsData.skills || FALLBACK_SETTINGS.skills) as unknown as Skill[],
+            timeline: (settingsData.timeline || FALLBACK_SETTINGS.timeline) as unknown as TimelineItem[],
+            achievements: (settingsData.achievements || FALLBACK_SETTINGS.achievements) as unknown as Achievement[],
+            uiText: settingsData.ui_text || settings.uiText,
           };
           console.log('✅ Settings fetched successfully:', fetchedSettings);
           setSettings(fetchedSettings);
@@ -147,6 +210,7 @@ export const SiteSettingsProvider: React.FC<{ children: React.ReactNode }> = ({ 
     };
 
     fetchSettings();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const updateSettings = useCallback(async (newSettings: Partial<SiteSettings>) => {
@@ -176,10 +240,8 @@ export const SiteSettingsProvider: React.FC<{ children: React.ReactNode }> = ({ 
       }
 
       // Prepare the update data with snake_case field names
-      const updateData: Record<
-        string,
-        string | string[] | Skill[] | TimelineItem[] | Achievement[]
-      > = {};
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const updateData: Record<string, any> = {};
 
       if (newSettings.siteName !== undefined) updateData.site_name = newSettings.siteName;
       if (newSettings.siteDescription !== undefined)
@@ -203,6 +265,7 @@ export const SiteSettingsProvider: React.FC<{ children: React.ReactNode }> = ({ 
       if (newSettings.timeline !== undefined) updateData.timeline = newSettings.timeline;
       if (newSettings.achievements !== undefined)
         updateData.achievements = newSettings.achievements;
+      if (newSettings.uiText !== undefined) updateData.ui_text = newSettings.uiText;
 
       console.log('📤 Sending update to Supabase:', updateData);
 
