@@ -151,8 +151,10 @@
         var decoded = l.search.slice(1).split('&').map(function (s) {
           return s.replace(/~and~/g, '&')
         }).join('?');
+        // Remove trailing slash from pathname to prevent double slashes
+        var basePath = l.pathname.replace(/\/$/, '');
         window.history.replaceState(null, null,
-          l.pathname + decoded + l.hash
+          basePath + decoded + l.hash
         );
       }
     }(window.location))
