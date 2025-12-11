@@ -12,13 +12,12 @@ const AdminSidebar: React.FC = () => {
         await signOut();
         navigate('/admin/login');
     };
-    
+
     const navLinkClasses = ({ isActive }: { isActive: boolean }) =>
-    `block w-full text-left px-4 py-2 text-sm transition-colors ${
-      isActive
-        ? 'bg-accent/10 text-accent dark:bg-accent-light/20 dark:text-accent-light'
-        : 'text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700'
-    }`;
+        `block w-full text-left px-4 py-2 text-sm transition-colors ${isActive
+            ? 'bg-accent/10 text-accent dark:bg-accent-light/20 dark:text-accent-light'
+            : 'text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700'
+        }`;
 
 
     return (
@@ -32,6 +31,7 @@ const AdminSidebar: React.FC = () => {
                 <NavLink to="/admin/posts/create" className={navLinkClasses}>New Post</NavLink>
                 <NavLink to="/admin/recommendations" className={navLinkClasses}>Recommendations</NavLink>
                 <NavLink to="/admin/settings/site" className={navLinkClasses}>Site Settings</NavLink>
+                <NavLink to="/admin/settings/ui-text" className={navLinkClasses}>UI Text</NavLink>
                 <NavLink to="/admin/settings/profile" className={navLinkClasses}>Profile Settings</NavLink>
             </nav>
             <div className="p-4 mt-6 border-t border-gray-200 dark:border-gray-700">
