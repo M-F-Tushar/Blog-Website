@@ -33,7 +33,7 @@ export const messageService = {
   async sendMessage(data: MessageFormData): Promise<void> {
     if (!safeSupabase) throw new Error('Supabase client not initialized');
 
-    const { error } = await safeSupabase.from('messages').insert([
+    const { error } = await safeSupabase.from('contact_messages').insert([
       {
         name: data.name,
         email: data.email,
@@ -63,7 +63,7 @@ export const messageService = {
     if (!safeSupabase) return [];
 
     const { data, error } = await safeSupabase
-      .from('messages')
+      .from('contact_messages')
       .select('*')
       .order('created_at', { ascending: false });
 
@@ -74,7 +74,10 @@ export const messageService = {
   async markAsRead(id: string): Promise<void> {
     if (!safeSupabase) return;
 
-    const { error } = await safeSupabase.from('messages').update({ read: true }).eq('id', id);
+    const { error } = await safeSupabase
+      .from('contact_messages')
+      .update({ read: true })
+      .eq('id', id);
 
     if (error) throw error;
   },
@@ -82,7 +85,7 @@ export const messageService = {
   async deleteMessage(id: string): Promise<void> {
     if (!safeSupabase) return;
 
-    const { error } = await safeSupabase.from('messages').delete().eq('id', id);
+    const { error } = await safeSupabase.from('contact_messages').delete().eq('id', id);
 
     if (error) throw error;
   },
@@ -111,7 +114,7 @@ export const messageService = {
     if (!safeSupabase) return 0;
 
     const { count, error } = await safeSupabase
-      .from('messages')
+      .from('contact_messages')
       .select('*', { count: 'exact', head: true })
       .eq('read', false);
 
