@@ -34,7 +34,7 @@ const SearchSuggestions: React.FC<SearchSuggestionsProps> = ({
 
         const lowerQuery = query.toLowerCase();
         const titleMatches = posts
-            .filter(post => post.title.toLowerCase().includes(lowerQuery))
+            .filter(post => (post.title || '').toLowerCase().includes(lowerQuery))
             .slice(0, 5)
             .map(post => ({
                 text: post.title,
@@ -45,8 +45,8 @@ const SearchSuggestions: React.FC<SearchSuggestionsProps> = ({
         const tagMatches = Array.from(
             new Set(
                 posts
-                    .flatMap(post => post.tags)
-                    .filter(tag => tag.toLowerCase().includes(lowerQuery))
+                    .flatMap(post => post.tags || [])
+                    .filter(tag => (tag || '').toLowerCase().includes(lowerQuery))
             )
         )
             .slice(0, 3)
@@ -128,8 +128,8 @@ const SearchSuggestions: React.FC<SearchSuggestionsProps> = ({
                                 key={`${suggestion.type}-${suggestion.text}`}
                                 onClick={() => onSelect(suggestion.text)}
                                 className={`w-full px-4 py-2.5 text-left flex items-center gap-3 transition-colors ${index === selectedIndex
-                                        ? 'bg-accent/10 dark:bg-accent/20'
-                                        : 'hover:bg-gray-50 dark:hover:bg-gray-700'
+                                    ? 'bg-accent/10 dark:bg-accent/20'
+                                    : 'hover:bg-gray-50 dark:hover:bg-gray-700'
                                     }`}
                             >
                                 {suggestion.type === 'recent' && (

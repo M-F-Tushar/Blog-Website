@@ -50,9 +50,9 @@ const Recommendations: React.FC = () => {
   const filteredRecommendations = useMemo(() => {
     return recommendations.filter((item) => {
       const matchesSearch =
-        item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        item.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        item.tags?.some((tag) => tag.toLowerCase().includes(searchQuery.toLowerCase()));
+        (item.title || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (item.description || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+        (item.tags || []).some((tag) => (tag || '').toLowerCase().includes(searchQuery.toLowerCase()));
 
       const matchesFilter = activeFilter === 'All' || item.type === activeFilter;
 
@@ -180,22 +180,20 @@ const Recommendations: React.FC = () => {
             <div className="flex bg-secondary-50 dark:bg-secondary-900 p-1 rounded-xl border border-secondary-200 dark:border-secondary-700 ml-auto md:ml-0">
               <button
                 onClick={() => setViewMode('grid')}
-                className={`p-2 rounded-lg transition-all ${
-                  viewMode === 'grid'
+                className={`p-2 rounded-lg transition-all ${viewMode === 'grid'
                     ? 'bg-white dark:bg-secondary-800 text-primary-600 dark:text-primary-400 shadow-sm'
                     : 'text-secondary-400 hover:text-secondary-600 dark:hover:text-secondary-300'
-                }`}
+                  }`}
                 title="Grid View"
               >
                 <Grid size={18} />
               </button>
               <button
                 onClick={() => setViewMode('list')}
-                className={`p-2 rounded-lg transition-all ${
-                  viewMode === 'list'
+                className={`p-2 rounded-lg transition-all ${viewMode === 'list'
                     ? 'bg-white dark:bg-secondary-800 text-primary-600 dark:text-primary-400 shadow-sm'
                     : 'text-secondary-400 hover:text-secondary-600 dark:hover:text-secondary-300'
-                }`}
+                  }`}
                 title="List View"
               >
                 <List size={18} />
@@ -210,11 +208,10 @@ const Recommendations: React.FC = () => {
             <button
               key={filter.label}
               onClick={() => setActiveFilter(filter.label)}
-              className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all ${
-                activeFilter === filter.label
+              className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all ${activeFilter === filter.label
                   ? 'bg-secondary-900 dark:bg-white text-white dark:text-secondary-900 shadow-md transform scale-105'
                   : 'bg-white dark:bg-secondary-800 text-secondary-600 dark:text-secondary-300 hover:bg-secondary-100 dark:hover:bg-secondary-700'
-              }`}
+                }`}
             >
               {filter.icon}
               {filter.label}
@@ -239,11 +236,10 @@ const Recommendations: React.FC = () => {
                       setActiveFilter(filter.label);
                       setIsFilterMenuOpen(false);
                     }}
-                    className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium w-full transition-all ${
-                      activeFilter === filter.label
+                    className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium w-full transition-all ${activeFilter === filter.label
                         ? 'bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300'
                         : 'text-secondary-600 dark:text-secondary-300 hover:bg-white dark:hover:bg-secondary-800'
-                    }`}
+                      }`}
                   >
                     {filter.icon}
                     {filter.label}
@@ -269,9 +265,8 @@ const Recommendations: React.FC = () => {
         ) : (
           <motion.div
             layout
-            className={`grid gap-6 ${
-              viewMode === 'grid' ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3' : 'grid-cols-1'
-            }`}
+            className={`grid gap-6 ${viewMode === 'grid' ? 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3' : 'grid-cols-1'
+              }`}
           >
             <AnimatePresence>
               {filteredRecommendations.map((item) => (

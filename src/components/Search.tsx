@@ -49,10 +49,10 @@ const Search: React.FC = () => {
     return posts.filter((post) => {
       // Text search
       const matchesQuery =
-        post.title.toLowerCase().includes(lowerCaseQuery) ||
-        post.excerpt.toLowerCase().includes(lowerCaseQuery) ||
-        post.content.toLowerCase().includes(lowerCaseQuery) ||
-        post.tags.some(tag => tag.toLowerCase().includes(lowerCaseQuery));
+        (post.title || '').toLowerCase().includes(lowerCaseQuery) ||
+        (post.excerpt || '').toLowerCase().includes(lowerCaseQuery) ||
+        (post.content || '').toLowerCase().includes(lowerCaseQuery) ||
+        (post.tags || []).some(tag => (tag || '').toLowerCase().includes(lowerCaseQuery));
 
       if (!matchesQuery) return false;
 
@@ -101,8 +101,8 @@ const Search: React.FC = () => {
       default:
         // Simple relevance: title matches rank higher
         return sorted.sort((a, b) => {
-          const aInTitle = a.title.toLowerCase().includes(query.toLowerCase());
-          const bInTitle = b.title.toLowerCase().includes(query.toLowerCase());
+          const aInTitle = (a.title || '').toLowerCase().includes(query.toLowerCase());
+          const bInTitle = (b.title || '').toLowerCase().includes(query.toLowerCase());
           if (aInTitle && !bInTitle) return -1;
           if (!aInTitle && bInTitle) return 1;
           return 0;

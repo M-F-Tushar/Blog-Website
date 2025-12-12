@@ -34,9 +34,9 @@ const Blog: React.FC = () => {
       const query = searchQuery.toLowerCase();
       filtered = filtered.filter(
         (p) =>
-          p.title.toLowerCase().includes(query) ||
-          p.excerpt.toLowerCase().includes(query) ||
-          p.tags.some((t) => t.toLowerCase().includes(query))
+          (p.title || '').toLowerCase().includes(query) ||
+          (p.excerpt || '').toLowerCase().includes(query) ||
+          (p.tags || []).some((t) => (t || '').toLowerCase().includes(query))
       );
     }
 
