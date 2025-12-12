@@ -189,6 +189,14 @@ export interface DatabaseSettings {
     showLatestArticles: boolean;
     showNewsletter: boolean;
   };
+  appearance?: {
+    primaryColor: string;
+    accentColor: string;
+    fontFamily: string;
+    logoUrl: string;
+    faviconUrl: string;
+    defaultTheme: 'light' | 'dark' | 'system';
+  };
   created_at?: string;
   updated_at?: string;
 }

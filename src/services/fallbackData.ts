@@ -249,6 +249,14 @@ export const FALLBACK_SETTINGS: Omit<DatabaseSettings, 'id' | 'created_at' | 'up
     showLatestArticles: true,
     showNewsletter: true,
   },
+  appearance: {
+    primaryColor: '#6366f1',
+    accentColor: '#8b5cf6',
+    fontFamily: 'Inter',
+    logoUrl: '',
+    faviconUrl: '',
+    defaultTheme: 'system',
+  },
 };
 
 // Re-export isSupabaseConfigured for convenience

@@ -81,6 +81,14 @@ interface SiteSettings {
     showLatestArticles: boolean;
     showNewsletter: boolean;
   };
+  appearance: {
+    primaryColor: string;
+    accentColor: string;
+    fontFamily: string;
+    logoUrl: string;
+    faviconUrl: string;
+    defaultTheme: 'light' | 'dark' | 'system';
+  };
 }
 
 interface SiteSettingsContextType extends SiteSettings {
@@ -149,6 +157,14 @@ const getSettingsFromStorage = (): SiteSettings => {
       showTrendingTopics: true,
       showLatestArticles: true,
       showNewsletter: true,
+    },
+    appearance: FALLBACK_SETTINGS.appearance || {
+      primaryColor: '#6366f1',
+      accentColor: '#8b5cf6',
+      fontFamily: 'Inter',
+      logoUrl: '',
+      faviconUrl: '',
+      defaultTheme: 'system' as const,
     },
   };
   try {
@@ -219,6 +235,7 @@ export const SiteSettingsProvider: React.FC<{ children: React.ReactNode }> = ({ 
             achievements: (settingsData.achievements || FALLBACK_SETTINGS.achievements) as unknown as Achievement[],
             uiText: settingsData.ui_text || settings.uiText,
             homepageLayout: settingsData.homepage_layout || settings.homepageLayout,
+            appearance: settingsData.appearance || settings.appearance,
           };
           console.log('✅ Settings fetched successfully:', fetchedSettings);
           setSettings(fetchedSettings);

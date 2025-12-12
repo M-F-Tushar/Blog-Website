@@ -33,6 +33,7 @@ const AdminSidebar: React.FC = () => {
                 <NavLink to="/admin/settings/site" className={navLinkClasses}>Site Settings</NavLink>
                 <NavLink to="/admin/settings/ui-text" className={navLinkClasses}>UI Text</NavLink>
                 <NavLink to="/admin/settings/layout" className={navLinkClasses}>Homepage Layout</NavLink>
+                <NavLink to="/admin/settings/appearance" className={navLinkClasses}>Appearance</NavLink>
                 <NavLink to="/admin/settings/profile" className={navLinkClasses}>Profile Settings</NavLink>
             </nav>
             <div className="p-4 mt-6 border-t border-gray-200 dark:border-gray-700">
