@@ -665,8 +665,8 @@ const CreatePost: React.FC = () => {
 
             {/* Preview */}
             {viewMode !== 'edit' && (
-              <div className={`${viewMode === 'split' ? 'w-1/2' : 'flex-1'} h-[500px] overflow-y-auto p-6 bg-gray-50 dark:bg-gray-850`}>
-                <div className="prose prose-lg dark:prose-invert max-w-none">
+              <div className={`${viewMode === 'split' ? 'w-1/2' : 'flex-1'} h-[500px] overflow-y-auto p-6 bg-white dark:bg-gray-900`}>
+                <div className="prose prose-lg dark:prose-invert max-w-none prose-headings:text-gray-900 dark:prose-headings:text-white prose-p:text-gray-700 dark:prose-p:text-gray-200 prose-strong:text-gray-900 dark:prose-strong:text-white prose-a:text-accent">
                   <MarkdownRenderer content={content} />
                 </div>
               </div>
