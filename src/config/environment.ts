@@ -13,6 +13,7 @@ export interface EnvironmentConfig {
 
   // Contact Form Configuration
   contact: {
+    useSupabase: boolean;
     formspreeEndpoint: string | null;
     fallbackEmail: string | null;
   };
@@ -37,14 +38,16 @@ export interface EnvironmentConfig {
  */
 export const getEnvironmentConfig = (): EnvironmentConfig => {
   const env = import.meta.env;
+  const isSupabaseConfigured = Boolean(env.VITE_SUPABASE_URL && env.VITE_SUPABASE_ANON_KEY);
 
   return {
     supabase: {
       url: env.VITE_SUPABASE_URL || null,
       anonKey: env.VITE_SUPABASE_ANON_KEY || null,
-      isConfigured: Boolean(env.VITE_SUPABASE_URL && env.VITE_SUPABASE_ANON_KEY),
+      isConfigured: isSupabaseConfigured,
     },
     contact: {
+      useSupabase: isSupabaseConfigured,
       formspreeEndpoint: env.VITE_FORMSPREE_ENDPOINT || null,
       fallbackEmail: env.VITE_CONTACT_EMAIL || null,
     },
@@ -85,9 +88,14 @@ export const checkConfiguration = (): {
   }
 
   // Check contact form configuration
-  if (!config.contact.formspreeEndpoint && !config.contact.fallbackEmail) {
+  // Valid if: Supabase is configured OR Formspree is configured OR Fallback email is set
+  if (
+    !config.contact.useSupabase &&
+    !config.contact.formspreeEndpoint &&
+    !config.contact.fallbackEmail
+  ) {
     warnings.push(
-      'Contact form is not fully configured. Set VITE_FORMSPREE_ENDPOINT for real email submission, ' +
+      'Contact form is not fully configured. Configure Supabase, set VITE_FORMSPREE_ENDPOINT, ' +
         'or VITE_CONTACT_EMAIL for mailto fallback.'
     );
   }
@@ -123,10 +131,13 @@ export const logConfigurationStatus = (): void => {
       'Supabase:',
       config.supabase.isConfigured ? '✅ Configured' : '⚠️ Not configured (using fallback data)'
     );
-    console.log(
-      'Contact Form:',
-      config.contact.formspreeEndpoint ? '✅ Formspree configured' : '⚠️ Using mailto fallback'
-    );
+
+    let contactStatus = '⚠️ Not configured';
+    if (config.contact.useSupabase) contactStatus = '✅ Database (Supabase)';
+    else if (config.contact.formspreeEndpoint) contactStatus = '✅ Formspree';
+    else if (config.contact.fallbackEmail) contactStatus = '⚠️ Mailto Fallback';
+
+    console.log('Contact Form:', contactStatus);
     console.log(
       'Error Tracking:',
       config.tracking.errorTrackingEnabled ? '✅ Enabled' : '❌ Disabled'

@@ -37,12 +37,18 @@ const HealthCheck: React.FC<HealthCheckProps> = ({ isOpen, onClose }) => {
     },
     {
       name: 'Contact Form',
-      status: config.contact.formspreeEndpoint ? 'configured' : 'fallback',
+      status: config.contact.useSupabase
+        ? 'database'
+        : config.contact.formspreeEndpoint
+          ? 'configured'
+          : 'fallback',
       icon: Shield,
-      details: config.contact.formspreeEndpoint
-        ? 'Formspree integration active'
-        : 'Using mailto fallback',
-      color: config.contact.formspreeEndpoint ? 'green' : 'yellow',
+      details: config.contact.useSupabase
+        ? 'Connected to Supabase Messages'
+        : config.contact.formspreeEndpoint
+          ? 'Formspree integration active'
+          : 'Using mailto fallback',
+      color: config.contact.useSupabase || config.contact.formspreeEndpoint ? 'green' : 'yellow',
     },
     {
       name: 'Error Tracking',
