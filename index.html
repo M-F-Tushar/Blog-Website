@@ -6,11 +6,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#0f172a" media="(prefers-color-scheme: dark)">
-  
+
   <!-- Redirect old hash-based URLs to clean URLs -->
   <!-- e.g., /Blog-Website/#/about -> /Blog-Website/about -->
   <script>
-    (function() {
+    (function () {
       var hash = window.location.hash;
       // Check if hash starts with #/ (old HashRouter format)
       if (hash && hash.startsWith('#/')) {
@@ -53,9 +53,8 @@
   <!-- Canonical URL -->
   <link rel="canonical" href="https://m-f-tushar.github.io/Blog-Website/">
 
-  <!-- Security Headers -->
+  <!-- Security Headers (Note: X-Frame-Options only works as HTTP header, not meta tag) -->
   <meta http-equiv="X-Content-Type-Options" content="nosniff">
-  <meta http-equiv="X-Frame-Options" content="SAMEORIGIN">
   <meta name="referrer" content="strict-origin-when-cross-origin">
 
   <!-- Structured Data -->
