@@ -22,8 +22,8 @@ export function useKeyboardShortcuts(shortcuts: KeyboardShortcut[]): void {
         target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable;
 
       for (const shortcut of shortcuts) {
-        // Check if the key matches
-        if (event.key.toLowerCase() !== shortcut.key.toLowerCase()) {
+        // Check if the key matches (with null safety)
+        if (!shortcut.key || event.key.toLowerCase() !== shortcut.key.toLowerCase()) {
           continue;
         }
 
