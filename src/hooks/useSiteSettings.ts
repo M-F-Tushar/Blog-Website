@@ -89,6 +89,16 @@ interface SiteSettings {
     faviconUrl: string;
     defaultTheme: 'light' | 'dark' | 'system';
   };
+  navigation: {
+    menuItems: Array<{
+      id: string;
+      label: string;
+      path: string;
+      isExternal: boolean;
+      visible: boolean;
+      order: number;
+    }>;
+  };
 }
 
 interface SiteSettingsContextType extends SiteSettings {
@@ -166,6 +176,15 @@ const getSettingsFromStorage = (): SiteSettings => {
       faviconUrl: '',
       defaultTheme: 'system' as const,
     },
+    navigation: FALLBACK_SETTINGS.navigation || {
+      menuItems: [
+        { id: 'home', label: 'Home', path: '/', isExternal: false, visible: true, order: 1 },
+        { id: 'about', label: 'About', path: '/about', isExternal: false, visible: true, order: 2 },
+        { id: 'blog', label: 'Blog', path: '/blog', isExternal: false, visible: true, order: 3 },
+        { id: 'recommendations', label: 'Recommendations', path: '/recommendations', isExternal: false, visible: true, order: 4 },
+        { id: 'contact', label: 'Contact', path: '/contact', isExternal: false, visible: true, order: 5 },
+      ],
+    },
   };
   try {
     const savedSettings = window.localStorage.getItem('siteSettings');
@@ -236,6 +255,7 @@ export const SiteSettingsProvider: React.FC<{ children: React.ReactNode }> = ({ 
             uiText: settingsData.ui_text || settings.uiText,
             homepageLayout: settingsData.homepage_layout || settings.homepageLayout,
             appearance: settingsData.appearance || settings.appearance,
+            navigation: settingsData.navigation || settings.navigation,
           };
           console.log('✅ Settings fetched successfully:', fetchedSettings);
           setSettings(fetchedSettings);

@@ -197,6 +197,16 @@ export interface DatabaseSettings {
     faviconUrl: string;
     defaultTheme: 'light' | 'dark' | 'system';
   };
+  navigation?: {
+    menuItems: Array<{
+      id: string;
+      label: string;
+      path: string;
+      isExternal: boolean;
+      visible: boolean;
+      order: number;
+    }>;
+  };
   created_at?: string;
   updated_at?: string;
 }

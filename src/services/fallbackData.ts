@@ -257,6 +257,15 @@ export const FALLBACK_SETTINGS: Omit<DatabaseSettings, 'id' | 'created_at' | 'up
     faviconUrl: '',
     defaultTheme: 'system',
   },
+  navigation: {
+    menuItems: [
+      { id: 'home', label: 'Home', path: '/', isExternal: false, visible: true, order: 1 },
+      { id: 'about', label: 'About', path: '/about', isExternal: false, visible: true, order: 2 },
+      { id: 'blog', label: 'Blog', path: '/blog', isExternal: false, visible: true, order: 3 },
+      { id: 'recommendations', label: 'Recommendations', path: '/recommendations', isExternal: false, visible: true, order: 4 },
+      { id: 'contact', label: 'Contact', path: '/contact', isExternal: false, visible: true, order: 5 },
+    ],
+  },
 };
 
 // Re-export isSupabaseConfigured for convenience
