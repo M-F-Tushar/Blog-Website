@@ -1,5 +1,11 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
-import { Post, Recommendation, PostStatus, RecommendationType } from '../types/types';
+import {
+  Post,
+  Recommendation,
+  PostStatus,
+  RecommendationType,
+  DifficultyLevel,
+} from '../types/types';
 
 // Supabase configuration from environment variables
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -13,13 +19,7 @@ export const isSupabaseConfigured = () => {
 };
 
 // Define database schema type
-export type Json =
-  | string
-  | number
-  | boolean
-  | null
-  | { [key: string]: Json | undefined }
-  | Json[]
+export type Json = string | number | boolean | null | { [key: string]: Json | undefined } | Json[];
 
 export interface Database {
   public: {
@@ -59,12 +59,12 @@ export interface Database {
         };
         Relationships: [
           {
-            foreignKeyName: "bookmarks_user_id_fkey";
-            columns: ["user_id"];
+            foreignKeyName: 'bookmarks_user_id_fkey';
+            columns: ['user_id'];
             isOneToOne: false;
-            referencedRelation: "users";
-            referencedColumns: ["id"];
-          }
+            referencedRelation: 'users';
+            referencedColumns: ['id'];
+          },
         ];
       };
     };
@@ -92,14 +92,16 @@ if (isSupabaseConfigured()) {
       auth: {
         autoRefreshToken: true,
         persistSession: true,
-        detectSessionInUrl: true
-      }
+        detectSessionInUrl: true,
+      },
     });
   } catch (error) {
     console.error('Error initializing Supabase:', error);
   }
 } else {
-  console.warn('Supabase is not configured. Set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY environment variables to enable Supabase features.');
+  console.warn(
+    'Supabase is not configured. Set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY environment variables to enable Supabase features.'
+  );
 }
 
 export { supabase };
@@ -126,6 +128,12 @@ export interface DatabaseRecommendation {
   url: string;
   description: string;
   type: string;
+  thumbnail: string | null;
+  difficulty: string | null;
+  estimated_time: string | null;
+  author_note: string | null;
+  tags: string[] | null;
+  is_featured: boolean;
   is_initial: boolean;
   created_at: string;
   updated_at: string;
@@ -219,7 +227,9 @@ export interface DatabaseSettings {
 }
 
 // Helper functions to convert between camelCase (React) and snake_case (PostgreSQL)
-export const postToDatabase = (post: Omit<Post, 'id'>): Omit<DatabasePost, 'id' | 'created_at' | 'updated_at'> => {
+export const postToDatabase = (
+  post: Omit<Post, 'id'>
+): Omit<DatabasePost, 'id' | 'created_at' | 'updated_at'> => {
   return {
     title: post.title,
     date: post.date,
@@ -247,19 +257,28 @@ export const postFromDatabase = (dbPost: DatabasePost): Post => {
     isInitial: dbPost.is_initial,
     author: {
       name: 'Author',
-      avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
+      avatar:
+        'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
     },
     readTime: `${Math.ceil(dbPost.content.split(' ').length / 200)} min read`,
     commentCount: 0,
   };
 };
 
-export const recommendationToDatabase = (rec: Omit<Recommendation, 'id'>): Omit<DatabaseRecommendation, 'id' | 'created_at' | 'updated_at'> => {
+export const recommendationToDatabase = (
+  rec: Omit<Recommendation, 'id'>
+): Omit<DatabaseRecommendation, 'id' | 'created_at' | 'updated_at'> => {
   return {
     title: rec.title,
     url: rec.url,
     description: rec.description,
     type: rec.type,
+    thumbnail: rec.thumbnail || null,
+    difficulty: rec.difficulty || null,
+    estimated_time: rec.estimatedTime || null,
+    author_note: rec.authorNote || null,
+    tags: rec.tags || null,
+    is_featured: rec.isFeatured || false,
     is_initial: rec.isInitial || false,
   };
 };
@@ -271,6 +290,12 @@ export const recommendationFromDatabase = (dbRec: DatabaseRecommendation): Recom
     url: dbRec.url,
     description: dbRec.description,
     type: dbRec.type as RecommendationType,
+    thumbnail: dbRec.thumbnail || undefined,
+    difficulty: (dbRec.difficulty as DifficultyLevel) || undefined,
+    estimatedTime: dbRec.estimated_time || undefined,
+    authorNote: dbRec.author_note || undefined,
+    tags: dbRec.tags || undefined,
+    isFeatured: dbRec.is_featured,
     isInitial: dbRec.is_initial,
   };
 };
