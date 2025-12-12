@@ -69,6 +69,7 @@ const AdminHomepageLayout = lazy(() => import('./components/admin/AdminHomepageL
 const AdminAppearanceSettings = lazy(() => import('./components/admin/AdminAppearanceSettings'));
 const AdminNavigationSettings = lazy(() => import('./components/admin/AdminNavigationSettings'));
 const AdminSEOSettings = lazy(() => import('./components/admin/AdminSEOSettings'));
+const AdminMediaLibrary = lazy(() => import('./components/admin/AdminMediaLibrary'));
 const DataMigration = lazy(() => import('./components/admin/DataMigration'));
 
 // Toast Container Wrapper to consume context
@@ -254,6 +255,7 @@ function App() {
                                 <Route path="settings/appearance" element={<AdminAppearanceSettings />} />
                                 <Route path="settings/navigation" element={<AdminNavigationSettings />} />
                                 <Route path="settings/seo" element={<AdminSEOSettings />} />
+                                <Route path="media" element={<AdminMediaLibrary />} />
                                 <Route path="settings/profile" element={<AdminProfileSettings />} />
                                 <Route path="migrate" element={<DataMigration />} />
                               </Route>
