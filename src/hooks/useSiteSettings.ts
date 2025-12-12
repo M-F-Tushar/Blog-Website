@@ -99,6 +99,13 @@ interface SiteSettings {
       order: number;
     }>;
   };
+  seo: {
+    defaultMetaTitle: string;
+    defaultMetaDescription: string;
+    ogImage: string;
+    twitterHandle: string;
+    pageMeta: Record<string, { title: string; description: string; ogImage?: string }>;
+  };
 }
 
 interface SiteSettingsContextType extends SiteSettings {
@@ -185,6 +192,13 @@ const getSettingsFromStorage = (): SiteSettings => {
         { id: 'contact', label: 'Contact', path: '/contact', isExternal: false, visible: true, order: 5 },
       ],
     },
+    seo: FALLBACK_SETTINGS.seo || {
+      defaultMetaTitle: 'My Blog - Personal Blog',
+      defaultMetaDescription: 'A modern personal blog built with React and TypeScript.',
+      ogImage: '',
+      twitterHandle: '',
+      pageMeta: {},
+    },
   };
   try {
     const savedSettings = window.localStorage.getItem('siteSettings');
@@ -256,6 +270,7 @@ export const SiteSettingsProvider: React.FC<{ children: React.ReactNode }> = ({ 
             homepageLayout: settingsData.homepage_layout || settings.homepageLayout,
             appearance: settingsData.appearance || settings.appearance,
             navigation: settingsData.navigation || settings.navigation,
+            seo: settingsData.seo || settings.seo,
           };
           console.log('✅ Settings fetched successfully:', fetchedSettings);
           setSettings(fetchedSettings);

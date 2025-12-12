@@ -207,6 +207,13 @@ export interface DatabaseSettings {
       order: number;
     }>;
   };
+  seo?: {
+    defaultMetaTitle: string;
+    defaultMetaDescription: string;
+    ogImage: string;
+    twitterHandle: string;
+    pageMeta: Record<string, { title: string; description: string; ogImage?: string }>;
+  };
   created_at?: string;
   updated_at?: string;
 }

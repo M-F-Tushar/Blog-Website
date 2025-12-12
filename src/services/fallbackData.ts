@@ -266,6 +266,13 @@ export const FALLBACK_SETTINGS: Omit<DatabaseSettings, 'id' | 'created_at' | 'up
       { id: 'contact', label: 'Contact', path: '/contact', isExternal: false, visible: true, order: 5 },
     ],
   },
+  seo: {
+    defaultMetaTitle: 'My Blog - Personal Blog',
+    defaultMetaDescription: 'A modern personal blog built with React and TypeScript.',
+    ogImage: '',
+    twitterHandle: '',
+    pageMeta: {},
+  },
 };
 
 // Re-export isSupabaseConfigured for convenience
