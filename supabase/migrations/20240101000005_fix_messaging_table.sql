@@ -1,7 +1,12 @@
--- Create a specific table for contact messages to avoid naming conflicts
--- (The previous 'messages' table might have conflicted or had permission issues)
+-- Create contact_messages table for the contact form
+-- NOTE: This table uses table-level grants instead of RLS for simplicity
+-- (Public contact forms work better without RLS complexity)
 
-CREATE TABLE IF NOT EXISTS contact_messages (
+-- Drop existing table if it exists
+DROP TABLE IF EXISTS contact_messages;
+
+-- Create the table
+CREATE TABLE contact_messages (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   name TEXT NOT NULL,
   email TEXT NOT NULL,
@@ -11,27 +16,14 @@ CREATE TABLE IF NOT EXISTS contact_messages (
   created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
--- Enable RLS
-ALTER TABLE contact_messages ENABLE ROW LEVEL SECURITY;
+-- Grant schema access
+GRANT USAGE ON SCHEMA public TO anon;
+GRANT USAGE ON SCHEMA public TO authenticated;
 
--- Policies
-CREATE POLICY "Anyone can insert contact_messages" 
-ON contact_messages FOR INSERT 
-WITH CHECK (true);
+-- Grant table access (NO RLS - using table-level grants instead)
+-- Anon can only INSERT (submit contact form)
+GRANT INSERT ON contact_messages TO anon;
+-- Authenticated users have full access (admin panel)
+GRANT ALL ON contact_messages TO authenticated;
+GRANT ALL ON contact_messages TO service_role;
 
-CREATE POLICY "Admins can view contact_messages" 
-ON contact_messages FOR SELECT 
-USING (auth.role() = 'authenticated');
-
-CREATE POLICY "Admins can update contact_messages" 
-ON contact_messages FOR UPDATE 
-USING (auth.role() = 'authenticated');
-
-CREATE POLICY "Admins can delete contact_messages" 
-ON contact_messages FOR DELETE 
-USING (auth.role() = 'authenticated');
-
--- Explicit Grants (to ensure anon can insert)
-GRANT ALL ON TABLE contact_messages TO anon;
-GRANT ALL ON TABLE contact_messages TO authenticated;
-GRANT ALL ON TABLE contact_messages TO service_role;

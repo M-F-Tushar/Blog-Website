@@ -31,31 +31,18 @@ export const messageService = {
   // --- Public Methods (Unauthenticated) ---
 
   async sendMessage(data: MessageFormData): Promise<void> {
-    console.log('[messageService] sendMessage called with:', data);
+    if (!safeSupabase) throw new Error('Supabase client not initialized');
 
-    if (!safeSupabase) {
-      console.error('[messageService] Supabase client not initialized!');
-      throw new Error('Supabase client not initialized');
-    }
-
-    console.log('[messageService] Inserting into contact_messages...');
-    const { data: result, error } = await safeSupabase.from('contact_messages').insert([
+    const { error } = await safeSupabase.from('contact_messages').insert([
       {
         name: data.name,
         email: data.email,
         subject: data.subject,
         message: data.message,
       },
-    ]).select();
+    ]);
 
-    console.log('[messageService] Insert result:', { result, error });
-
-    if (error) {
-      console.error('[messageService] Insert error:', error);
-      throw error;
-    }
-
-    console.log('[messageService] Message saved successfully!');
+    if (error) throw error;
   },
 
   async subscribeToNewsletter(email: string): Promise<void> {

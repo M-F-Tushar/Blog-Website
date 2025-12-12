@@ -128,12 +128,9 @@ const Contact: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('[Contact] handleSubmit called');
-    console.log('[Contact] formData:', formData);
 
     // Honeypot check - if filled, it's a bot
     if (formData.honeypot) {
-      console.log('[Contact] Honeypot triggered - rejecting as bot');
       // Silently reject
       setFormStatus('success');
       setFormData({ name: '', email: '', subject: '', message: '', honeypot: '' });
@@ -142,11 +139,9 @@ const Contact: React.FC = () => {
 
     // Validate form
     if (!validateForm()) {
-      console.log('[Contact] Validation failed');
       return;
     }
 
-    console.log('[Contact] Validation passed, calling messageService.sendMessage...');
     setFormStatus('sending');
 
     try {
@@ -158,13 +153,12 @@ const Contact: React.FC = () => {
         message: formData.message,
       });
 
-      console.log('[Contact] messageService.sendMessage completed successfully!');
       setFormStatus('success');
       setFormData({ name: '', email: '', subject: '', message: '', honeypot: '' });
       setValidationErrors({});
       setTimeout(() => setFormStatus('idle'), 5000);
     } catch (error) {
-      console.error('[Contact] Form submission error:', error);
+      console.error('Form submission error:', error);
       setFormStatus('error');
       setTimeout(() => setFormStatus('idle'), 5000);
     }
