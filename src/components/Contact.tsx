@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 import useSEO from '../hooks/useSEO';
 import { useSiteSettings } from '../hooks/useSiteSettings';
+import { messageService } from '../services/messageService';
 
 interface FormData {
   name: string;
@@ -42,7 +43,7 @@ const faqs: FAQ[] = [
   {
     question: 'Can you help with my project?',
     answer:
-      "I&apos;d love to hear about your project! Send me an email with details about what you&apos;re building, your timeline, and how I can help.",
+      'I&apos;d love to hear about your project! Send me an email with details about what you&apos;re building, your timeline, and how I can help.',
   },
   {
     question: 'Do you accept guest posts?',
@@ -130,7 +131,7 @@ const Contact: React.FC = () => {
 
     // Honeypot check - if filled, it's a bot
     if (formData.honeypot) {
-      // Silently reject - don't tell bots they were caught
+      // Silently reject
       setFormStatus('success');
       setFormData({ name: '', email: '', subject: '', message: '', honeypot: '' });
       return;
@@ -143,45 +144,23 @@ const Contact: React.FC = () => {
 
     setFormStatus('sending');
 
-    // Check for Formspree endpoint configuration
-    const formspreeEndpoint = import.meta.env.VITE_FORMSPREE_ENDPOINT;
+    try {
+      // Use Supabase message service
+      await messageService.sendMessage({
+        name: formData.name,
+        email: formData.email,
+        subject: formData.subject,
+        message: formData.message,
+      });
 
-    if (formspreeEndpoint) {
-      // Use Formspree for real email submission
-      try {
-        const response = await fetch(formspreeEndpoint, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(formData),
-        });
-
-        if (response.ok) {
-          setFormStatus('success');
-          setFormData({ name: '', email: '', subject: '', message: '', honeypot: '' });
-          setValidationErrors({});
-          setTimeout(() => setFormStatus('idle'), 5000);
-        } else {
-          throw new Error('Form submission failed');
-        }
-      } catch (error) {
-        console.error('Form submission error:', error);
-        setFormStatus('error');
-        setTimeout(() => setFormStatus('idle'), 5000);
-      }
-    } else {
-      // Fallback to mailto link if no Formspree endpoint configured
-      const mailtoLink = `mailto:${socialLinks.email}?subject=${encodeURIComponent(formData.subject)}&body=${encodeURIComponent(
-        `Name: ${formData.name}\nEmail: ${formData.email}\n\nMessage:\n${formData.message}`
-      )}`;
-      window.location.href = mailtoLink;
-
-      // Show success message for mailto fallback
       setFormStatus('success');
       setFormData({ name: '', email: '', subject: '', message: '', honeypot: '' });
       setValidationErrors({});
-      setTimeout(() => setFormStatus('idle'), 3000);
+      setTimeout(() => setFormStatus('idle'), 5000);
+    } catch (error) {
+      console.error('Form submission error:', error);
+      setFormStatus('error');
+      setTimeout(() => setFormStatus('idle'), 5000);
     }
   };
 

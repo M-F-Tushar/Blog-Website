@@ -4,6 +4,7 @@ import { ArrowUp, Rss, Mail, Github, Linkedin, Send } from 'lucide-react';
 import { useSiteSettings } from '../hooks/useSiteSettings';
 import { usePosts } from '../hooks/usePosts';
 import { PostStatus } from '../types/types';
+import { messageService } from '../services/messageService';
 
 interface FooterProps {
   id?: string;
@@ -34,7 +35,7 @@ const Footer: React.FC<FooterProps> = ({ id }) => {
       .slice(0, 3);
   }, [posts]);
 
-  const handleNewsletterSubmit = (e: React.FormEvent) => {
+  const handleNewsletterSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     // Email validation
@@ -45,10 +46,19 @@ const Footer: React.FC<FooterProps> = ({ id }) => {
       return;
     }
 
-    // TODO: Integrate with actual newsletter service
-    setSubscribeStatus('success');
-    setEmail('');
-    setTimeout(() => setSubscribeStatus('idle'), 3000);
+    try {
+      await messageService.subscribeToNewsletter(email);
+      setSubscribeStatus('success');
+      setEmail('');
+      setTimeout(() => setSubscribeStatus('idle'), 3000);
+    } catch (error) {
+      console.error('Subscription failed:', error);
+      // Even if it fails (e.g. already subscribed), we might want to show success or a specific message
+      // For now, let's show error only if it's a real error.
+      // The service ignores duplicate emails, so we should be fine.
+      setSubscribeStatus('error');
+      setTimeout(() => setSubscribeStatus('idle'), 3000);
+    }
   };
 
   const scrollToTop = () => {
@@ -67,12 +77,13 @@ const Footer: React.FC<FooterProps> = ({ id }) => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-12 mb-12">
           {/* Brand Column */}
           <div className="lg:col-span-4 space-y-6">
-            <Link to="/" className="text-2xl font-bold font-serif text-white tracking-tight hover:opacity-90 transition-opacity">
+            <Link
+              to="/"
+              className="text-2xl font-bold font-serif text-white tracking-tight hover:opacity-90 transition-opacity"
+            >
               {siteName}
             </Link>
-            <p className="text-secondary-400 leading-relaxed max-w-sm">
-              {footerText.tagline}
-            </p>
+            <p className="text-secondary-400 leading-relaxed max-w-sm">{footerText.tagline}</p>
             <div className="flex items-center gap-4">
               <a
                 href={socialLinks.github}
@@ -151,10 +162,10 @@ const Footer: React.FC<FooterProps> = ({ id }) => {
 
           {/* Newsletter */}
           <div className="lg:col-span-3">
-            <h3 className="text-white font-semibold text-lg mb-6">{footerText.stayConnectedTitle}</h3>
-            <p className="text-sm text-secondary-400 mb-4">
-              {footerText.newsletterDescription}
-            </p>
+            <h3 className="text-white font-semibold text-lg mb-6">
+              {footerText.stayConnectedTitle}
+            </h3>
+            <p className="text-sm text-secondary-400 mb-4">{footerText.newsletterDescription}</p>
             <form onSubmit={handleNewsletterSubmit} className="space-y-3">
               <div className="relative">
                 <Mail

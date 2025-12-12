@@ -62,6 +62,7 @@ const AdminAppearanceSettings = lazy(() => import('./components/admin/AdminAppea
 const AdminNavigationSettings = lazy(() => import('./components/admin/AdminNavigationSettings'));
 const AdminSEOSettings = lazy(() => import('./components/admin/AdminSEOSettings'));
 const AdminMediaLibrary = lazy(() => import('./components/admin/AdminMediaLibrary'));
+const AdminInbox = lazy(() => import('./components/admin/AdminInbox'));
 const DataMigration = lazy(() => import('./components/admin/DataMigration'));
 
 // Toast Container Wrapper to consume context
@@ -219,20 +220,13 @@ function App() {
             >
               <Route element={<AdminRootLayout />}>
                 <Route path="dashboard" element={<AdminDashboard />} />
+                <Route path="inbox" element={<AdminInbox />} />
+                <Route path="posts/create" element={<CreatePost />} />
                 <Route path="posts/create" element={<CreatePost />} />
                 <Route path="posts/edit/:postId" element={<CreatePost />} />
-                <Route
-                  path="recommendations"
-                  element={<AdminRecommendationsDashboard />}
-                />
-                <Route
-                  path="recommendations/create"
-                  element={<RecommendationForm />}
-                />
-                <Route
-                  path="recommendations/edit/:recId"
-                  element={<RecommendationForm />}
-                />
+                <Route path="recommendations" element={<AdminRecommendationsDashboard />} />
+                <Route path="recommendations/create" element={<RecommendationForm />} />
+                <Route path="recommendations/edit/:recId" element={<RecommendationForm />} />
                 <Route path="settings/site" element={<AdminSiteSettings />} />
                 <Route path="settings/ui-text" element={<AdminUITextSettings />} />
                 <Route path="settings/layout" element={<AdminHomepageLayout />} />
