@@ -34,6 +34,8 @@ export enum RecommendationType {
   DOCUMENTATION = 'documentation',
 }
 
+export type DifficultyLevel = 'beginner' | 'intermediate' | 'advanced';
+
 export interface Recommendation {
   id: string;
   title: string;
@@ -41,6 +43,13 @@ export interface Recommendation {
   description: string;
   type: RecommendationType;
   isInitial?: boolean;
+  // Enhanced fields
+  thumbnail?: string; // Preview image URL
+  difficulty?: DifficultyLevel; // Skill level required
+  estimatedTime?: string; // e.g., "15 min", "2 hours"
+  authorNote?: string; // Why I recommend this
+  tags?: string[]; // Related topics
+  isFeatured?: boolean; // Highlight important resources
 }
 
 export interface Comment {

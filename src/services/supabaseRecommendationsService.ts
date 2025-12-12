@@ -72,6 +72,7 @@ export const createRecommendation = async (
 
   try {
     const dbRec = recommendationToDatabase(recommendation);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { data, error } = await supabase
       .from(RECOMMENDATIONS_TABLE)
       .insert(dbRec as any)
@@ -102,6 +103,7 @@ export const updateRecommendation = async (
   }
 
   try {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const updateData: any = {};
 
     if (recommendation.title !== undefined) updateData.title = recommendation.title;
@@ -109,6 +111,15 @@ export const updateRecommendation = async (
     if (recommendation.description !== undefined)
       updateData.description = recommendation.description;
     if (recommendation.type !== undefined) updateData.type = recommendation.type;
+
+    // Updated fields
+    if (recommendation.thumbnail !== undefined) updateData.thumbnail = recommendation.thumbnail;
+    if (recommendation.difficulty !== undefined) updateData.difficulty = recommendation.difficulty;
+    if (recommendation.estimatedTime !== undefined)
+      updateData.estimated_time = recommendation.estimatedTime;
+    if (recommendation.authorNote !== undefined) updateData.author_note = recommendation.authorNote;
+    if (recommendation.tags !== undefined) updateData.tags = recommendation.tags;
+    if (recommendation.isFeatured !== undefined) updateData.is_featured = recommendation.isFeatured;
 
     updateData.updated_at = new Date().toISOString();
 
