@@ -15,6 +15,17 @@ const Footer: React.FC<FooterProps> = ({ id }) => {
   const [email, setEmail] = useState('');
   const [subscribeStatus, setSubscribeStatus] = useState<'idle' | 'success' | 'error'>('idle');
 
+  // Safe defaults for uiText.footer
+  const footerText = uiText?.footer ?? {
+    tagline: 'Exploring ideas through code and creativity.',
+    exploreTitle: 'Explore',
+    latestTitle: 'Latest Posts',
+    stayConnectedTitle: 'Stay Connected',
+    newsletterDescription: 'Subscribe to get notified about new posts.',
+    subscribeButton: 'Subscribe',
+    copyrightText: 'Made with Heart in React',
+  };
+
   // Get popular posts (most recent 3)
   const popularPosts = useMemo(() => {
     return posts
@@ -60,7 +71,7 @@ const Footer: React.FC<FooterProps> = ({ id }) => {
               {siteName}
             </Link>
             <p className="text-secondary-400 leading-relaxed max-w-sm">
-              {uiText.footer.tagline}
+              {footerText.tagline}
             </p>
             <div className="flex items-center gap-4">
               <a
@@ -93,7 +104,7 @@ const Footer: React.FC<FooterProps> = ({ id }) => {
 
           {/* Quick Links */}
           <div className="lg:col-span-2">
-            <h3 className="text-white font-semibold text-lg mb-6">{uiText.footer.exploreTitle}</h3>
+            <h3 className="text-white font-semibold text-lg mb-6">{footerText.exploreTitle}</h3>
             <nav className="space-y-3" aria-label="Footer navigation">
               {[
                 { path: '/', label: 'Home' },
@@ -115,7 +126,7 @@ const Footer: React.FC<FooterProps> = ({ id }) => {
 
           {/* Popular Posts */}
           <div className="lg:col-span-3">
-            <h3 className="text-white font-semibold text-lg mb-6">{uiText.footer.latestTitle}</h3>
+            <h3 className="text-white font-semibold text-lg mb-6">{footerText.latestTitle}</h3>
             <div className="space-y-4">
               {popularPosts.length > 0 ? (
                 popularPosts.map((post) => (
@@ -140,9 +151,9 @@ const Footer: React.FC<FooterProps> = ({ id }) => {
 
           {/* Newsletter */}
           <div className="lg:col-span-3">
-            <h3 className="text-white font-semibold text-lg mb-6">{uiText.footer.stayConnectedTitle}</h3>
+            <h3 className="text-white font-semibold text-lg mb-6">{footerText.stayConnectedTitle}</h3>
             <p className="text-sm text-secondary-400 mb-4">
-              {uiText.footer.newsletterDescription}
+              {footerText.newsletterDescription}
             </p>
             <form onSubmit={handleNewsletterSubmit} className="space-y-3">
               <div className="relative">
@@ -164,7 +175,7 @@ const Footer: React.FC<FooterProps> = ({ id }) => {
                 className="w-full px-4 py-2.5 bg-primary-600 hover:bg-primary-700 text-white rounded-lg text-sm font-medium transition-all duration-200 flex items-center justify-center gap-2 shadow-lg shadow-primary-900/20 hover:shadow-primary-600/30 hover:-translate-y-0.5 active:translate-y-0"
               >
                 <Send size={16} />
-                {uiText.footer.subscribeButton}
+                {footerText.subscribeButton}
               </button>
               {subscribeStatus === 'success' && (
                 <p className="text-xs text-green-400 animate-fade-in">✓ Subscribed successfully!</p>
@@ -179,7 +190,7 @@ const Footer: React.FC<FooterProps> = ({ id }) => {
         {/* Bottom Bar */}
         <div className="border-t border-secondary-800 pt-8 mt-8 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-sm text-secondary-500 flex items-center gap-1">
-            © {currentYear} {authorName}. {uiText.footer.copyrightText || 'Made with Heart in React'}
+            © {currentYear} {authorName}. {footerText.copyrightText || 'Made with Heart in React'}
             {/* Fallback to hardcoded if empty, but keeping the heart icon logic separate requires parsing. 
                  Simplifying to text for now as per plan, or I can re-add the icon if needed.
                  The user asked for dynamic. Let's assume copyrightText contains the whole 'Made with Heart...' string. 

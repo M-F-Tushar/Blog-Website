@@ -14,6 +14,17 @@ const Header: React.FC = () => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const searchInputRef = React.useRef<HTMLInputElement>(null);
 
+  // Safe defaults for uiText.header
+  const headerText = uiText?.header ?? {
+    home: 'Home',
+    about: 'About',
+    blog: 'Blog',
+    recommendations: 'Recommendations',
+    bookmarks: 'Bookmarks',
+    contact: 'Contact',
+    searchPlaceholder: 'Search...',
+  };
+
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 20);
@@ -30,11 +41,11 @@ const Header: React.FC = () => {
   }, [location.pathname]);
 
   const navLinks = [
-    { name: uiText.header.home, path: '/' },
-    { name: uiText.header.about, path: '/about' },
-    { name: uiText.header.blog, path: '/blog' },
-    { name: uiText.header.recommendations, path: '/recommendations' },
-    { name: uiText.header.contact, path: '/contact' },
+    { name: headerText.home, path: '/' },
+    { name: headerText.about, path: '/about' },
+    { name: headerText.blog, path: '/blog' },
+    { name: headerText.recommendations, path: '/recommendations' },
+    { name: headerText.contact, path: '/contact' },
   ];
 
   return (
@@ -63,8 +74,8 @@ const Header: React.FC = () => {
                   key={link.path}
                   to={link.path}
                   className={`relative text-sm font-medium transition-colors hover:text-primary-600 dark:hover:text-primary-400 ${location.pathname === link.path
-                      ? 'text-primary-600 dark:text-primary-400'
-                      : 'text-secondary-600 dark:text-secondary-300'
+                    ? 'text-primary-600 dark:text-primary-400'
+                    : 'text-secondary-600 dark:text-secondary-300'
                     }`}
                 >
                   {link.name}
@@ -92,7 +103,7 @@ const Header: React.FC = () => {
                     <input
                       ref={searchInputRef}
                       type="text"
-                      placeholder={uiText.header.searchPlaceholder}
+                      placeholder={headerText.searchPlaceholder}
                       className="w-full pl-10 pr-4 py-2 rounded-full bg-secondary-100 dark:bg-secondary-800 text-secondary-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500 text-sm"
                       onBlur={() => setIsSearchOpen(false)}
                       autoFocus
@@ -181,8 +192,8 @@ const Header: React.FC = () => {
                     key={link.path}
                     to={link.path}
                     className={`text-lg font-medium transition-colors ${location.pathname === link.path
-                        ? 'text-primary-600 dark:text-primary-400 pl-4 border-l-4 border-primary-600 dark:border-primary-400'
-                        : 'text-secondary-600 dark:text-secondary-300 pl-4 border-l-4 border-transparent'
+                      ? 'text-primary-600 dark:text-primary-400 pl-4 border-l-4 border-primary-600 dark:border-primary-400'
+                      : 'text-secondary-600 dark:text-secondary-300 pl-4 border-l-4 border-transparent'
                       }`}
                     onClick={() => setIsMenuOpen(false)}
                   >
