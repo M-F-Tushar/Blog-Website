@@ -1,27 +1,32 @@
 import React, { useMemo, useState } from 'react';
 import { usePosts } from '../../hooks/usePosts';
 import { useRecommendations } from '../../hooks/useRecommendations';
-import { PostStatus, Post } from '../../types/types';
+import { PostStatus } from '../../types/types';
 import { useSiteSettings } from '../../hooks/useSiteSettings';
-import { Eye, TrendingUp, FileText, Tag, Star, FolderOpen, BarChart2, Clock } from 'lucide-react';
+import { useDashboardAnalytics } from '../../hooks/useDashboardAnalytics';
+import { Eye, TrendingUp, FileText, Tag, Star, FolderOpen, BarChart2, Clock, AlertCircle, RefreshCw } from 'lucide-react';
 
 interface StatCardProps {
     title: string;
     value: string | number;
     icon: React.ReactNode;
     trend?: { value: number; positive: boolean };
+    isFallback?: boolean;
 }
 
-const StatCard: React.FC<StatCardProps> = ({ title, value, icon, trend }) => (
+const StatCard: React.FC<StatCardProps> = ({ title, value, icon, trend, isFallback }) => (
     <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md flex items-center">
         <div className="p-3 bg-accent/20 rounded-full mr-4 text-accent dark:text-accent-light">
             {icon}
         </div>
         <div className="flex-1">
-            <p className="text-sm font-medium text-gray-500 dark:text-gray-400">{title}</p>
+            <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                {title}
+                {isFallback && <span className="ml-1 text-xs text-yellow-500" title="Using local data">(local)</span>}
+            </p>
             <p className="text-2xl font-bold text-gray-900 dark:text-white">{value}</p>
         </div>
-        {trend && (
+        {trend && trend.value > 0 && (
             <div className={`text-sm font-medium ${trend.positive ? 'text-green-500' : 'text-red-500'}`}>
                 {trend.positive ? '↑' : '↓'} {Math.abs(trend.value)}%
             </div>
@@ -29,38 +34,34 @@ const StatCard: React.FC<StatCardProps> = ({ title, value, icon, trend }) => (
     </div>
 );
 
-// Simulate view counts based on post age and engagement metrics
-const generateViewCount = (post: Post): number => {
-    const daysSincePublish = Math.floor((Date.now() - new Date(post.date).getTime()) / (1000 * 60 * 60 * 24));
-    const baseViews = Math.floor(Math.random() * 500) + 100;
-    const ageBonus = Math.min(daysSincePublish * 10, 2000);
-    const contentBonus = post.content.length * 0.1;
-    return Math.floor(baseViews + ageBonus + contentBonus);
-};
-
 const DashboardAnalytics: React.FC = () => {
     const { posts } = usePosts();
     const { recommendations } = useRecommendations();
     const { categories } = useSiteSettings();
+    const { stats: analyticsStats, isUsingFallback, refresh, loading: analyticsLoading } = useDashboardAnalytics();
     const [activeTab, setActiveTab] = useState<'overview' | 'popular' | 'activity'>('overview');
 
     const stats = useMemo(() => {
         const publishedPosts = posts.filter(p => p.status === PostStatus.PUBLISHED);
         const draftPosts = posts.filter(p => p.status === PostStatus.DRAFT);
 
-        // Generate view counts for each post
-        const postsWithViews = publishedPosts.map(post => ({
-            ...post,
-            views: generateViewCount(post),
-        }));
+        // Use real analytics data if available
+        const totalViews = analyticsStats?.totalViews || 0;
+        const avgViews = analyticsStats?.avgViewsPerPost || 0;
+        const trendPercentage = analyticsStats?.trendPercentage || 0;
+        const trendPositive = analyticsStats?.trendPositive ?? true;
 
-        const totalViews = postsWithViews.reduce((sum, p) => sum + p.views, 0);
-        const avgViews = postsWithViews.length > 0 ? Math.round(totalViews / postsWithViews.length) : 0;
-
-        // Get top performing posts
-        const popularPosts = [...postsWithViews]
-            .sort((a, b) => b.views - a.views)
-            .slice(0, 5);
+        // Get top performing posts from analytics or compute from posts
+        const popularPosts = (analyticsStats?.postStats || [])
+            .filter(p => p.status === 'Published')
+            .sort((a, b) => b.totalViews - a.totalViews)
+            .slice(0, 5)
+            .map(p => ({
+                id: p.postId,
+                title: p.title,
+                category: p.category,
+                views: p.totalViews,
+            }));
 
         // Category distribution
         const categoryStats = categories.reduce((acc, cat) => {
@@ -81,11 +82,13 @@ const DashboardAnalytics: React.FC = () => {
             totalCategories: categories.length,
             totalViews,
             avgViews,
+            trendPercentage,
+            trendPositive,
             popularPosts,
             categoryStats,
             recentPosts,
         };
-    }, [posts, recommendations, categories]);
+    }, [posts, recommendations, categories, analyticsStats]);
 
     // Generate mock activity log
     const activityLog = useMemo(() => {
@@ -116,8 +119,8 @@ const DashboardAnalytics: React.FC = () => {
                         key={id}
                         onClick={() => setActiveTab(id as typeof activeTab)}
                         className={`flex items-center gap-2 px-4 py-2 rounded-t-lg transition-colors ${activeTab === id
-                                ? 'bg-accent text-white'
-                                : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
+                            ? 'bg-accent text-white'
+                            : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
                             }`}
                     >
                         <Icon size={16} />
@@ -129,17 +132,37 @@ const DashboardAnalytics: React.FC = () => {
             {/* Overview Tab */}
             {activeTab === 'overview' && (
                 <div className="space-y-6">
+                    {/* Fallback notice */}
+                    {isUsingFallback && (
+                        <div className="flex items-center justify-between p-3 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg border border-yellow-200 dark:border-yellow-800">
+                            <div className="flex items-center gap-2 text-yellow-700 dark:text-yellow-300 text-sm">
+                                <AlertCircle size={16} />
+                                <span>View statistics are using local data. Run the SQL migration to enable real analytics.</span>
+                            </div>
+                            <button
+                                onClick={refresh}
+                                disabled={analyticsLoading}
+                                className="flex items-center gap-1 px-3 py-1 text-sm text-yellow-700 dark:text-yellow-300 hover:bg-yellow-100 dark:hover:bg-yellow-800 rounded transition-colors"
+                            >
+                                <RefreshCw size={14} className={analyticsLoading ? 'animate-spin' : ''} />
+                                Refresh
+                            </button>
+                        </div>
+                    )}
+
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                         <StatCard
                             title="Total Views"
                             value={stats.totalViews.toLocaleString()}
                             icon={<Eye size={24} />}
-                            trend={{ value: 12, positive: true }}
+                            trend={{ value: stats.trendPercentage, positive: stats.trendPositive }}
+                            isFallback={isUsingFallback}
                         />
                         <StatCard
                             title="Avg. Views/Post"
                             value={stats.avgViews.toLocaleString()}
                             icon={<TrendingUp size={24} />}
+                            isFallback={isUsingFallback}
                         />
                         <StatCard
                             title="Total Posts"
@@ -205,8 +228,8 @@ const DashboardAnalytics: React.FC = () => {
                         {stats.popularPosts.map((post, index) => (
                             <div key={post.id} className="flex items-center gap-4 p-3 rounded-lg bg-gray-50 dark:bg-gray-750">
                                 <span className={`text-2xl font-bold ${index === 0 ? 'text-yellow-500' :
-                                        index === 1 ? 'text-gray-400' :
-                                            index === 2 ? 'text-amber-600' : 'text-gray-500'
+                                    index === 1 ? 'text-gray-400' :
+                                        index === 2 ? 'text-amber-600' : 'text-gray-500'
                                     }`}>
                                     #{index + 1}
                                 </span>
@@ -235,8 +258,8 @@ const DashboardAnalytics: React.FC = () => {
                         {activityLog.map((activity, index) => (
                             <div key={index} className="flex items-center gap-4 p-3 border-l-4 border-accent bg-gray-50 dark:bg-gray-750 rounded-r-lg">
                                 <div className={`p-2 rounded-full ${activity.type === 'post' ? 'bg-blue-100 text-blue-600' :
-                                        activity.type === 'setting' ? 'bg-purple-100 text-purple-600' :
-                                            'bg-green-100 text-green-600'
+                                    activity.type === 'setting' ? 'bg-purple-100 text-purple-600' :
+                                        'bg-green-100 text-green-600'
                                     }`}>
                                     {activity.type === 'post' ? <FileText size={16} /> :
                                         activity.type === 'setting' ? <FolderOpen size={16} /> :

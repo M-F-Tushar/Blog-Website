@@ -346,6 +346,13 @@ export const SiteSettingsProvider: React.FC<{ children: React.ReactNode }> = ({ 
         updateData.achievements = newSettings.achievements;
       if (newSettings.uiText !== undefined) updateData.ui_text = newSettings.uiText;
 
+      // FIX: Add missing settings that were only saved to localStorage before
+      if (newSettings.appearance !== undefined) updateData.appearance = newSettings.appearance;
+      if (newSettings.navigation !== undefined) updateData.navigation = newSettings.navigation;
+      if (newSettings.seo !== undefined) updateData.seo = newSettings.seo;
+      if (newSettings.homepageLayout !== undefined)
+        updateData.homepage_layout = newSettings.homepageLayout;
+
       console.log('📤 Sending update to Supabase:', updateData);
 
       if (existingSettings) {

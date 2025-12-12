@@ -6,6 +6,7 @@ import {
   RecommendationType,
   DifficultyLevel,
 } from '../types/types';
+import { DEFAULT_AVATAR } from '../constants/constants';
 
 // Supabase configuration from environment variables
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -257,8 +258,7 @@ export const postFromDatabase = (dbPost: DatabasePost): Post => {
     isInitial: dbPost.is_initial,
     author: {
       name: 'Author',
-      avatar:
-        'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
+      avatar: DEFAULT_AVATAR,
     },
     readTime: `${Math.ceil(dbPost.content.split(' ').length / 200)} min read`,
     commentCount: 0,

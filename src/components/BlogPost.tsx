@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -29,6 +29,7 @@ import { useReadingPosition } from '../hooks/useReadingPosition';
 import ContinueReadingPrompt from './common/ContinueReadingPrompt';
 import StructuredData from './common/StructuredData';
 import { generateBlogPostingSchema } from '../utils/structuredData';
+import { recordPageView } from '../services/analyticsService';
 
 const BlogPost: React.FC = () => {
   const { postId } = useParams<{ postId: string }>();
@@ -39,6 +40,13 @@ const BlogPost: React.FC = () => {
   const post = useMemo(() => {
     return posts.find((p) => p.id === postId);
   }, [postId, posts]);
+
+  // Record page view when post is loaded
+  useEffect(() => {
+    if (post?.id) {
+      recordPageView(post.id);
+    }
+  }, [post?.id]);
 
   const readingTime = useMemo(() => (post ? calculateReadingTime(post.content) : 0), [post]);
   const totalWords = useMemo(() => (post ? getWordCount(post.content) : 0), [post]);

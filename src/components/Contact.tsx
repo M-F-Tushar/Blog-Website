@@ -20,6 +20,7 @@ interface FormData {
   email: string;
   subject: string;
   message: string;
+  honeypot: string; // Spam prevention - should remain empty
 }
 
 interface FAQ {
@@ -62,9 +63,18 @@ const Contact: React.FC = () => {
     email: '',
     subject: '',
     message: '',
+    honeypot: '', // Spam prevention
   });
   const [formStatus, setFormStatus] = useState<'idle' | 'sending' | 'success' | 'error'>('idle');
   const [expandedFAQ, setExpandedFAQ] = useState<number | null>(null);
+  const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
+
+  // Validation constants
+  const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  const MIN_MESSAGE_LENGTH = 10;
+  const MAX_MESSAGE_LENGTH = 5000;
+  const MAX_NAME_LENGTH = 100;
+  const MAX_SUBJECT_LENGTH = 200;
 
   useSEO({
     title: 'Contact',
@@ -78,8 +88,59 @@ const Contact: React.FC = () => {
     });
   };
 
+  const validateForm = (): boolean => {
+    const errors: Record<string, string> = {};
+
+    // Name validation
+    if (!formData.name.trim()) {
+      errors.name = 'Name is required';
+    } else if (formData.name.length > MAX_NAME_LENGTH) {
+      errors.name = `Name must be less than ${MAX_NAME_LENGTH} characters`;
+    }
+
+    // Email validation
+    if (!formData.email.trim()) {
+      errors.email = 'Email is required';
+    } else if (!EMAIL_REGEX.test(formData.email)) {
+      errors.email = 'Please enter a valid email address';
+    }
+
+    // Subject validation
+    if (!formData.subject.trim()) {
+      errors.subject = 'Subject is required';
+    } else if (formData.subject.length > MAX_SUBJECT_LENGTH) {
+      errors.subject = `Subject must be less than ${MAX_SUBJECT_LENGTH} characters`;
+    }
+
+    // Message validation
+    if (!formData.message.trim()) {
+      errors.message = 'Message is required';
+    } else if (formData.message.length < MIN_MESSAGE_LENGTH) {
+      errors.message = `Message must be at least ${MIN_MESSAGE_LENGTH} characters`;
+    } else if (formData.message.length > MAX_MESSAGE_LENGTH) {
+      errors.message = `Message must be less than ${MAX_MESSAGE_LENGTH} characters`;
+    }
+
+    setValidationErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Honeypot check - if filled, it's a bot
+    if (formData.honeypot) {
+      // Silently reject - don't tell bots they were caught
+      setFormStatus('success');
+      setFormData({ name: '', email: '', subject: '', message: '', honeypot: '' });
+      return;
+    }
+
+    // Validate form
+    if (!validateForm()) {
+      return;
+    }
+
     setFormStatus('sending');
 
     // Check for Formspree endpoint configuration
@@ -98,7 +159,8 @@ const Contact: React.FC = () => {
 
         if (response.ok) {
           setFormStatus('success');
-          setFormData({ name: '', email: '', subject: '', message: '' });
+          setFormData({ name: '', email: '', subject: '', message: '', honeypot: '' });
+          setValidationErrors({});
           setTimeout(() => setFormStatus('idle'), 5000);
         } else {
           throw new Error('Form submission failed');
@@ -117,7 +179,8 @@ const Contact: React.FC = () => {
 
       // Show success message for mailto fallback
       setFormStatus('success');
-      setFormData({ name: '', email: '', subject: '', message: '' });
+      setFormData({ name: '', email: '', subject: '', message: '', honeypot: '' });
+      setValidationErrors({});
       setTimeout(() => setFormStatus('idle'), 3000);
     }
   };
@@ -190,6 +253,20 @@ const Contact: React.FC = () => {
             </h2>
 
             <form onSubmit={handleSubmit} className="space-y-6">
+              {/* Honeypot field - hidden from users, visible to bots */}
+              <div className="hidden" aria-hidden="true">
+                <label htmlFor="honeypot">Leave this field empty</label>
+                <input
+                  type="text"
+                  id="honeypot"
+                  name="honeypot"
+                  value={formData.honeypot}
+                  onChange={handleInputChange}
+                  tabIndex={-1}
+                  autoComplete="off"
+                />
+              </div>
+
               <div>
                 <label
                   htmlFor="name"
@@ -204,9 +281,17 @@ const Contact: React.FC = () => {
                   value={formData.name}
                   onChange={handleInputChange}
                   required
-                  className="w-full px-4 py-3 rounded-xl bg-white dark:bg-secondary-800 border border-secondary-200 dark:border-secondary-700 focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all outline-none"
+                  maxLength={100}
+                  aria-invalid={!!validationErrors.name}
+                  aria-describedby={validationErrors.name ? 'name-error' : undefined}
+                  className={`w-full px-4 py-3 rounded-xl bg-white dark:bg-secondary-800 border ${validationErrors.name ? 'border-red-500' : 'border-secondary-200 dark:border-secondary-700'} focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all outline-none`}
                   placeholder="John Doe"
                 />
+                {validationErrors.name && (
+                  <p id="name-error" className="mt-1 text-sm text-red-500" role="alert">
+                    {validationErrors.name}
+                  </p>
+                )}
               </div>
 
               <div>
@@ -223,9 +308,16 @@ const Contact: React.FC = () => {
                   value={formData.email}
                   onChange={handleInputChange}
                   required
-                  className="w-full px-4 py-3 rounded-xl bg-white dark:bg-secondary-800 border border-secondary-200 dark:border-secondary-700 focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all outline-none"
+                  aria-invalid={!!validationErrors.email}
+                  aria-describedby={validationErrors.email ? 'email-error' : undefined}
+                  className={`w-full px-4 py-3 rounded-xl bg-white dark:bg-secondary-800 border ${validationErrors.email ? 'border-red-500' : 'border-secondary-200 dark:border-secondary-700'} focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all outline-none`}
                   placeholder="john@example.com"
                 />
+                {validationErrors.email && (
+                  <p id="email-error" className="mt-1 text-sm text-red-500" role="alert">
+                    {validationErrors.email}
+                  </p>
+                )}
               </div>
 
               <div>
@@ -242,9 +334,17 @@ const Contact: React.FC = () => {
                   value={formData.subject}
                   onChange={handleInputChange}
                   required
-                  className="w-full px-4 py-3 rounded-xl bg-white dark:bg-secondary-800 border border-secondary-200 dark:border-secondary-700 focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all outline-none"
+                  maxLength={200}
+                  aria-invalid={!!validationErrors.subject}
+                  aria-describedby={validationErrors.subject ? 'subject-error' : undefined}
+                  className={`w-full px-4 py-3 rounded-xl bg-white dark:bg-secondary-800 border ${validationErrors.subject ? 'border-red-500' : 'border-secondary-200 dark:border-secondary-700'} focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all outline-none`}
                   placeholder="Project Inquiry"
                 />
+                {validationErrors.subject && (
+                  <p id="subject-error" className="mt-1 text-sm text-red-500" role="alert">
+                    {validationErrors.subject}
+                  </p>
+                )}
               </div>
 
               <div>

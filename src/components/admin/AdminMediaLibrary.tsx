@@ -1,6 +1,8 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { usePosts } from '../../hooks/usePosts';
-import { Image, Upload, Trash2, Copy, Search, Grid, List, Check, X } from 'lucide-react';
+import { Image, Upload, Trash2, Copy, Search, Grid, List, Check, X, AlertCircle, Loader2 } from 'lucide-react';
+import { uploadMedia, deleteMedia, listMedia, MediaFile, initializeMediaBucket } from '../../services/mediaStorageService';
+import { isSupabaseConfigured } from '../../services/supabase';
 
 interface MediaItem {
     id: string;
@@ -10,6 +12,7 @@ interface MediaItem {
     size: number;
     uploadedAt: string;
     usedIn: string[];
+    isUploaded?: boolean; // To distinguish between images from posts vs uploaded files
 }
 
 const AdminMediaLibrary: React.FC = () => {
@@ -19,6 +22,12 @@ const AdminMediaLibrary: React.FC = () => {
     const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
     const [copiedUrl, setCopiedUrl] = useState<string | null>(null);
     const [successMessage, setSuccessMessage] = useState('');
+    const [errorMessage, setErrorMessage] = useState('');
+    const [isUploading, setIsUploading] = useState(false);
+    const [isDeleting, setIsDeleting] = useState(false);
+    const [uploadedMedia, setUploadedMedia] = useState<MediaFile[]>([]);
+    const [storageAvailable, setStorageAvailable] = useState(false);
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
     // Extract all images from posts
     const mediaItems = useMemo(() => {
@@ -69,16 +78,8 @@ const AdminMediaLibrary: React.FC = () => {
         return items;
     }, [posts]);
 
-    // Filter by search
-    const filteredItems = useMemo(() => {
-        if (!searchQuery) return mediaItems;
-        const query = searchQuery.toLowerCase();
-        return mediaItems.filter(item =>
-            item.name.toLowerCase().includes(query) ||
-            item.url.toLowerCase().includes(query) ||
-            item.usedIn.some(post => post.toLowerCase().includes(query))
-        );
-    }, [mediaItems, searchQuery]);
+    // NOTE: Original filter kept for reference, but we now use filteredItemsAll
+    // which includes both post images AND uploaded files
 
     const toggleSelect = (id: string) => {
         setSelectedItems(prev => {
@@ -93,10 +94,10 @@ const AdminMediaLibrary: React.FC = () => {
     };
 
     const selectAll = () => {
-        if (selectedItems.size === filteredItems.length) {
+        if (selectedItems.size === filteredItemsAll.length) {
             setSelectedItems(new Set());
         } else {
-            setSelectedItems(new Set(filteredItems.map(item => item.id)));
+            setSelectedItems(new Set(filteredItemsAll.map(item => item.id)));
         }
     };
 
@@ -109,6 +110,111 @@ const AdminMediaLibrary: React.FC = () => {
             setSuccessMessage('');
         }, 2000);
     }, []);
+
+    // Initialize storage and load uploaded media on mount
+    useEffect(() => {
+        const init = async () => {
+            if (isSupabaseConfigured()) {
+                const available = await initializeMediaBucket();
+                setStorageAvailable(available);
+                if (available) {
+                    const media = await listMedia();
+                    setUploadedMedia(media);
+                }
+            }
+        };
+        init();
+    }, []);
+
+    // Combine post images with uploaded media
+    const allMediaItems = useMemo(() => {
+        const uploadedItems: MediaItem[] = uploadedMedia.map(m => ({
+            id: m.id,
+            url: m.url,
+            name: m.name,
+            type: m.type,
+            size: m.size,
+            uploadedAt: m.uploadedAt,
+            usedIn: [],
+            isUploaded: true,
+        }));
+        return [...uploadedItems, ...mediaItems];
+    }, [uploadedMedia, mediaItems]);
+
+    // Filter by search - use allMediaItems
+    const filteredItemsAll = useMemo(() => {
+        if (!searchQuery) return allMediaItems;
+        const query = searchQuery.toLowerCase();
+        return allMediaItems.filter(item =>
+            item.name.toLowerCase().includes(query) ||
+            item.url.toLowerCase().includes(query) ||
+            item.usedIn.some(post => post.toLowerCase().includes(query))
+        );
+    }, [allMediaItems, searchQuery]);
+
+    const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+        const files = event.target.files;
+        if (!files || files.length === 0) return;
+
+        setIsUploading(true);
+        setErrorMessage('');
+
+        try {
+            for (const file of Array.from(files)) {
+                const uploaded = await uploadMedia(file);
+                if (uploaded) {
+                    setUploadedMedia(prev => [uploaded, ...prev]);
+                }
+            }
+            setSuccessMessage(`${files.length} file(s) uploaded successfully!`);
+            setTimeout(() => setSuccessMessage(''), 3000);
+        } catch (error) {
+            setErrorMessage(error instanceof Error ? error.message : 'Failed to upload files');
+            setTimeout(() => setErrorMessage(''), 5000);
+        } finally {
+            setIsUploading(false);
+            if (fileInputRef.current) {
+                fileInputRef.current.value = '';
+            }
+        }
+    };
+
+    const handleDelete = async () => {
+        if (selectedItems.size === 0) return;
+
+        // Only allow deleting uploaded files, not images extracted from posts
+        const uploadedSelected = Array.from(selectedItems).filter(id =>
+            allMediaItems.find(item => item.id === id)?.isUploaded
+        );
+
+        if (uploadedSelected.length === 0) {
+            setErrorMessage('Cannot delete images that are part of posts. Edit the post to remove them.');
+            setTimeout(() => setErrorMessage(''), 5000);
+            return;
+        }
+
+        if (!window.confirm(`Delete ${uploadedSelected.length} file(s)? This cannot be undone.`)) {
+            return;
+        }
+
+        setIsDeleting(true);
+        setErrorMessage('');
+
+        try {
+            for (const id of uploadedSelected) {
+                await deleteMedia(id);
+                setUploadedMedia(prev => prev.filter(m => m.id !== id));
+            }
+            setSelectedItems(new Set());
+            setSuccessMessage(`${uploadedSelected.length} file(s) deleted successfully!`);
+            setTimeout(() => setSuccessMessage(''), 3000);
+        } catch (error) {
+            setErrorMessage(error instanceof Error ? error.message : 'Failed to delete files');
+            setTimeout(() => setErrorMessage(''), 5000);
+        } finally {
+            setIsDeleting(false);
+        }
+    };
 
     const formatSize = (bytes: number): string => {
         if (bytes < 1024) return `${bytes} B`;
@@ -128,26 +234,55 @@ const AdminMediaLibrary: React.FC = () => {
                             Media Library
                         </h1>
                         <p className="text-sm text-gray-500 dark:text-gray-400">
-                            {mediaItems.length} items • Extracted from {posts.length} posts
+                            {allMediaItems.length} items • {uploadedMedia.length} uploaded • {mediaItems.length} from posts
                         </p>
                     </div>
                 </div>
                 <div className="flex gap-2">
-                    <button
-                        className="flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"
-                        title="Upload new media (coming soon)"
-                        disabled
+                    <input
+                        ref={fileInputRef}
+                        type="file"
+                        multiple
+                        accept="image/*,.pdf,.doc,.docx"
+                        onChange={handleFileUpload}
+                        className="hidden"
+                        id="media-upload"
+                    />
+                    <label
+                        htmlFor="media-upload"
+                        className={`flex items-center gap-2 px-4 py-2 rounded-md transition-colors cursor-pointer ${storageAvailable && !isUploading
+                            ? 'bg-accent text-white hover:bg-indigo-700'
+                            : 'bg-gray-100 dark:bg-gray-700 text-gray-400 cursor-not-allowed'
+                            }`}
+                        title={storageAvailable ? 'Upload media files' : 'Configure Supabase Storage to enable uploads'}
                     >
-                        <Upload size={18} />
-                        Upload
-                    </button>
+                        {isUploading ? <Loader2 size={18} className="animate-spin" /> : <Upload size={18} />}
+                        {isUploading ? 'Uploading...' : 'Upload'}
+                    </label>
                 </div>
             </div>
+
+            {/* Storage not available warning */}
+            {!storageAvailable && isSupabaseConfigured() && (
+                <div className="mb-4 p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg border border-yellow-200 dark:border-yellow-800">
+                    <div className="flex items-center gap-2 text-yellow-700 dark:text-yellow-300 text-sm">
+                        <AlertCircle size={16} />
+                        <span>Media storage not available. Create a "media" bucket in Supabase Storage to enable uploads.</span>
+                    </div>
+                </div>
+            )}
 
             {successMessage && (
                 <div className="mb-4 p-4 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded-md flex items-center gap-2">
                     <Check size={18} />
                     {successMessage}
+                </div>
+            )}
+
+            {errorMessage && (
+                <div className="mb-4 p-4 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 rounded-md flex items-center gap-2">
+                    <X size={18} />
+                    {errorMessage}
                 </div>
             )}
 
@@ -171,7 +306,7 @@ const AdminMediaLibrary: React.FC = () => {
                         onClick={selectAll}
                         className="px-3 py-2 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
                     >
-                        {selectedItems.size === filteredItems.length ? 'Deselect All' : 'Select All'}
+                        {selectedItems.size === filteredItemsAll.length ? 'Deselect All' : 'Select All'}
                     </button>
 
                     <div className="flex border rounded-md overflow-hidden">
@@ -192,12 +327,13 @@ const AdminMediaLibrary: React.FC = () => {
 
                 {selectedItems.size > 0 && (
                     <button
-                        className="flex items-center gap-2 px-4 py-2 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 rounded-md hover:bg-red-200 dark:hover:bg-red-900/50 transition-colors"
-                        title="Delete selected (coming soon)"
-                        disabled
+                        onClick={handleDelete}
+                        disabled={isDeleting}
+                        className="flex items-center gap-2 px-4 py-2 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 rounded-md hover:bg-red-200 dark:hover:bg-red-900/50 transition-colors disabled:opacity-50"
+                        title="Delete selected uploaded files"
                     >
-                        <Trash2 size={18} />
-                        Delete ({selectedItems.size})
+                        {isDeleting ? <Loader2 size={18} className="animate-spin" /> : <Trash2 size={18} />}
+                        {isDeleting ? 'Deleting...' : `Delete (${selectedItems.size})`}
                     </button>
                 )}
             </div>
@@ -205,12 +341,12 @@ const AdminMediaLibrary: React.FC = () => {
             {/* Grid View */}
             {viewMode === 'grid' && (
                 <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-                    {filteredItems.map(item => (
+                    {filteredItemsAll.map(item => (
                         <div
                             key={item.id}
                             className={`relative group cursor-pointer rounded-lg overflow-hidden border-2 transition-all ${selectedItems.has(item.id)
-                                    ? 'border-accent ring-2 ring-accent/50'
-                                    : 'border-gray-200 dark:border-gray-700 hover:border-gray-400'
+                                ? 'border-accent ring-2 ring-accent/50'
+                                : 'border-gray-200 dark:border-gray-700 hover:border-gray-400'
                                 }`}
                             onClick={() => toggleSelect(item.id)}
                         >
@@ -256,12 +392,12 @@ const AdminMediaLibrary: React.FC = () => {
             {/* List View */}
             {viewMode === 'list' && (
                 <div className="space-y-2">
-                    {filteredItems.map(item => (
+                    {filteredItemsAll.map(item => (
                         <div
                             key={item.id}
                             className={`flex items-center gap-4 p-3 rounded-lg border-2 cursor-pointer transition-all ${selectedItems.has(item.id)
-                                    ? 'border-accent bg-accent/5'
-                                    : 'border-gray-200 dark:border-gray-700 hover:border-gray-400 bg-white dark:bg-gray-800'
+                                ? 'border-accent bg-accent/5'
+                                : 'border-gray-200 dark:border-gray-700 hover:border-gray-400 bg-white dark:bg-gray-800'
                                 }`}
                             onClick={() => toggleSelect(item.id)}
                         >
@@ -301,11 +437,11 @@ const AdminMediaLibrary: React.FC = () => {
                 </div>
             )}
 
-            {filteredItems.length === 0 && (
+            {filteredItemsAll.length === 0 && (
                 <div className="text-center py-16 text-gray-500">
                     <Image size={48} className="mx-auto mb-4 opacity-30" />
-                    <p>{searchQuery ? 'No media found matching your search.' : 'No media found in your posts.'}</p>
-                    <p className="text-sm mt-2">Add images to your posts and they will appear here.</p>
+                    <p>{searchQuery ? 'No media found matching your search.' : 'No media found. Upload files or add images to your posts.'}</p>
+                    <p className="text-sm mt-2">Use the Upload button above or add images to your posts.</p>
                 </div>
             )}
 

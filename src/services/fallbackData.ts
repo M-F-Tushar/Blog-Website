@@ -5,6 +5,7 @@
 
 import { Post, Recommendation, PostStatus, RecommendationType } from '../types/types';
 import type { DatabaseSettings } from './supabase';
+import { DEFAULT_AVATAR } from '../constants/constants';
 
 /**
  * Mock posts for demo/fallback mode
@@ -40,8 +41,7 @@ Thank you for visiting!`,
     isInitial: true,
     author: {
       name: 'Admin',
-      avatar:
-        'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
+      avatar: DEFAULT_AVATAR,
     },
     readTime: '2 min read',
     commentCount: 0,
@@ -74,8 +74,7 @@ Happy coding!`,
     isInitial: true,
     author: {
       name: 'Admin',
-      avatar:
-        'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
+      avatar: DEFAULT_AVATAR,
     },
     readTime: '3 min read',
     commentCount: 2,

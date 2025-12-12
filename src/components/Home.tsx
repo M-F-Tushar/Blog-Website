@@ -19,6 +19,19 @@ const Home: React.FC = () => {
   const { authorName, authorTagline, siteDescription, siteName, uiText, homepageLayout } = useSiteSettings();
   const { displayedText: typedTagline, isTyping } = useTypingEffect(authorTagline, 50, 1000);
 
+  // Safe defaults for uiText.home to prevent undefined errors
+  const homeText = uiText?.home ?? {
+    welcomeBadge: '✨ Welcome to my blog',
+    startReading: 'Start Reading',
+    moreAboutMe: 'More About Me',
+    featuredStory: 'Featured Story',
+    trendingTopics: 'Trending Topics',
+    latestArticles: 'Latest Articles',
+    newsletterTitle: 'Stay Updated',
+    newsletterDescription: 'Subscribe to get notified about new posts.',
+    subscribeButton: 'Subscribe',
+  };
+
   const schema = useMemo(() => generateWebSiteSchema(), []);
 
   const structuredDataSchema = useMemo(
@@ -159,7 +172,7 @@ const Home: React.FC = () => {
                 <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/50 dark:bg-secondary-800/50 backdrop-blur-sm border border-secondary-200 dark:border-secondary-700 mb-8 hover:scale-105 transition-transform duration-300 cursor-default shadow-sm hover:shadow-md">
                   <Sparkles size={16} className="text-accent-500 animate-pulse" />
                   <span className="text-sm font-medium text-secondary-600 dark:text-secondary-300">
-                    {uiText.home.welcomeBadge}
+                    {homeText.welcomeBadge}
                   </span>
                 </div>
 
@@ -184,14 +197,14 @@ const Home: React.FC = () => {
                     to="/blog"
                     className="group px-8 py-4 bg-primary-600 text-white font-semibold rounded-full shadow-lg shadow-primary-500/30 hover:bg-primary-700 hover:shadow-primary-500/40 hover:-translate-y-1 transition-all duration-300 flex items-center justify-center gap-2"
                   >
-                    {uiText.home.startReading}
+                    {homeText.startReading}
                     <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
                   </Link>
                   <Link
                     to="/about"
                     className="px-8 py-4 bg-white/80 dark:bg-secondary-800/80 backdrop-blur-sm text-secondary-900 dark:text-white font-semibold rounded-full shadow-md hover:shadow-lg border border-secondary-200 dark:border-secondary-700 hover:-translate-y-1 transition-all duration-300"
                   >
-                    {uiText.home.moreAboutMe}
+                    {homeText.moreAboutMe}
                   </Link>
                 </div>
               </motion.div>
@@ -208,7 +221,7 @@ const Home: React.FC = () => {
             <div className="flex items-center gap-2 mb-8">
               <Sparkles className="text-accent-500" />
               <h2 className="text-3xl font-bold font-serif text-secondary-900 dark:text-white">
-                {uiText.home.featuredStory}
+                {homeText.featuredStory}
               </h2>
             </div>
             <div className="transform hover:-translate-y-1 transition-transform duration-300">
@@ -226,7 +239,7 @@ const Home: React.FC = () => {
             <div className="flex items-center gap-2 mb-6">
               <Tag className="text-primary-500" />
               <h2 className="text-2xl font-bold font-serif text-secondary-900 dark:text-white">
-                {uiText.home.trendingTopics}
+                {homeText.trendingTopics}
               </h2>
             </div>
             <div className="relative">
@@ -257,7 +270,7 @@ const Home: React.FC = () => {
               <div className="flex items-center gap-2">
                 <TrendingUp className="text-green-500" />
                 <h2 className="text-3xl font-bold font-serif text-secondary-900 dark:text-white">
-                  {uiText.home.latestArticles}
+                  {homeText.latestArticles}
                 </h2>
               </div>
               <Link
@@ -303,11 +316,11 @@ const Home: React.FC = () => {
                 </div>
 
                 <h2 className="text-3xl md:text-4xl font-bold font-serif text-white">
-                  {uiText.home.newsletterTitle}
+                  {homeText.newsletterTitle}
                 </h2>
 
                 <p className="text-lg text-secondary-300 leading-relaxed">
-                  {uiText.home.newsletterDescription}
+                  {homeText.newsletterDescription}
                 </p>
 
                 <form
@@ -323,7 +336,7 @@ const Home: React.FC = () => {
                     type="submit"
                     className="px-8 py-3.5 bg-primary-600 text-white font-semibold rounded-full hover:bg-primary-500 transition-all shadow-lg shadow-primary-900/30 hover:shadow-primary-600/40 hover:-translate-y-0.5 active:translate-y-0"
                   >
-                    {uiText.home.subscribeButton}
+                    {homeText.subscribeButton}
                   </button>
                 </form>
               </div>

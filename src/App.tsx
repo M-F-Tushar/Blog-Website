@@ -4,18 +4,10 @@ import { AnimatePresence } from 'framer-motion';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import { ErrorBoundary } from './components/common/ErrorBoundary';
+import Providers from './components/Providers';
 
 import ScrollToTop from './components/common/ScrollToTop';
 import { LoadingSpinner } from './components/common/LoadingSpinner';
-import { SiteSettingsProvider } from './hooks/useSiteSettings';
-import { PostsProvider } from './hooks/usePosts';
-import { ThemeProvider } from './hooks/useTheme';
-import { ProfileProvider } from './hooks/useProfile';
-import { RecommendationsProvider } from './hooks/useRecommendations';
-import { AuthProvider } from './hooks/useAuth';
-import { BookmarksProvider } from './context/BookmarksContext';
-import { ToastProvider } from './context/ToastContext';
-import { CommandPaletteProvider } from './context/CommandPaletteContext';
 import { useToast } from './hooks/useToast';
 import { ToastContainer } from './components/ui/Toast';
 import CommandPalette from './components/common/CommandPalette';
@@ -193,86 +185,70 @@ const MainLayout: React.FC = () => {
 function App() {
   return (
     <ErrorBoundary>
-      <AuthProvider>
-        <ThemeProvider>
-          <ToastProvider>
-            <CommandPaletteProvider>
-              <SiteSettingsProvider>
-                <PostsProvider>
-                  <ProfileProvider>
-                    <RecommendationsProvider>
-                      <BookmarksProvider>
-                        <BrowserRouter basename={import.meta.env.BASE_URL.replace(/\/$/, '')}>
-                          <Routes>
-                            <Route path="/*" element={<MainLayout />} />
-                            <Route
-                              path="/admin/login"
-                              element={
-                                <Suspense
-                                  fallback={
-                                    <div className="flex justify-center items-center min-h-screen">
-                                      <LoadingSpinner />
-                                    </div>
-                                  }
-                                >
-                                  <AdminLogin />
-                                </Suspense>
-                              }
-                            />
-                            <Route
-                              path="/admin"
-                              element={
-                                <Suspense
-                                  fallback={
-                                    <div className="flex justify-center items-center min-h-screen">
-                                      <LoadingSpinner />
-                                    </div>
-                                  }
-                                >
-                                  <AdminLayout />
-                                </Suspense>
-                              }
-                            >
-                              <Route element={<AdminRootLayout />}>
-                                <Route path="dashboard" element={<AdminDashboard />} />
-                                <Route path="posts/create" element={<CreatePost />} />
-                                <Route path="posts/edit/:postId" element={<CreatePost />} />
-                                <Route
-                                  path="recommendations"
-                                  element={<AdminRecommendationsDashboard />}
-                                />
-                                <Route
-                                  path="recommendations/create"
-                                  element={<RecommendationForm />}
-                                />
-                                <Route
-                                  path="recommendations/edit/:recId"
-                                  element={<RecommendationForm />}
-                                />
-                                <Route path="settings/site" element={<AdminSiteSettings />} />
-                                <Route path="settings/ui-text" element={<AdminUITextSettings />} />
-                                <Route path="settings/layout" element={<AdminHomepageLayout />} />
-                                <Route path="settings/appearance" element={<AdminAppearanceSettings />} />
-                                <Route path="settings/navigation" element={<AdminNavigationSettings />} />
-                                <Route path="settings/seo" element={<AdminSEOSettings />} />
-                                <Route path="media" element={<AdminMediaLibrary />} />
-                                <Route path="settings/profile" element={<AdminProfileSettings />} />
-                                <Route path="migrate" element={<DataMigration />} />
-                              </Route>
-                            </Route>
-                          </Routes>
-                          <ScrollToTop />
-                        </BrowserRouter>
-                        <ToastContainerWrapper />
-                      </BookmarksProvider>
-                    </RecommendationsProvider>
-                  </ProfileProvider>
-                </PostsProvider>
-              </SiteSettingsProvider>
-            </CommandPaletteProvider>
-          </ToastProvider>
-        </ThemeProvider>
-      </AuthProvider>
+      <Providers>
+        <BrowserRouter basename={import.meta.env.BASE_URL.replace(/\/$/, '')}>
+          <Routes>
+            <Route path="/*" element={<MainLayout />} />
+            <Route
+              path="/admin/login"
+              element={
+                <Suspense
+                  fallback={
+                    <div className="flex justify-center items-center min-h-screen">
+                      <LoadingSpinner />
+                    </div>
+                  }
+                >
+                  <AdminLogin />
+                </Suspense>
+              }
+            />
+            <Route
+              path="/admin"
+              element={
+                <Suspense
+                  fallback={
+                    <div className="flex justify-center items-center min-h-screen">
+                      <LoadingSpinner />
+                    </div>
+                  }
+                >
+                  <AdminLayout />
+                </Suspense>
+              }
+            >
+              <Route element={<AdminRootLayout />}>
+                <Route path="dashboard" element={<AdminDashboard />} />
+                <Route path="posts/create" element={<CreatePost />} />
+                <Route path="posts/edit/:postId" element={<CreatePost />} />
+                <Route
+                  path="recommendations"
+                  element={<AdminRecommendationsDashboard />}
+                />
+                <Route
+                  path="recommendations/create"
+                  element={<RecommendationForm />}
+                />
+                <Route
+                  path="recommendations/edit/:recId"
+                  element={<RecommendationForm />}
+                />
+                <Route path="settings/site" element={<AdminSiteSettings />} />
+                <Route path="settings/ui-text" element={<AdminUITextSettings />} />
+                <Route path="settings/layout" element={<AdminHomepageLayout />} />
+                <Route path="settings/appearance" element={<AdminAppearanceSettings />} />
+                <Route path="settings/navigation" element={<AdminNavigationSettings />} />
+                <Route path="settings/seo" element={<AdminSEOSettings />} />
+                <Route path="media" element={<AdminMediaLibrary />} />
+                <Route path="settings/profile" element={<AdminProfileSettings />} />
+                <Route path="migrate" element={<DataMigration />} />
+              </Route>
+            </Route>
+          </Routes>
+          <ScrollToTop />
+        </BrowserRouter>
+        <ToastContainerWrapper />
+      </Providers>
     </ErrorBoundary>
   );
 }

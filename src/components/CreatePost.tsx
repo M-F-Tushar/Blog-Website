@@ -16,6 +16,7 @@ import { useSiteSettings } from '../hooks/useSiteSettings';
 import { isSupabaseConfigured } from '../services/supabase';
 import { uploadImage, generateUniqueFilename } from '../services/supabaseStorageService';
 import MarkdownRenderer from './markdown/MarkdownRenderer';
+import { DEFAULT_AVATAR } from '../constants/constants';
 
 interface ToolbarButton {
   icon: React.FC<{ size?: number; className?: string }>;
@@ -421,7 +422,7 @@ const CreatePost: React.FC = () => {
       excerpt: content.substring(0, 150) + '...',
       author: {
         name: authorName || 'Admin',
-        avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
+        avatar: DEFAULT_AVATAR,
       },
       readTime: `${readingTime.minutes} min read`,
     };
@@ -548,92 +549,92 @@ const CreatePost: React.FC = () => {
           {/* Enhanced Toolbar */}
           <div className="flex flex-wrap items-center gap-1 p-2 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-750">
             {/* Undo/Redo */}
-            <button type="button" onClick={handleUndo} className={toolBtnClasses} title="Undo (Ctrl+Z)" disabled={undoStack.length === 0}>
+            <button type="button" onClick={handleUndo} className={toolBtnClasses} title="Undo (Ctrl+Z)" aria-label="Undo (Ctrl+Z)" disabled={undoStack.length === 0}>
               <Undo size={16} />
             </button>
-            <button type="button" onClick={handleRedo} className={toolBtnClasses} title="Redo (Ctrl+Y)" disabled={redoStack.length === 0}>
+            <button type="button" onClick={handleRedo} className={toolBtnClasses} title="Redo (Ctrl+Y)" aria-label="Redo (Ctrl+Y)" disabled={redoStack.length === 0}>
               <Redo size={16} />
             </button>
 
             <div className="w-px h-6 bg-gray-300 dark:bg-gray-600 mx-1" />
 
             {/* Text Formatting */}
-            <button type="button" onClick={() => handleInsert('**', '**')} className={toolBtnClasses} title="Bold (Ctrl+B)">
+            <button type="button" onClick={() => handleInsert('**', '**')} className={toolBtnClasses} title="Bold (Ctrl+B)" aria-label="Bold (Ctrl+B)">
               <Bold size={16} />
             </button>
-            <button type="button" onClick={() => handleInsert('*', '*')} className={toolBtnClasses} title="Italic (Ctrl+I)">
+            <button type="button" onClick={() => handleInsert('*', '*')} className={toolBtnClasses} title="Italic (Ctrl+I)" aria-label="Italic (Ctrl+I)">
               <Italic size={16} />
             </button>
-            <button type="button" onClick={() => handleInsert('~~', '~~')} className={toolBtnClasses} title="Strikethrough">
+            <button type="button" onClick={() => handleInsert('~~', '~~')} className={toolBtnClasses} title="Strikethrough" aria-label="Strikethrough">
               <Strikethrough size={16} />
             </button>
 
             <div className="w-px h-6 bg-gray-300 dark:bg-gray-600 mx-1" />
 
             {/* Headings */}
-            <button type="button" onClick={() => handleInsertText('\n# ')} className={toolBtnClasses} title="Heading 1">
+            <button type="button" onClick={() => handleInsertText('\n# ')} className={toolBtnClasses} title="Heading 1" aria-label="Heading 1">
               <Heading1 size={16} />
             </button>
-            <button type="button" onClick={() => handleInsertText('\n## ')} className={toolBtnClasses} title="Heading 2">
+            <button type="button" onClick={() => handleInsertText('\n## ')} className={toolBtnClasses} title="Heading 2" aria-label="Heading 2">
               <Heading2 size={16} />
             </button>
-            <button type="button" onClick={() => handleInsertText('\n### ')} className={toolBtnClasses} title="Heading 3">
+            <button type="button" onClick={() => handleInsertText('\n### ')} className={toolBtnClasses} title="Heading 3" aria-label="Heading 3">
               <Heading3 size={16} />
             </button>
 
             <div className="w-px h-6 bg-gray-300 dark:bg-gray-600 mx-1" />
 
             {/* Lists */}
-            <button type="button" onClick={() => handleInsertText('\n- ')} className={toolBtnClasses} title="Bullet list">
+            <button type="button" onClick={() => handleInsertText('\n- ')} className={toolBtnClasses} title="Bullet list" aria-label="Bullet list">
               <List size={16} />
             </button>
-            <button type="button" onClick={() => handleInsertText('\n1. ')} className={toolBtnClasses} title="Numbered list">
+            <button type="button" onClick={() => handleInsertText('\n1. ')} className={toolBtnClasses} title="Numbered list" aria-label="Numbered list">
               <ListOrdered size={16} />
             </button>
-            <button type="button" onClick={() => handleInsertText('\n- [ ] ')} className={toolBtnClasses} title="Checklist">
+            <button type="button" onClick={() => handleInsertText('\n- [ ] ')} className={toolBtnClasses} title="Checklist" aria-label="Checklist">
               <CheckSquare size={16} />
             </button>
 
             <div className="w-px h-6 bg-gray-300 dark:bg-gray-600 mx-1" />
 
             {/* Blocks */}
-            <button type="button" onClick={() => handleInsertText('\n> ')} className={toolBtnClasses} title="Quote">
+            <button type="button" onClick={() => handleInsertText('\n> ')} className={toolBtnClasses} title="Quote" aria-label="Quote">
               <Quote size={16} />
             </button>
-            <button type="button" onClick={() => handleInsert('`', '`')} className={toolBtnClasses} title="Inline code">
+            <button type="button" onClick={() => handleInsert('`', '`')} className={toolBtnClasses} title="Inline code" aria-label="Inline code">
               <Code size={16} />
             </button>
-            <button type="button" onClick={() => handleInsertText('\n```\n\n```')} className={toolBtnClasses} title="Code block">
+            <button type="button" onClick={() => handleInsertText('\n```\n\n```')} className={toolBtnClasses} title="Code block" aria-label="Code block">
               <FileCode size={16} />
             </button>
-            <button type="button" onClick={() => handleInsertText('\n---\n')} className={toolBtnClasses} title="Horizontal rule">
+            <button type="button" onClick={() => handleInsertText('\n---\n')} className={toolBtnClasses} title="Horizontal rule" aria-label="Horizontal rule">
               <Minus size={16} />
             </button>
 
             <div className="w-px h-6 bg-gray-300 dark:bg-gray-600 mx-1" />
 
             {/* Links & Media */}
-            <button type="button" onClick={() => handleInsert('[', '](url)')} className={toolBtnClasses} title="Link (Ctrl+K)">
+            <button type="button" onClick={() => handleInsert('[', '](url)')} className={toolBtnClasses} title="Link (Ctrl+K)" aria-label="Insert link (Ctrl+K)">
               <Link2 size={16} />
             </button>
-            <button type="button" onClick={() => handleInsertText('\n![alt](url)')} className={toolBtnClasses} title="Image">
+            <button type="button" onClick={() => handleInsertText('\n![alt](url)')} className={toolBtnClasses} title="Image" aria-label="Insert image">
               <Image size={16} />
             </button>
-            <button type="button" onClick={() => handleInsertText('\n| Header | Header |\n| --- | --- |\n| Cell | Cell |')} className={toolBtnClasses} title="Table">
+            <button type="button" onClick={() => handleInsertText('\n| Header | Header |\n| --- | --- |\n| Cell | Cell |')} className={toolBtnClasses} title="Table" aria-label="Insert table">
               <Table size={16} />
             </button>
 
             <div className="w-px h-6 bg-gray-300 dark:bg-gray-600 mx-1" />
 
             {/* Embed */}
-            <button type="button" onClick={() => setShowEmbedModal(true)} className={toolBtnClasses} title="Embed YouTube/Twitter/CodePen">
+            <button type="button" onClick={() => setShowEmbedModal(true)} className={toolBtnClasses} title="Embed YouTube/Twitter/CodePen" aria-label="Embed YouTube/Twitter/CodePen">
               <Youtube size={16} />
             </button>
 
             {/* Import */}
-            <label className={`${toolBtnClasses} cursor-pointer`} title="Import file (.md, .txt, .html)">
+            <label className={`${toolBtnClasses} cursor-pointer`} title="Import file (.md, .txt, .html)" aria-label="Import file (.md, .txt, .html)">
               <FileUp size={16} />
-              <input type="file" accept=".md,.txt,.html" onChange={handleFileImport} className="hidden" />
+              <input type="file" accept=".md,.txt,.html" onChange={handleFileImport} className="hidden" aria-label="Import markdown or text file" />
             </label>
           </div>
 
