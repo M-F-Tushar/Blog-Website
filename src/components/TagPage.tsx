@@ -5,15 +5,11 @@ import { Hash, ArrowLeft } from 'lucide-react';
 import { usePosts } from '../hooks/usePosts';
 import Card from './Card';
 import { PostStatus } from '../types/types';
-import useSEO from '../hooks/useSEO';
+import SEO from './common/SEO';
 import { EmptyState } from './common/EmptyState';
 
 const TagPage: React.FC = () => {
   const { tagName } = useParams<{ tagName: string }>();
-  useSEO({
-    title: `Posts tagged with "${tagName}"`,
-    description: `Find all articles and posts tagged with "${tagName}".`
-  });
   const { posts } = usePosts();
 
   const filteredPosts = useMemo(() => {
@@ -25,6 +21,10 @@ const TagPage: React.FC = () => {
 
   return (
     <div className="space-y-12 pb-12">
+      <SEO
+        title={`Posts tagged with "${tagName}"`}
+        description={`Find all articles and posts tagged with "${tagName}".`}
+      />
       {/* Header */}
       <section className="relative py-16 md:py-20 bg-secondary-50 dark:bg-secondary-900/50 -mt-8 px-4 text-center">
         <motion.div

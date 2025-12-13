@@ -6,39 +6,40 @@
         xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"
         xmlns:video="http://www.google.com/schemas/sitemap-video/1.1">
   <url>
-    <loc>https://m-f-tushar.github.io/Blog-Website/</loc>
+    <loc>https://mahirfaysaltusherblog.is-a.dev/</loc>
     <changefreq>daily</changefreq>
     <priority>1</priority>
-    <lastmod>2025-11-24T13:15:27.875Z</lastmod>
+    <lastmod>2025-12-13T15:25:48.184Z</lastmod>
   </url>
   <url>
-    <loc>https://m-f-tushar.github.io/Blog-Website/#/about</loc>
+    <loc>https://mahirfaysaltusherblog.is-a.dev/about</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
-    <lastmod>2025-11-24T13:15:27.876Z</lastmod>
+    <lastmod>2025-12-13T15:25:48.185Z</lastmod>
   </url>
   <url>
-    <loc>https://m-f-tushar.github.io/Blog-Website/#/blog</loc>
+    <loc>https://mahirfaysaltusherblog.is-a.dev/blog</loc>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
-    <lastmod>2025-11-24T13:15:27.876Z</lastmod>
+    <lastmod>2025-12-13T15:25:48.185Z</lastmod>
   </url>
   <url>
-    <loc>https://m-f-tushar.github.io/Blog-Website/#/recommendations</loc>
+    <loc>https://mahirfaysaltusherblog.is-a.dev/recommendations</loc>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
-    <lastmod>2025-11-24T13:15:27.876Z</lastmod>
+    <lastmod>2025-12-13T15:25:48.185Z</lastmod>
   </url>
   <url>
-    <loc>https://m-f-tushar.github.io/Blog-Website/#/contact</loc>
+    <loc>https://mahirfaysaltusherblog.is-a.dev/contact</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
-    <lastmod>2025-11-24T13:15:27.876Z</lastmod>
+    <lastmod>2025-12-13T15:25:48.185Z</lastmod>
   </url>
   <url>
-    <loc>https://m-f-tushar.github.io/Blog-Website/#/tags</loc>
+    <loc>https://mahirfaysaltusherblog.is-a.dev/tags</loc>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
-    <lastmod>2025-11-24T13:15:27.876Z</lastmod>
+    <lastmod>2025-12-13T15:25:48.185Z</lastmod>
   </url>
+
 </urlset>

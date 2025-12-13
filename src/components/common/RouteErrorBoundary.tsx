@@ -1,4 +1,4 @@
-import React, { Component, ErrorInfo, ReactNode } from 'react';
+import React, { ErrorInfo, ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import { Home, ArrowLeft, AlertTriangle } from 'lucide-react';
 import { errorTracker } from '../../utils/errorTracking';
@@ -13,13 +13,14 @@ interface State {
   is404: boolean;
 }
 
-export class RouteErrorBoundary extends Component<Props, State> {
+export class RouteErrorBoundary extends React.Component<Props, State> {
+  state: State = {
+    hasError: false,
+    is404: false,
+  };
+
   constructor(props: Props) {
     super(props);
-    this.state = {
-      hasError: false,
-      is404: false,
-    };
   }
 
   static getDerivedStateFromError(error: Error): Partial<State> {

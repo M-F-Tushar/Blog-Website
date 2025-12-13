@@ -7,7 +7,7 @@ import { useSiteSettings } from '../hooks/useSiteSettings';
 import { useTypingEffect } from '../hooks/useTypingEffect';
 import { PostStatus } from '../types/types';
 import Card from './Card';
-import useSEO from '../hooks/useSEO';
+import SEO from './common/SEO';
 import { generateWebSiteSchema } from '../utils/seo';
 import { CardSkeleton } from './ui/CardSkeleton';
 import { EmptyState } from './common/EmptyState';
@@ -45,12 +45,6 @@ const Home: React.FC = () => {
     [siteName, siteDescription, authorName]
   );
 
-  useSEO({
-    description: siteDescription,
-    image: 'https://m-f-tushar.github.io/Blog-Website/images/og-image.jpg',
-    schema,
-  });
-
   const publishedPosts = useMemo(() => {
     return posts
       .filter((p) => p.status === PostStatus.PUBLISHED)
@@ -71,15 +65,12 @@ const Home: React.FC = () => {
   // Extract popular tags (naive implementation based on frequency)
   const popularTags = useMemo(() => {
     const tags = publishedPosts.flatMap((p) => p.tags || []);
-    const tagCounts = tags.reduce(
-      (acc, tag) => {
-        acc[tag] = (acc[tag] || 0) + 1;
-        return acc;
-      },
-      {} as Record<string, number>
-    );
+    const tagCounts = tags.reduce((acc: Record<string, number>, tag) => {
+      acc[tag] = (acc[tag] || 0) + 1;
+      return acc;
+    }, {} as Record<string, number>);
     return Object.entries(tagCounts)
-      .sort((a, b) => b[1] - a[1])
+      .sort((a: [string, number], b: [string, number]) => b[1] - a[1])
       .slice(0, 6)
       .map(([tag]) => tag);
   }, [publishedPosts]);
@@ -145,6 +136,10 @@ const Home: React.FC = () => {
 
   return (
     <>
+      <SEO
+        description={siteDescription}
+        image="https://mahirfaysaltusherblog.is-a.dev/images/og-image.jpg"
+      />
       <StructuredData data={structuredDataSchema} />
       <motion.div
         className="space-y-16 pb-12"

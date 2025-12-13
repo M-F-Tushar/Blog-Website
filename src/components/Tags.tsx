@@ -3,16 +3,12 @@ import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Tag, Search, Hash } from 'lucide-react';
 import { usePosts } from '../hooks/usePosts';
+import SEO from './common/SEO';
 import { PostStatus } from '../types/types';
-import useSEO from '../hooks/useSEO';
 import { LoadingSpinner } from './common/LoadingSpinner';
 import { EmptyState } from './common/EmptyState';
 
 const Tags: React.FC = () => {
-    useSEO({
-        title: 'All Tags',
-        description: 'Browse all tags used in the blog posts.'
-    });
     const { posts, loading, error } = usePosts();
     const [searchQuery, setSearchQuery] = useState('');
 
@@ -61,6 +57,10 @@ const Tags: React.FC = () => {
 
     return (
         <div className="space-y-12 pb-12">
+            <SEO
+                title="All Tags"
+                description="Browse all tags used in the blog posts."
+            />
             {/* Header */}
             <section className="relative py-16 md:py-24 bg-secondary-50 dark:bg-secondary-900/50 -mt-8 px-4 text-center">
                 <motion.div

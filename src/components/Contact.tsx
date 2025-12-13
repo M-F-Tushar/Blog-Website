@@ -12,8 +12,8 @@ import {
   MessageSquare,
   Sparkles,
 } from 'lucide-react';
-import useSEO from '../hooks/useSEO';
 import { useSiteSettings } from '../hooks/useSiteSettings';
+import SEO from './common/SEO';
 import { messageService } from '../services/messageService';
 
 interface FormData {
@@ -76,11 +76,6 @@ const Contact: React.FC = () => {
   const MAX_MESSAGE_LENGTH = 5000;
   const MAX_NAME_LENGTH = 100;
   const MAX_SUBJECT_LENGTH = 200;
-
-  useSEO({
-    title: 'Contact',
-    description: `Get in touch with ${authorName}. Available for consulting, collaboration, and inquiries.`,
-  });
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData({
@@ -168,6 +163,10 @@ const Contact: React.FC = () => {
 
   return (
     <div className="space-y-24 pb-12">
+      <SEO
+        title="Contact"
+        description={`Get in touch with ${authorName}. Available for consulting, collaboration, and inquiries.`}
+      />
       {/* Header */}
       <section className="relative py-12 md:py-16 bg-secondary-50 dark:bg-secondary-900/50 -mt-8 px-4 text-center">
         <motion.div

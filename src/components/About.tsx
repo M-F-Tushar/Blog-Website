@@ -12,7 +12,7 @@ import {
   GraduationCap,
   Sparkles,
 } from 'lucide-react';
-import useSEO from '../hooks/useSEO';
+import SEO from './common/SEO';
 import { generatePersonSchema } from '../utils/seo';
 import { useProfile } from '../hooks/useProfile';
 import { useSiteSettings } from '../hooks/useSiteSettings';
@@ -53,12 +53,9 @@ const About: React.FC = () => {
     [authorName, authorBio, socialLinks]
   );
 
-  useSEO({
-    title: `About ${authorName}`,
-    description: `Learn more about ${authorName}, web developer and CS student.`,
-    image: photoUrl || 'https://m-f-tushar.github.io/Blog-Website/images/og-image.jpg',
-    schema,
-  });
+
+
+  // Calculate statistics
 
   // Calculate statistics
   const stats = useMemo(() => {
@@ -83,6 +80,11 @@ const About: React.FC = () => {
 
   return (
     <>
+      <SEO
+        title={`About ${authorName}`}
+        description={`Learn more about ${authorName}, web developer and CS student.`}
+        image={photoUrl || 'https://mahirfaysaltusherblog.is-a.dev/images/og-image.jpg'}
+      />
       <StructuredData data={structuredDataSchema} />
       <div className="space-y-24 pb-12">
         {/* Hero Section */}
@@ -250,11 +252,10 @@ const About: React.FC = () => {
                     >
                       <div className="absolute -left-[41px] md:-left-[57px] top-0 p-2 bg-white dark:bg-secondary-950 border-2 border-secondary-200 dark:border-secondary-800 rounded-full">
                         <div
-                          className={`p-1.5 rounded-full ${
-                            item.type === 'work'
-                              ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400'
-                              : 'bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400'
-                          }`}
+                          className={`p-1.5 rounded-full ${item.type === 'work'
+                            ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400'
+                            : 'bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400'
+                            }`}
                         >
                           {item.type === 'work' ? (
                             <Briefcase size={16} />

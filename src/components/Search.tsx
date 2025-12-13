@@ -2,9 +2,9 @@ import React, { useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { usePosts } from '../hooks/usePosts';
+import SEO from './common/SEO';
 import { PostStatus } from '../types/types';
 import Card from './Card';
-import useSEO from '../hooks/useSEO';
 import { EmptyState } from './common/EmptyState';
 import SearchFilters, { FilterState } from './common/SearchFilters';
 import { SlidersHorizontal, ArrowUpDown, Search as SearchIcon, Sparkles } from 'lucide-react';
@@ -22,11 +22,6 @@ const Search: React.FC = () => {
     categories: [],
     tags: [],
     dateRange: 'all'
-  });
-
-  useSEO({
-    title: `Search results for "${query}"`,
-    description: `Find posts related to your search query: ${query}.`
   });
 
   // Get unique categories and tags
@@ -116,6 +111,10 @@ const Search: React.FC = () => {
 
   return (
     <div className="space-y-12 pb-12">
+      <SEO
+        title={`Search results for "${query}"`}
+        description={`Find posts related to your search query: ${query}.`}
+      />
       {/* Header Section */}
       <section className="relative py-16 md:py-24 bg-secondary-50 dark:bg-secondary-900/50 -mt-8 px-4 text-center">
         <motion.div

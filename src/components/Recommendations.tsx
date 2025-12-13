@@ -16,17 +16,13 @@ import {
 } from 'lucide-react';
 import { useRecommendations } from '../hooks/useRecommendations';
 import { RecommendationType } from '../types/types';
-import useSEO from '../hooks/useSEO';
+import SEO from './common/SEO';
 import { LoadingSpinner } from './common/LoadingSpinner';
 import { EmptyState } from './common/EmptyState';
 import RecommendationCard from './common/RecommendationCard';
 
 const Recommendations: React.FC = () => {
-  useSEO({
-    title: 'Recommendations',
-    description:
-      'A curated collection of my favorite tools, books, courses, and resources for developers.',
-  });
+
 
   const { recommendations, loading, error } = useRecommendations();
   const [searchQuery, setSearchQuery] = useState('');
@@ -100,6 +96,10 @@ const Recommendations: React.FC = () => {
 
   return (
     <div className="pb-12 space-y-12">
+      <SEO
+        title="Recommendations"
+        description="A curated collection of my favorite tools, books, courses, and resources for developers."
+      />
       {/* Hero Section */}
       <section className="relative py-16 px-4 -mt-8 overflow-hidden bg-gradient-to-br from-secondary-50 to-secondary-100 dark:from-secondary-900 dark:to-secondary-950">
         <div className="absolute inset-0 -z-10">
@@ -181,8 +181,8 @@ const Recommendations: React.FC = () => {
               <button
                 onClick={() => setViewMode('grid')}
                 className={`p-2 rounded-lg transition-all ${viewMode === 'grid'
-                    ? 'bg-white dark:bg-secondary-800 text-primary-600 dark:text-primary-400 shadow-sm'
-                    : 'text-secondary-400 hover:text-secondary-600 dark:hover:text-secondary-300'
+                  ? 'bg-white dark:bg-secondary-800 text-primary-600 dark:text-primary-400 shadow-sm'
+                  : 'text-secondary-400 hover:text-secondary-600 dark:hover:text-secondary-300'
                   }`}
                 title="Grid View"
               >
@@ -191,8 +191,8 @@ const Recommendations: React.FC = () => {
               <button
                 onClick={() => setViewMode('list')}
                 className={`p-2 rounded-lg transition-all ${viewMode === 'list'
-                    ? 'bg-white dark:bg-secondary-800 text-primary-600 dark:text-primary-400 shadow-sm'
-                    : 'text-secondary-400 hover:text-secondary-600 dark:hover:text-secondary-300'
+                  ? 'bg-white dark:bg-secondary-800 text-primary-600 dark:text-primary-400 shadow-sm'
+                  : 'text-secondary-400 hover:text-secondary-600 dark:hover:text-secondary-300'
                   }`}
                 title="List View"
               >
@@ -209,8 +209,8 @@ const Recommendations: React.FC = () => {
               key={filter.label}
               onClick={() => setActiveFilter(filter.label)}
               className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all ${activeFilter === filter.label
-                  ? 'bg-secondary-900 dark:bg-white text-white dark:text-secondary-900 shadow-md transform scale-105'
-                  : 'bg-white dark:bg-secondary-800 text-secondary-600 dark:text-secondary-300 hover:bg-secondary-100 dark:hover:bg-secondary-700'
+                ? 'bg-secondary-900 dark:bg-white text-white dark:text-secondary-900 shadow-md transform scale-105'
+                : 'bg-white dark:bg-secondary-800 text-secondary-600 dark:text-secondary-300 hover:bg-secondary-100 dark:hover:bg-secondary-700'
                 }`}
             >
               {filter.icon}
@@ -237,8 +237,8 @@ const Recommendations: React.FC = () => {
                       setIsFilterMenuOpen(false);
                     }}
                     className={`flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium w-full transition-all ${activeFilter === filter.label
-                        ? 'bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300'
-                        : 'text-secondary-600 dark:text-secondary-300 hover:bg-white dark:hover:bg-secondary-800'
+                      ? 'bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300'
+                      : 'text-secondary-600 dark:text-secondary-300 hover:bg-white dark:hover:bg-secondary-800'
                       }`}
                   >
                     {filter.icon}

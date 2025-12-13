@@ -5,7 +5,7 @@ import Card from './Card';
 import { usePosts } from '../hooks/usePosts';
 import { PostStatus } from '../types/types';
 import Pagination from './Pagination';
-import useSEO from '../hooks/useSEO';
+import SEO from './common/SEO';
 import { CardSkeleton } from './ui/CardSkeleton';
 import { EmptyState } from './common/EmptyState';
 import ViewToggle, { ViewMode, SortOption } from './common/ViewToggle';
@@ -14,11 +14,6 @@ import { useLocalStorage } from '../hooks/useLocalStorage';
 const POSTS_PER_PAGE = 9;
 
 const Blog: React.FC = () => {
-  useSEO({
-    title: 'Blog',
-    description: 'Read my latest articles about web development, programming, and technology.',
-  });
-
   const { posts, loading, error } = usePosts();
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState('');
@@ -96,6 +91,10 @@ const Blog: React.FC = () => {
 
   return (
     <div className="space-y-12 pb-12">
+      <SEO
+        title="Blog"
+        description="Read my latest articles about web development, programming, and technology."
+      />
       {/* Header Section */}
       <section className="relative py-12 md:py-16 bg-secondary-50 dark:bg-secondary-900/50 -mt-8 px-4">
         <div className="container mx-auto max-w-4xl text-center relative z-10">

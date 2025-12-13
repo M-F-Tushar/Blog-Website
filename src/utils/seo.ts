@@ -7,7 +7,7 @@ export const siteConfig = {
   author: {
     name: 'M-F-Tushar',
     twitter: '@your_twitter_handle', // Update with actual handle
-    image: 'https://m-f-tushar.github.io/Blog-Website/images/profile.jpg', // Update with actual profile image
+    image: 'https://mahirfaysaltusherblog.is-a.dev/images/profile.jpg', // Update with actual profile image
   },
   social: {
     twitter: 'https://twitter.com/your_twitter_handle',
@@ -23,7 +23,7 @@ export const generateWebSiteSchema = () => ({
   url: siteConfig.url,
   potentialAction: {
     '@type': 'SearchAction',
-    target: `${siteConfig.url}/#/search?q={search_term_string}`,
+    target: `${siteConfig.url}/search?q={search_term_string}`,
     'query-input': 'required name=search_term_string',
   },
 });
@@ -53,7 +53,7 @@ export const generateBlogSchema = (posts: Post[]) => ({
   '@type': 'Blog',
   name: siteConfig.title,
   description: siteConfig.description,
-  url: `${siteConfig.url}/#/blog`,
+  url: `${siteConfig.url}/blog`,
   author: {
     '@type': 'Person',
     name: siteConfig.author.name,
@@ -64,7 +64,7 @@ export const generateBlogSchema = (posts: Post[]) => ({
     description: post.excerpt,
     datePublished: post.date,
     dateModified: post.date, // Assuming modified date is same for now, update if available
-    url: `${siteConfig.url}/#/blog/${post.id}`,
+    url: `${siteConfig.url}/blog/${post.id}`,
     image: post.coverImage,
   })),
 });
@@ -92,7 +92,7 @@ export const generateBlogPostSchema = (post: Post) => ({
   },
   mainEntityOfPage: {
     '@type': 'WebPage',
-    '@id': `${siteConfig.url}/#/blog/${post.id}`,
+    '@id': `${siteConfig.url}/blog/${post.id}`,
   },
   keywords: post.tags.join(', '),
 });

@@ -12,7 +12,7 @@ import 'highlight.js/styles/github-dark.css';
 import { Calendar, Clock, Tag, ChevronLeft, User } from 'lucide-react';
 import { usePosts } from '../hooks/usePosts';
 import { useSiteSettings } from '../hooks/useSiteSettings';
-import useSEO from '../hooks/useSEO';
+import SEO from './common/SEO';
 import { SkeletonPost } from './common/LoadingSpinner';
 import { EmptyState } from './common/EmptyState';
 import { generateBlogPostSchema } from '../utils/seo';
@@ -78,18 +78,7 @@ const BlogPost: React.FC = () => {
     return undefined;
   }, [post, authorName]);
 
-  useSEO({
-    title: post?.title,
-    description: post?.excerpt,
-    image: post?.coverImage,
-    type: 'article',
-    author: authorName,
-    publishedTime: post?.date,
-    tags: post?.tags,
-    // Use clean URL without hash for proper SEO indexing
-    canonicalUrl: `https://m-f-tushar.github.io/Blog-Website/blog/${postId}`,
-    schema,
-  });
+
 
   if (loading) {
     return <SkeletonPost />;

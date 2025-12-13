@@ -144,6 +144,7 @@ const MainLayout: React.FC = () => {
               </div>
             }
           >
+            {/* @ts-ignore */}
             <Routes location={location} key={location.pathname}>
               <Route index element={<Home />} />
               <Route path="about" element={<About />} />

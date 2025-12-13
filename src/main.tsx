@@ -13,12 +13,15 @@ const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)
 
 // Dynamic import for code splitting
 import('./App')
-  .then((module) => {
+  .then(async (module) => {
     const App = module.default;
+    const { HelmetProvider } = await import('react-helmet-async');
     root.render(
       <React.StrictMode>
         <ErrorBoundary>
-          <App />
+          <HelmetProvider>
+            <App />
+          </HelmetProvider>
         </ErrorBoundary>
       </React.StrictMode>
     );

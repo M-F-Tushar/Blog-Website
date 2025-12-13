@@ -3,4 +3,4 @@ Allow: /
 Disallow: /admin/
 Disallow: /private/
 
-Sitemap: https://m-f-tushar.github.io/Blog-Website/sitemap.xml
+Sitemap: https://mahirfaysaltusherblog.is-a.dev/sitemap.xml

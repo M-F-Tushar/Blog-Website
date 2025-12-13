@@ -4,16 +4,11 @@ import { useBookmarks } from '../context/BookmarksContext';
 import Card from './Card';
 import { EmptyState } from './common/EmptyState';
 import { LoadingSpinner } from './common/LoadingSpinner';
-import useSEO from '../hooks/useSEO';
+import SEO from './common/SEO';
 
 const ReadingList: React.FC = () => {
   const { posts, loading: postsLoading } = usePosts();
   const { bookmarks, isLoading: bookmarksLoading } = useBookmarks();
-
-  useSEO({
-    title: 'My Reading List',
-    description: 'Your saved articles and bookmarks.',
-  });
 
   const bookmarkedPosts = useMemo(() => {
     return posts.filter((post) => bookmarks.includes(post.id));
@@ -29,6 +24,10 @@ const ReadingList: React.FC = () => {
 
   return (
     <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+      <SEO
+        title="My Reading List"
+        description="Your saved articles and bookmarks."
+      />
       <div className="text-center">
         <h1 className="text-4xl font-bold font-serif text-gray-900 dark:text-white">
           My Reading List
