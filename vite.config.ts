@@ -9,7 +9,7 @@ import viteCompression from 'vite-plugin-compression';
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, '.', '');
   return {
-    base: process.env.GITHUB_ACTIONS ? '/Blog-Website/' : '/',
+    base: '/',
     server: {
       port: 3000,
       host: '0.0.0.0',
