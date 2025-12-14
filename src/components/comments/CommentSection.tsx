@@ -22,27 +22,52 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
       return;
     }
     try {
-      const { data, error } = await supabase
+      // 1. Fetch comments first
+      const { data: commentsData, error: commentsError } = await supabase
         .from('comments')
-        .select(
-          `
-          *,
-          user:user_id (
-            full_name,
-            avatar_url
-          )
-        `
-        )
+        .select('*')
         .eq('post_id', postId)
         .order('created_at', { ascending: true });
 
-      if (error) throw error;
+      if (commentsError) throw commentsError;
 
-      // Transform data to match Comment interface (handling the joined user data)
+      if (!commentsData || commentsData.length === 0) {
+        setComments([]);
+        setIsLoading(false);
+        return;
+      }
+
+      // 2. Extract unique user IDs
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const transformedComments = (data || []).map((item: any) => ({
+      const userIds = [...new Set((commentsData as any[]).map((c) => c.user_id))];
+
+      // 3. Fetch profiles for these users
+      const { data: profilesData, error: profilesError } = await supabase
+        .from('profiles')
+        .select('id, full_name, avatar_url')
+        .in('id', userIds);
+
+      if (profilesError) {
+        console.warn('Error fetching profiles:', profilesError);
+        // Continue without profiles if error occurs (graceful degradation)
+      }
+
+      // 4. Create a map of profiles for easy lookup
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const profilesMap: Record<string, any> = {};
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (profilesData as any[])?.forEach((profile) => {
+        profilesMap[profile.id] = profile;
+      });
+
+      // 5. Combine data
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const transformedComments = commentsData.map((item: any) => ({
         ...item,
-        user: item.user, // Supabase returns joined data as an object or array depending on relationship
+        user: profilesMap[item.user_id] || {
+          full_name: 'Unknown User',
+          avatar_url: '',
+        },
       }));
 
       setComments(transformedComments);
