@@ -28,7 +28,7 @@ export interface Database {
       posts: {
         Row: DatabasePost;
         Insert: Omit<DatabasePost, 'id' | 'created_at' | 'updated_at'>;
-        Update: Partial<Omit<DatabasePost, 'id' | 'created_at' | 'updated_at'>>;
+        Update: Partial<Omit<DatabasePost, 'id' | 'created_at'>>;
         Relationships: [];
       };
       recommendations: {

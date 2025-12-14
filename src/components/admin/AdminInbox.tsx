@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Mail, Users, Trash2, CheckCircle, RefreshCw, Eye, MessageSquare } from 'lucide-react';
+import { Mail, Users, Trash2, RefreshCw, MessageSquare } from 'lucide-react';
 import { messageService, Message, Subscriber } from '../../services/messageService';
 
 const AdminInbox: React.FC = () => {
@@ -155,6 +155,7 @@ const AdminInbox: React.FC = () => {
                           onClick={() => {
                             setSelectedMessage(msg);
                             if (!msg.read)
+                              // eslint-disable-next-line @typescript-eslint/no-explicit-any
                               handleMarkAsRead(msg.id, { stopPropagation: () => {} } as any);
                           }}
                           className={`p-4 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors ${

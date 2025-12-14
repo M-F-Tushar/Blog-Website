@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useRecommendations } from '../../hooks/useRecommendations';
-import { RecommendationType, Recommendation } from '../../types/types';
+import { RecommendationType } from '../../types/types';
 
 const RecommendationForm: React.FC = () => {
   const { recId } = useParams<{ recId?: string }>();
@@ -146,7 +146,7 @@ const RecommendationForm: React.FC = () => {
             <select
               id="difficulty"
               value={difficulty}
-              onChange={(e) => setDifficulty(e.target.value as any)}
+              onChange={(e) => setDifficulty(e.target.value as any)} // eslint-disable-line @typescript-eslint/no-explicit-any
               className={inputClasses}
             >
               <option value="">Select Level</option>
@@ -208,7 +208,7 @@ const RecommendationForm: React.FC = () => {
             id="description"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            className={`${inputClasses} h-24`}
+            className={`${inputClasses} h - 24`}
             required
           />
         </div>
@@ -221,7 +221,7 @@ const RecommendationForm: React.FC = () => {
             id="authorNote"
             value={authorNote}
             onChange={(e) => setAuthorNote(e.target.value)}
-            className={`${inputClasses} h-20`}
+            className={`${inputClasses} h - 20`}
             placeholder="This resource really helped me understand..."
           />
         </div>

@@ -72,10 +72,9 @@ export const createRecommendation = async (
 
   try {
     const dbRec = recommendationToDatabase(recommendation);
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const { data, error } = await supabase
       .from(RECOMMENDATIONS_TABLE)
-      .insert(dbRec as any)
+      .insert(dbRec as any) // eslint-disable-line @typescript-eslint/no-explicit-any
       .select()
       .single();
 

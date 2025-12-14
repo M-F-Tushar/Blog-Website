@@ -18,7 +18,7 @@ interface State {
 }
 
 export class ErrorBoundary extends Component<Props, State> {
-  private retryTimeout?: NodeJS.Timeout;
+  private timeoutId: ReturnType<typeof setTimeout> | null = null;
 
   constructor(props: Props) {
     super(props);
@@ -43,8 +43,8 @@ export class ErrorBoundary extends Component<Props, State> {
   }
 
   componentWillUnmount() {
-    if (this.retryTimeout) {
-      clearTimeout(this.retryTimeout);
+    if (this.timeoutId) {
+      clearTimeout(this.timeoutId);
     }
   }
 
@@ -73,7 +73,7 @@ export class ErrorBoundary extends Component<Props, State> {
     // Exponential backoff: 1s, 2s, 4s
     const delay = Math.min(1000 * Math.pow(2, retryCount), 8000);
 
-    this.retryTimeout = setTimeout(() => {
+    this.timeoutId = setTimeout(() => {
       this.setState((prevState) => ({
         hasError: false,
         error: undefined,

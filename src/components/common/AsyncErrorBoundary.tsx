@@ -16,7 +16,7 @@ interface State {
 }
 
 class AsyncErrorBoundaryInner extends Component<Props, State> {
-  private retryTimeout?: NodeJS.Timeout;
+  private timeoutId: ReturnType<typeof setTimeout> | null = null;
 
   constructor(props: Props) {
     super(props);
@@ -36,15 +36,15 @@ class AsyncErrorBoundaryInner extends Component<Props, State> {
   }
 
   componentWillUnmount() {
-    if (this.retryTimeout) {
-      clearTimeout(this.retryTimeout);
+    if (this.timeoutId) {
+      clearTimeout(this.timeoutId);
     }
   }
 
   handleRetry = () => {
     this.setState({ isRetrying: true });
 
-    this.retryTimeout = setTimeout(() => {
+    this.timeoutId = setTimeout(() => {
       this.setState({
         hasError: false,
         error: undefined,

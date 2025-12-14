@@ -3,23 +3,30 @@ import { Post, PostStatus } from '../types/types';
 import { siteConfig } from './seo';
 
 const escapeXml = (unsafe: string) => {
-    return unsafe.replace(/[<>&'"]/g, (c) => {
-        switch (c) {
-            case '<': return '&lt;';
-            case '>': return '&gt;';
-            case '&': return '&amp;';
-            case '\'': return '&apos;';
-            case '"': return '&quot;';
-            default: return c;
-        }
-    });
+  return unsafe.replace(/[<>&'"]/g, (c) => {
+    switch (c) {
+      case '<':
+        return '&lt;';
+      case '>':
+        return '&gt;';
+      case '&':
+        return '&amp;';
+      case "'":
+        return '&apos;';
+      case '"':
+        return '&quot;';
+      default:
+        return c;
+    }
+  });
 };
 
 export const generateRSS = (posts: Post[], outputPath: string) => {
-    const rssItems = posts
-        .filter(post => post.status === PostStatus.PUBLISHED)
-        .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-        .map((post) => `
+  const rssItems = posts
+    .filter((post) => post.status === PostStatus.PUBLISHED)
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+    .map(
+      (post) => `
     <item>
       <title>${escapeXml(post.title)}</title>
       <link>${siteConfig.url}/#/blog/${post.id}</link>
@@ -27,11 +34,13 @@ export const generateRSS = (posts: Post[], outputPath: string) => {
       <pubDate>${new Date(post.date).toUTCString()}</pubDate>
       <description>${escapeXml(post.excerpt)}</description>
       ${post.coverImage ? `<enclosure url="${post.coverImage}" type="image/jpeg" />` : ''}
-      ${post.tags.map(tag => `<category>${escapeXml(tag)}</category>`).join('')}
+      ${post.tags.map((tag) => `<category>${escapeXml(tag)}</category>`).join('')}
     </item>
-  `).join('');
+  `
+    )
+    .join('');
 
-    const rssFeed = `<?xml version="1.0" encoding="UTF-8" ?>
+  const rssFeed = `<?xml version="1.0" encoding="UTF-8" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>${escapeXml(siteConfig.title)}</title>
@@ -44,6 +53,6 @@ export const generateRSS = (posts: Post[], outputPath: string) => {
   </channel>
 </rss>`;
 
-    fs.writeFileSync(outputPath, rssFeed);
-    console.log(`RSS feed generated at ${outputPath}`);
+  fs.writeFileSync(outputPath, rssFeed);
+  console.log(`RSS feed generated at ${outputPath}`); // eslint-disable-line no-console
 };

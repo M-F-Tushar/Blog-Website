@@ -99,7 +99,7 @@ class ErrorTracker {
     this.captureError(new Error(message), 'info');
 
     if (import.meta.env.DEV && context) {
-      console.info('[Info]', message, context);
+      console.info('[Info]', message, context); // eslint-disable-line no-console
     }
   }
 

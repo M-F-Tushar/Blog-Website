@@ -1,6 +1,6 @@
 import React from 'react';
 import { LayoutGrid, List, AlignJustify, ArrowDownUp } from 'lucide-react';
-import { motion } from 'framer-motion';
+// import { motion } from 'framer-motion';
 
 export type ViewMode = 'grid' | 'list' | 'compact';
 export type SortOption = 'newest' | 'oldest' | 'popular' | 'alphabetical';

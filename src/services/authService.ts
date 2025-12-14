@@ -1,9 +1,11 @@
+import { Session } from '@supabase/supabase-js';
 import { supabase } from './supabase';
 
 export const authService = {
   // Sign in with email and password
   async signIn(email: string, password: string) {
-    if (!supabase) return { data: { user: null, session: null }, error: new Error('Supabase not configured') };
+    if (!supabase)
+      return { data: { user: null, session: null }, error: new Error('Supabase not configured') };
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
@@ -23,7 +25,10 @@ export const authService = {
   // Get current session
   async getSession() {
     if (!supabase) return null;
-    const { data: { session }, error } = await supabase.auth.getSession();
+    const {
+      data: { session },
+      error,
+    } = await supabase.auth.getSession();
     if (error) throw error;
     return session;
   },
@@ -31,14 +36,17 @@ export const authService = {
   // Get current user
   async getCurrentUser() {
     if (!supabase) return null;
-    const { data: { user }, error } = await supabase.auth.getUser();
+    const {
+      data: { user },
+      error,
+    } = await supabase.auth.getUser();
     if (error) throw error;
     return user;
   },
 
   // Listen to auth state changes
-  onAuthStateChange(callback: (event: string, session: any) => void) {
-    if (!supabase) return { data: { subscription: { unsubscribe: () => { } } } };
+  onAuthStateChange(callback: (event: string, session: Session | null) => void) {
+    if (!supabase) return { data: { subscription: { unsubscribe: () => {} } } };
     return supabase.auth.onAuthStateChange(callback);
   },
 };

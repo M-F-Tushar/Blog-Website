@@ -68,6 +68,7 @@ export const createPost = async (post: Omit<Post, 'id'>): Promise<Post> => {
     const dbPost = postToDatabase(post);
     const { data, error } = await supabase
       .from(POSTS_TABLE)
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       .insert(dbPost as any)
       .select()
       .single();
@@ -93,6 +94,7 @@ export const updatePost = async (id: string, post: Partial<Post>): Promise<void>
   }
 
   try {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const updateData: any = {};
 
     if (post.title !== undefined) updateData.title = post.title;

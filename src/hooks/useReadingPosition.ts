@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useEffect, useCallback, useMemo } from 'react';
 import { useLocalStorage } from './useLocalStorage';
 
 export interface ReadingPosition {
@@ -114,7 +114,7 @@ export function useReadingPosition(postId: string, totalWords: number = 0) {
 
   // Auto-save on scroll (debounced)
   useEffect(() => {
-    let timeoutId: NodeJS.Timeout;
+    let timeoutId: ReturnType<typeof setTimeout>;
 
     const handleScroll = () => {
       clearTimeout(timeoutId);

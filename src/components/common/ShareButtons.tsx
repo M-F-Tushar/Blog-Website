@@ -6,10 +6,10 @@ interface ShareButtonsProps {
   description?: string;
 }
 
-const ShareButtons: React.FC<ShareButtonsProps> = ({ url, title, description }) => {
+const ShareButtons: React.FC<ShareButtonsProps> = ({ url, title, description: _description }) => {
   const encodedUrl = encodeURIComponent(url);
   const encodedTitle = encodeURIComponent(title);
-  const encodedDescription = encodeURIComponent(description || '');
+  // const encodedDescription = encodeURIComponent(description || '');
 
   const shareLinks = {
     twitter: `https://twitter.com/intent/tweet?url=${encodedUrl}&text=${encodedTitle}`,

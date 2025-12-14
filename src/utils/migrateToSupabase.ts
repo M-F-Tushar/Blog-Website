@@ -12,8 +12,8 @@ export interface MigrationProgress {
 /**
  * Check if Supabase already has data
  */
-const checkIfDataExists = async (): Promise<{ 
-  hasPosts: boolean; 
+const checkIfDataExists = async (): Promise<{
+  hasPosts: boolean;
   hasRecommendations: boolean;
   postsCount: number;
   recommendationsCount: number;
@@ -33,7 +33,7 @@ const checkIfDataExists = async (): Promise<{
 
     if (postsError) throw postsError;
     if (recsError) throw recsError;
-    
+
     return {
       hasPosts: (postsCount || 0) > 0,
       hasRecommendations: (recsCount || 0) > 0,
@@ -121,9 +121,7 @@ export const migrateDataToSupabase = async (
         is_initial: true, // Mark as initial/read-only
       }));
 
-      const { error: postsError } = await supabase
-        .from('posts')
-        .insert(postsToInsert as any);
+      const { error: postsError } = await supabase.from('posts').insert(postsToInsert as any); // eslint-disable-line @typescript-eslint/no-explicit-any
 
       if (postsError) {
         console.error('Error migrating posts:', postsError);
@@ -152,7 +150,7 @@ export const migrateDataToSupabase = async (
 
       const { error: recsError } = await supabase
         .from('recommendations')
-        .insert(recsToInsert as any);
+        .insert(recsToInsert as any); // eslint-disable-line @typescript-eslint/no-explicit-any
 
       if (recsError) {
         console.error('Error migrating recommendations:', recsError);
@@ -172,11 +170,11 @@ export const migrateDataToSupabase = async (
       });
     }
 
-    console.log('Data migration completed successfully');
+    console.log('Data migration completed successfully'); // eslint-disable-line no-console
   } catch (error) {
     console.error('Error migrating data:', error);
     const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
-    
+
     if (onProgress) {
       onProgress({
         status: 'error',
@@ -184,7 +182,7 @@ export const migrateDataToSupabase = async (
         error: errorMessage,
       });
     }
-    
+
     throw error;
   }
 };

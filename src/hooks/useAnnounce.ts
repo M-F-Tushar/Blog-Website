@@ -29,7 +29,7 @@ export const useAnnounce = () => {
     politeness: 'polite',
   });
 
-  const timeoutRef = React.useRef<NodeJS.Timeout | null>(null);
+  const timeoutRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const announce = useCallback((message: string, options: AnnounceOptions = {}) => {
     const { politeness = 'polite', timeout = 5000 } = options;

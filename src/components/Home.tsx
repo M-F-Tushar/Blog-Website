@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { motion, Variants } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { ArrowRight, Sparkles, TrendingUp, Mail, Tag } from 'lucide-react';
 import { usePosts } from '../hooks/usePosts';
 import { useSiteSettings } from '../hooks/useSiteSettings';
@@ -16,7 +16,8 @@ import { generateWebSiteSchema as generateJsonLdWebSite } from '../utils/structu
 
 const Home: React.FC = () => {
   const { posts, featuredPostId, loading, error } = usePosts();
-  const { authorName, authorTagline, siteDescription, siteName, uiText, homepageLayout } = useSiteSettings();
+  const { authorName, authorTagline, siteDescription, siteName, uiText, homepageLayout } =
+    useSiteSettings();
   const { displayedText: typedTagline, isTyping } = useTypingEffect(authorTagline, 50, 1000);
 
   // Safe defaults for uiText.home to prevent undefined errors
@@ -32,7 +33,7 @@ const Home: React.FC = () => {
     subscribeButton: 'Subscribe',
   };
 
-  const schema = useMemo(() => generateWebSiteSchema(), []);
+  // const schema = useMemo(() => generateWebSiteSchema(), []);
 
   const structuredDataSchema = useMemo(
     () =>
@@ -65,10 +66,13 @@ const Home: React.FC = () => {
   // Extract popular tags (naive implementation based on frequency)
   const popularTags = useMemo(() => {
     const tags = publishedPosts.flatMap((p) => p.tags || []);
-    const tagCounts = tags.reduce((acc: Record<string, number>, tag) => {
-      acc[tag] = (acc[tag] || 0) + 1;
-      return acc;
-    }, {} as Record<string, number>);
+    const tagCounts = tags.reduce(
+      (acc: Record<string, number>, tag) => {
+        acc[tag] = (acc[tag] || 0) + 1;
+        return acc;
+      },
+      {} as Record<string, number>
+    );
     return Object.entries(tagCounts)
       .sort((a: [string, number], b: [string, number]) => b[1] - a[1])
       .slice(0, 6)
@@ -81,7 +85,7 @@ const Home: React.FC = () => {
       opacity: 1,
       transition: {
         staggerChildren: 0.15,
-        delayChildren: 0.1
+        delayChildren: 0.1,
       },
     },
   };
@@ -94,7 +98,7 @@ const Home: React.FC = () => {
       transition: {
         type: 'spring' as const,
         stiffness: 50,
-        damping: 15
+        damping: 15,
       },
     },
   };
@@ -161,9 +165,7 @@ const Home: React.FC = () => {
             </div>
 
             <div className="container mx-auto max-w-5xl text-center relative z-10">
-              <motion.div
-                variants={itemVariants}
-              >
+              <motion.div variants={itemVariants}>
                 <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/50 dark:bg-secondary-800/50 backdrop-blur-sm border border-secondary-200 dark:border-secondary-700 mb-8 hover:scale-105 transition-transform duration-300 cursor-default shadow-sm hover:shadow-md">
                   <Sparkles size={16} className="text-accent-500 animate-pulse" />
                   <span className="text-sm font-medium text-secondary-600 dark:text-secondary-300">
@@ -172,7 +174,10 @@ const Home: React.FC = () => {
                 </div>
 
                 <h1 className="text-5xl md:text-7xl font-bold font-serif text-secondary-900 dark:text-white mb-8 tracking-tight leading-tight drop-shadow-sm">
-                  Hi, I&apos;m <span className="text-gradient bg-clip-text text-transparent bg-gradient-to-r from-primary-600 to-accent-600 dark:from-primary-400 dark:to-accent-400">{authorName}</span>
+                  Hi, I&apos;m{' '}
+                  <span className="text-gradient bg-clip-text text-transparent bg-gradient-to-r from-primary-600 to-accent-600 dark:from-primary-400 dark:to-accent-400">
+                    {authorName}
+                  </span>
                 </h1>
 
                 <p
@@ -193,7 +198,10 @@ const Home: React.FC = () => {
                     className="group px-8 py-4 bg-primary-600 text-white font-semibold rounded-full shadow-lg shadow-primary-500/30 hover:bg-primary-700 hover:shadow-primary-500/40 hover:-translate-y-1 transition-all duration-300 flex items-center justify-center gap-2"
                   >
                     {homeText.startReading}
-                    <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
+                    <ArrowRight
+                      size={20}
+                      className="group-hover:translate-x-1 transition-transform"
+                    />
                   </Link>
                   <Link
                     to="/about"
@@ -246,7 +254,10 @@ const Home: React.FC = () => {
                     className="group relative px-4 py-2 bg-white/50 dark:bg-secondary-800/50 backdrop-blur-sm border border-secondary-200 dark:border-secondary-700 rounded-full text-secondary-600 dark:text-secondary-300 hover:border-primary-500 hover:text-primary-500 dark:hover:text-primary-400 hover:shadow-md transition-all duration-300 whitespace-nowrap flex-shrink-0"
                   >
                     <span className="relative z-10 flex items-center gap-1">
-                      <span className="opacity-50 group-hover:opacity-100 transition-opacity">#</span>{tag}
+                      <span className="opacity-50 group-hover:opacity-100 transition-opacity">
+                        #
+                      </span>
+                      {tag}
                     </span>
                   </Link>
                 ))}
@@ -272,7 +283,8 @@ const Home: React.FC = () => {
                 to="/blog"
                 className="hidden md:flex items-center gap-1 text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 font-medium transition-colors group"
               >
-                View all <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+                View all{' '}
+                <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
               </Link>
             </div>
 
