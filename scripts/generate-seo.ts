@@ -16,8 +16,13 @@ dotenv.config();
 const supabaseUrl = process.env.VITE_SUPABASE_URL;
 const supabaseKey = process.env.VITE_SUPABASE_ANON_KEY;
 
-if (!supabaseUrl || !supabaseKey) {
-  console.warn('⚠️ Supabase credentials not found. Skipping dynamic SEO generation.');
+if (
+  !supabaseUrl ||
+  !supabaseUrl.startsWith('http') ||
+  !supabaseKey ||
+  supabaseKey.includes('your_supabase')
+) {
+  console.warn('⚠️ Supabase credentials not found or invalid. Skipping dynamic SEO generation.');
   process.exit(0);
 }
 
@@ -37,18 +42,19 @@ const staticPages = [
   { url: '/tags', changefreq: 'weekly', priority: 0.5 },
 ];
 
-console.log('🔍 Fetching posts from Supabase...');
-const { data: posts, error } = await supabase.from('posts').select('*').eq('status', 'published');
+const generateSEO = async () => {
+  console.log('🔍 Fetching posts from Supabase...');
+  const { data: posts, error } = await supabase.from('posts').select('*').eq('status', 'published');
 
-if (error) {
-  console.error('❌ Error fetching posts:', error);
-  return;
-}
+  if (error) {
+    console.error('❌ Error fetching posts:', error);
+    return;
+  }
 
-console.log(`✅ Found ${posts.length} published posts.`);
+  console.log(`✅ Found ${posts.length} published posts.`);
 
-// 1. Generate Sitemap
-const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
+  // 1. Generate Sitemap
+  const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
         xmlns:news="http://www.google.com/schemas/sitemap-news/0.9"
         xmlns:xhtml="http://www.w3.org/1999/xhtml"
@@ -56,54 +62,55 @@ const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
         xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"
         xmlns:video="http://www.google.com/schemas/sitemap-video/1.1">
 ${staticPages
-    .map(
-      (page) => `  <url>
+  .map(
+    (page) => `  <url>
     <loc>${siteConfig.url}${page.url}</loc>
     <changefreq>${page.changefreq}</changefreq>
     <priority>${page.priority}</priority>
     <lastmod>${new Date().toISOString()}</lastmod>
   </url>`
-    )
-    .join('\n')}
+  )
+  .join('\n')}
 ${posts
-    .map(
-      (post) => `  <url>
+  .map(
+    (post) => `  <url>
     <loc>${siteConfig.url}/blog/${post.id}</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
     <lastmod>${new Date(post.date).toISOString()}</lastmod>
-    ${post.cover_image
-          ? `<image:image>
+    ${
+      post.cover_image
+        ? `<image:image>
       <image:loc>${post.cover_image}</image:loc>
       <image:title>${post.title}</image:title>
     </image:image>`
-          : ''
-        }
+        : ''
+    }
   </url>`
-    )
-    .join('\n')}
+  )
+  .join('\n')}
 </urlset>`;
 
-fs.writeFileSync(path.join(publicDir, 'sitemap.xml'), sitemap);
-console.log('✅ Sitemap generated at public/sitemap.xml');
+  fs.writeFileSync(path.join(publicDir, 'sitemap.xml'), sitemap);
+  console.log('✅ Sitemap generated at public/sitemap.xml');
 
-// 2. Generate RSS
-// Map Supabase posts to the Post type expected by generateRSS
-const mappedPosts = posts.map((p) => ({
-  id: p.id,
-  title: p.title,
-  excerpt: p.excerpt,
-  content: p.content,
-  date: p.date,
-  category: p.category,
-  tags: p.tags || [],
-  coverImage: p.cover_image,
-  status: p.status,
-}));
+  // 2. Generate RSS
+  // Map Supabase posts to the Post type expected by generateRSS
+  const mappedPosts = posts.map((p) => ({
+    id: p.id,
+    title: p.title,
+    excerpt: p.excerpt,
+    content: p.content,
+    date: p.date,
+    category: p.category,
+    tags: p.tags || [],
+    coverImage: p.cover_image,
+    status: p.status,
+  }));
 
-generateRSS(mappedPosts as any, path.join(publicDir, 'rss.xml'));
-console.log('✅ RSS feed generated at public/rss.xml');
-}
+  generateRSS(mappedPosts as any, path.join(publicDir, 'rss.xml'));
+  console.log('✅ RSS feed generated at public/rss.xml');
+};
 
 generateSEO().catch((err) => {
   console.error(err);
