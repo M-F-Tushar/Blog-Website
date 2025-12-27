@@ -6,6 +6,7 @@ A modern, professional personal blog platform built with React, TypeScript, and 
 
 ## ✨ Key Features
 
+
 ### 🎨 Modern Design
 - **Professional UI/UX** - Clean, modern interface with glassmorphism effects
 - **Responsive Layout** - Optimized for mobile, tablet, and desktop
