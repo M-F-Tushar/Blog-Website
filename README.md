@@ -3,7 +3,7 @@
 A modern, professional personal blog platform built with React, TypeScript, and Tailwind CSS. Features a beautiful, responsive design with dark mode support, SEO optimization, and a powerful admin panel for content management.
 
 ![Blog Preview](https://via.placeholder.com/1200x600?text=Modern+Personal+Blog)
-
+ 
 ## ✨ Key Features
           
 ### 🎨 Modern Design
