@@ -12,7 +12,7 @@
     ],
     "*.{css}": [
         "prettier --write"
-    ]
+    ] 
 } 
      
   
