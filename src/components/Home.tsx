@@ -13,6 +13,7 @@ import { CardSkeleton } from './ui/CardSkeleton';
 import { EmptyState } from './common/EmptyState';
 import StructuredData from './common/StructuredData';
 import { generateWebSiteSchema as generateJsonLdWebSite } from '../utils/structuredData';
+import { siteConfig } from '../config/site';
 
 const Home: React.FC = () => {
   const { posts, featuredPostId, loading, error } = usePosts();
@@ -39,7 +40,7 @@ const Home: React.FC = () => {
     () =>
       generateJsonLdWebSite(
         siteName,
-        'https://m-f-tushar.github.io/Blog-Website',
+        siteConfig.url,
         siteDescription,
         { name: authorName }
       ),

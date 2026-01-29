@@ -21,6 +21,7 @@ import { PostStatus } from '../types/types';
 import { LoadingSpinner } from './common/LoadingSpinner';
 import StructuredData from './common/StructuredData';
 import { generatePersonSchema as generateJsonLdPerson } from '../utils/structuredData';
+import { siteConfig } from '../config/site';
 
 const About: React.FC = () => {
   const {
@@ -44,7 +45,7 @@ const About: React.FC = () => {
         {
           name: authorName,
           email: socialLinks?.email,
-          url: 'https://m-f-tushar.github.io/Blog-Website',
+          url: siteConfig.url,
         },
         'Web Developer',
         authorBio,
