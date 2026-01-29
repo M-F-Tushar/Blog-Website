@@ -9,9 +9,11 @@ export const PostSchema = z.object({
   content: z.string().min(1, 'Content is required').max(100000, 'Content is too long'),
   excerpt: z.string().max(500, 'Excerpt must be 500 characters or less').optional(),
   category: z.string().min(1, 'Category is required'),
-  tags: z.array(z.string().max(50, 'Tag must be 50 characters or less')).max(10, 'Maximum 10 tags allowed'),
+  tags: z
+    .array(z.string().max(50, 'Tag must be 50 characters or less'))
+    .max(10, 'Maximum 10 tags allowed'),
   status: z.enum(['Draft', 'Published', 'Archived']),
-  coverImage: z.string().url('Invalid URL').optional().or(z.literal('')),
+  coverImage: z.union([z.string().url('Invalid URL'), z.literal('')]).optional(),
 });
 
 export const RecommendationSchema = z.object({
@@ -19,8 +21,11 @@ export const RecommendationSchema = z.object({
   description: z.string().min(1, 'Description is required').max(1000, 'Description is too long'),
   url: z.string().url('Invalid URL'),
   type: z.string().min(1, 'Type is required'),
-  tags: z.array(z.string().max(50, 'Tag must be 50 characters or less')).max(10, 'Maximum 10 tags allowed').optional(),
-  imageUrl: z.string().url('Invalid URL').optional().or(z.literal('')),
+  tags: z
+    .array(z.string().max(50, 'Tag must be 50 characters or less'))
+    .max(10, 'Maximum 10 tags allowed')
+    .optional(),
+  imageUrl: z.union([z.string().url('Invalid URL'), z.literal('')]).optional(),
 });
 
 export type ValidatedPost = z.infer<typeof PostSchema>;

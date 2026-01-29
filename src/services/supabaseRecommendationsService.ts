@@ -123,7 +123,7 @@ export const updateRecommendation = async (
   try {
     // Partial validation for provided fields
     if (Object.keys(recommendation).length > 0) {
-      const validationData: any = {};
+      const validationData: Record<string, unknown> = {};
       if (recommendation.title !== undefined) validationData.title = recommendation.title;
       if (recommendation.description !== undefined)
         validationData.description = recommendation.description;

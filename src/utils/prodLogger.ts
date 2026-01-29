@@ -5,9 +5,19 @@
 const isDev = import.meta.env.DEV;
 
 export const logger = {
-  log: (...args: unknown[]) => isDev && console.log(...args),
-  warn: (...args: unknown[]) => isDev && console.warn(...args),
-  error: (...args: unknown[]) => console.error(...args),
-  debug: (...args: unknown[]) => isDev && console.debug(...args),
-  info: (...args: unknown[]) => isDev && console.info(...args),
+  log: (...args: unknown[]): void => {
+    if (isDev) console.log(...args); // eslint-disable-line no-console
+  },
+  warn: (...args: unknown[]): void => {
+    if (isDev) console.warn(...args);
+  },
+  error: (...args: unknown[]): void => {
+    console.error(...args); // eslint-disable-line no-console
+  },
+  debug: (...args: unknown[]): void => {
+    if (isDev) console.debug(...args); // eslint-disable-line no-console
+  },
+  info: (...args: unknown[]): void => {
+    if (isDev) console.info(...args);
+  },
 };

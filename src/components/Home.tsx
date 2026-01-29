@@ -8,7 +8,6 @@ import { useTypingEffect } from '../hooks/useTypingEffect';
 import { PostStatus } from '../types/types';
 import Card from './Card';
 import SEO from './common/SEO';
-import { generateWebSiteSchema } from '../utils/seo';
 import { CardSkeleton } from './ui/CardSkeleton';
 import { EmptyState } from './common/EmptyState';
 import StructuredData from './common/StructuredData';

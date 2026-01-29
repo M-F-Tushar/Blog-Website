@@ -119,7 +119,7 @@ export const updatePost = async (id: string, post: Partial<Post>): Promise<void>
   try {
     // Validate input if provided fields
     if (Object.keys(post).length > 0) {
-      const validationData: any = {};
+      const validationData: Record<string, unknown> = {};
       if (post.title !== undefined) validationData.title = post.title;
       if (post.content !== undefined) validationData.content = post.content;
       if (post.excerpt !== undefined) validationData.excerpt = post.excerpt;
