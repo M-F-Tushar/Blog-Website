@@ -8,11 +8,11 @@ import { useTypingEffect } from '../hooks/useTypingEffect';
 import { PostStatus } from '../types/types';
 import Card from './Card';
 import SEO from './common/SEO';
-import { generateWebSiteSchema } from '../utils/seo';
 import { CardSkeleton } from './ui/CardSkeleton';
 import { EmptyState } from './common/EmptyState';
 import StructuredData from './common/StructuredData';
 import { generateWebSiteSchema as generateJsonLdWebSite } from '../utils/structuredData';
+import { siteConfig } from '../config/site';
 
 const Home: React.FC = () => {
   const { posts, featuredPostId, loading, error } = usePosts();
@@ -36,13 +36,7 @@ const Home: React.FC = () => {
   // const schema = useMemo(() => generateWebSiteSchema(), []);
 
   const structuredDataSchema = useMemo(
-    () =>
-      generateJsonLdWebSite(
-        siteName,
-        'https://m-f-tushar.github.io/Blog-Website',
-        siteDescription,
-        { name: authorName }
-      ),
+    () => generateJsonLdWebSite(siteName, siteConfig.url, siteDescription, { name: authorName }),
     [siteName, siteDescription, authorName]
   );
 
@@ -195,7 +189,7 @@ const Home: React.FC = () => {
                 <div className="flex flex-col sm:flex-row justify-center gap-4">
                   <Link
                     to="/blog"
-                    className="group px-8 py-4 bg-primary-600 text-white font-semibold rounded-full shadow-lg shadow-primary-500/30 hover:bg-primary-700 hover:shadow-primary-500/40 hover:-translate-y-1 transition-all duration-300 flex items-center justify-center gap-2"
+                    className="group inline-flex items-center justify-center gap-2 px-8 py-4 bg-gradient-to-r from-primary-600 to-accent-600 text-white rounded-full font-semibold shadow-lg shadow-primary-500/30 hover:shadow-xl hover:shadow-primary-500/40 hover:scale-105 transition-all duration-300"
                   >
                     {homeText.startReading}
                     <ArrowRight
@@ -205,7 +199,7 @@ const Home: React.FC = () => {
                   </Link>
                   <Link
                     to="/about"
-                    className="px-8 py-4 bg-white/80 dark:bg-secondary-800/80 backdrop-blur-sm text-secondary-900 dark:text-white font-semibold rounded-full shadow-md hover:shadow-lg border border-secondary-200 dark:border-secondary-700 hover:-translate-y-1 transition-all duration-300"
+                    className="inline-flex items-center justify-center px-8 py-4 bg-white/80 dark:bg-secondary-800/80 backdrop-blur-sm text-secondary-900 dark:text-white font-semibold rounded-full shadow-md hover:shadow-lg border border-secondary-200 dark:border-secondary-700 hover:-translate-y-1 transition-all duration-300"
                   >
                     {homeText.moreAboutMe}
                   </Link>

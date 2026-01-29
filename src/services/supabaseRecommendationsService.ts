@@ -1,5 +1,7 @@
 import { supabase, recommendationToDatabase, recommendationFromDatabase } from './supabase';
 import { Recommendation } from '../types/types';
+import { RecommendationSchema } from '../utils/validation';
+import DOMPurify from 'dompurify';
 
 const RECOMMENDATIONS_TABLE = 'recommendations';
 
@@ -71,7 +73,24 @@ export const createRecommendation = async (
   }
 
   try {
-    const dbRec = recommendationToDatabase(recommendation);
+    // Validate input
+    const validatedRec = RecommendationSchema.parse({
+      title: recommendation.title,
+      description: recommendation.description,
+      url: recommendation.url,
+      type: recommendation.type,
+      tags: recommendation.tags || [],
+      imageUrl: recommendation.thumbnail,
+    });
+
+    // Sanitize content
+    const sanitizedRec = {
+      ...recommendation,
+      title: DOMPurify.sanitize(validatedRec.title, { ALLOWED_TAGS: [] }),
+      description: DOMPurify.sanitize(validatedRec.description, { ALLOWED_TAGS: [] }),
+    };
+
+    const dbRec = recommendationToDatabase(sanitizedRec);
     const { data, error } = await supabase
       .from(RECOMMENDATIONS_TABLE)
       .insert(dbRec as any) // eslint-disable-line @typescript-eslint/no-explicit-any
@@ -102,13 +121,29 @@ export const updateRecommendation = async (
   }
 
   try {
+    // Partial validation for provided fields
+    if (Object.keys(recommendation).length > 0) {
+      const validationData: Record<string, unknown> = {};
+      if (recommendation.title !== undefined) validationData.title = recommendation.title;
+      if (recommendation.description !== undefined)
+        validationData.description = recommendation.description;
+      if (recommendation.url !== undefined) validationData.url = recommendation.url;
+      if (recommendation.type !== undefined) validationData.type = recommendation.type;
+      if (recommendation.tags !== undefined) validationData.tags = recommendation.tags;
+      if (recommendation.thumbnail !== undefined)
+        validationData.imageUrl = recommendation.thumbnail;
+
+      RecommendationSchema.partial().parse(validationData);
+    }
+
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const updateData: any = {};
 
-    if (recommendation.title !== undefined) updateData.title = recommendation.title;
+    if (recommendation.title !== undefined)
+      updateData.title = DOMPurify.sanitize(recommendation.title, { ALLOWED_TAGS: [] });
     if (recommendation.url !== undefined) updateData.url = recommendation.url;
     if (recommendation.description !== undefined)
-      updateData.description = recommendation.description;
+      updateData.description = DOMPurify.sanitize(recommendation.description, { ALLOWED_TAGS: [] });
     if (recommendation.type !== undefined) updateData.type = recommendation.type;
 
     // Updated fields

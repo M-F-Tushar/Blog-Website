@@ -51,8 +51,11 @@ const Header: React.FC = () => {
   return (
     <>
       <motion.header
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? 'bg-white/80 dark:bg-secondary-900/80 backdrop-blur-md shadow-sm' : 'bg-transparent'
-          }`}
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+          scrolled
+            ? 'bg-white/80 dark:bg-secondary-900/80 backdrop-blur-md shadow-sm'
+            : 'bg-transparent'
+        }`}
         initial={{ y: -100 }}
         animate={{ y: 0 }}
         transition={{ duration: 0.5 }}
@@ -73,10 +76,11 @@ const Header: React.FC = () => {
                 <Link
                   key={link.path}
                   to={link.path}
-                  className={`relative text-sm font-medium transition-colors hover:text-primary-600 dark:hover:text-primary-400 ${location.pathname === link.path
-                    ? 'text-primary-600 dark:text-primary-400'
-                    : 'text-secondary-600 dark:text-secondary-300'
-                    }`}
+                  className={`relative text-sm font-medium transition-colors hover:text-primary-600 dark:hover:text-primary-400 ${
+                    location.pathname === link.path
+                      ? 'text-primary-600 dark:text-primary-400'
+                      : 'text-secondary-600 dark:text-secondary-300'
+                  }`}
                 >
                   {link.name}
                   {location.pathname === link.path && (
@@ -92,7 +96,9 @@ const Header: React.FC = () => {
             {/* Desktop Actions */}
             <div className="hidden md:flex items-center gap-4">
               {/* Search Bar */}
-              <div className={`relative transition-all duration-300 ${isSearchOpen ? 'w-64' : 'w-10'}`}>
+              <div
+                className={`relative transition-all duration-300 ${isSearchOpen ? 'w-64' : 'w-10'}`}
+              >
                 {isSearchOpen ? (
                   <motion.div
                     initial={{ opacity: 0, scale: 0.9 }}
@@ -100,15 +106,26 @@ const Header: React.FC = () => {
                     exit={{ opacity: 0, scale: 0.9 }}
                     className="relative"
                   >
+                    <label htmlFor="header-search" className="sr-only">
+                      Search posts
+                    </label>
                     <input
+                      id="header-search"
                       ref={searchInputRef}
-                      type="text"
+                      type="search"
                       placeholder={headerText.searchPlaceholder}
                       className="w-full pl-10 pr-4 py-2 rounded-full bg-secondary-100 dark:bg-secondary-800 text-secondary-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500 text-sm"
                       onBlur={() => setIsSearchOpen(false)}
                       autoFocus
+                      aria-describedby="search-hint"
                     />
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-secondary-500" size={16} />
+                    <span id="search-hint" className="sr-only">
+                      Press Enter to search or Escape to clear
+                    </span>
+                    <Search
+                      className="absolute left-3 top-1/2 -translate-y-1/2 text-secondary-500"
+                      size={16}
+                    />
                   </motion.div>
                 ) : (
                   <button
@@ -191,10 +208,11 @@ const Header: React.FC = () => {
                   <Link
                     key={link.path}
                     to={link.path}
-                    className={`text-lg font-medium transition-colors ${location.pathname === link.path
-                      ? 'text-primary-600 dark:text-primary-400 pl-4 border-l-4 border-primary-600 dark:border-primary-400'
-                      : 'text-secondary-600 dark:text-secondary-300 pl-4 border-l-4 border-transparent'
-                      }`}
+                    className={`text-lg font-medium py-4 px-6 rounded-xl transition-colors touch-manipulation ${
+                      location.pathname === link.path
+                        ? 'text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-950 border-l-4 border-primary-600 dark:border-primary-400'
+                        : 'text-secondary-600 dark:text-secondary-300 hover:bg-secondary-100 dark:hover:bg-secondary-800 active:bg-secondary-200 dark:active:bg-secondary-700 border-l-4 border-transparent'
+                    }`}
                     onClick={() => setIsMenuOpen(false)}
                   >
                     {link.name}

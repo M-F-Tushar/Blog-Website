@@ -222,7 +222,6 @@ function App() {
                 <Route path="dashboard" element={<AdminDashboard />} />
                 <Route path="inbox" element={<AdminInbox />} />
                 <Route path="posts/create" element={<CreatePost />} />
-                <Route path="posts/create" element={<CreatePost />} />
                 <Route path="posts/edit/:postId" element={<CreatePost />} />
                 <Route path="recommendations" element={<AdminRecommendationsDashboard />} />
                 <Route path="recommendations/create" element={<RecommendationForm />} />

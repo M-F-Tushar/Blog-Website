@@ -4,7 +4,7 @@ import { fileURLToPath } from 'url';
 import { createClient } from '@supabase/supabase-js';
 import dotenv from 'dotenv';
 import { generateRSS } from '../src/utils/generateRSS';
-import { siteConfig } from '../src/utils/seo';
+import { siteConfig as seoConfig } from '../src/utils/seo';
 
 // ES module equivalent of __dirname
 const __filename = fileURLToPath(import.meta.url);
@@ -64,7 +64,7 @@ const generateSEO = async () => {
 ${staticPages
   .map(
     (page) => `  <url>
-    <loc>${siteConfig.url}${page.url}</loc>
+    <loc>${seoConfig.url}${page.url}</loc>
     <changefreq>${page.changefreq}</changefreq>
     <priority>${page.priority}</priority>
     <lastmod>${new Date().toISOString()}</lastmod>
@@ -74,7 +74,7 @@ ${staticPages
 ${posts
   .map(
     (post) => `  <url>
-    <loc>${siteConfig.url}/blog/${post.id}</loc>
+    <loc>${seoConfig.url}/blog/${post.id}</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
     <lastmod>${new Date(post.date).toISOString()}</lastmod>

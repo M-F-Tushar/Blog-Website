@@ -43,7 +43,8 @@
     "remark-math": "^6.0.0",
     "tailwind-merge": "^3.4.0",
     "web-vitals": "^5.1.0",
-    "yet-another-react-lightbox": "^3.25.0"
+    "yet-another-react-lightbox": "^3.25.0",
+    "zod": "^3.22.0"
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.11.0",
@@ -67,6 +68,7 @@
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^7.0.1",
+    "feed": "^4.2.2",
     "husky": "^9.1.7",
     "jsdom": "^27.4.0",
     "lint-staged": "^16.2.7",

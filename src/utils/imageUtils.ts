@@ -6,12 +6,18 @@
  * Generate a blur placeholder from an image source
  * Returns a base64 encoded tiny version of the image
  */
-export async function generateBlurPlaceholder(src: string): Promise<string> {
+export async function generateBlurPlaceholder(src: string, timeout = 10000): Promise<string> {
   return new Promise((resolve, reject) => {
     const img = new Image();
     img.crossOrigin = 'anonymous';
 
+    const timeoutId = setTimeout(() => {
+      img.src = '';
+      reject(new Error('Image load timed out'));
+    }, timeout);
+
     img.onload = () => {
+      clearTimeout(timeoutId);
       const canvas = document.createElement('canvas');
       const ctx = canvas.getContext('2d');
 
@@ -38,6 +44,7 @@ export async function generateBlurPlaceholder(src: string): Promise<string> {
     };
 
     img.onerror = () => {
+      clearTimeout(timeoutId);
       reject(new Error('Failed to load image'));
     };
 
@@ -109,11 +116,25 @@ export function getOptimalSizes(
 /**
  * Preload an image
  */
-export function preloadImage(src: string): Promise<void> {
+export function preloadImage(src: string, timeout = 10000): Promise<void> {
   return new Promise((resolve, reject) => {
     const img = new Image();
-    img.onload = () => resolve();
-    img.onerror = reject;
+
+    const timeoutId = setTimeout(() => {
+      img.src = '';
+      reject(new Error('Image preload timed out'));
+    }, timeout);
+
+    img.onload = () => {
+      clearTimeout(timeoutId);
+      resolve();
+    };
+
+    img.onerror = () => {
+      clearTimeout(timeoutId);
+      reject(new Error('Failed to preload image'));
+    };
+
     img.src = src;
   });
 }

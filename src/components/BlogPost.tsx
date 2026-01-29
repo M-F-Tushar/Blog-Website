@@ -16,6 +16,7 @@ import SEO from './common/SEO';
 import { SkeletonPost } from './common/LoadingSpinner';
 import { EmptyState } from './common/EmptyState';
 import { generateBlogPostSchema } from '../utils/seo';
+import { siteConfig as centralSiteConfig } from '../config/site';
 import { calculateReadingTime, formatReadingTime, getWordCount } from '../utils/readingTime';
 import ShareButtons from './common/ShareButtons';
 import ReadingProgress from './common/ReadingProgress';
@@ -68,17 +69,12 @@ const BlogPost: React.FC = () => {
 
   const structuredDataSchema = useMemo(() => {
     if (post) {
-      return generateBlogPostingSchema(
-        post,
-        'https://m-f-tushar.github.io/Blog-Website',
-        'M-F-Tushar Blog',
-        { name: authorName }
-      );
+      return generateBlogPostingSchema(post, centralSiteConfig.url, centralSiteConfig.name, {
+        name: authorName,
+      });
     }
     return undefined;
   }, [post, authorName]);
-
-
 
   if (loading) {
     return <SkeletonPost />;
@@ -89,7 +85,7 @@ const BlogPost: React.FC = () => {
       <EmptyState
         icon="🔍"
         title="Post Not Found"
-        description="The blog post you&apos;re looking for doesn&apos;t exist or has been removed."
+        description="The blog post you're looking for doesn't exist or has been removed."
         actionLabel="Back to Blog"
         actionLink="/blog"
       />
@@ -111,6 +107,15 @@ const BlogPost: React.FC = () => {
 
   return (
     <>
+      <SEO
+        title={post.title}
+        description={post.excerpt}
+        image={post.coverImage || centralSiteConfig.ogImage}
+        url={`/blog/${post.id}`}
+        type="article"
+        publishedTime={post.date}
+        tags={post.tags}
+      />
       {structuredDataSchema && <StructuredData data={structuredDataSchema} />}
       <ReadingProgress totalWords={totalWords} showPercentage={true} />
 
