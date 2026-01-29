@@ -30,6 +30,14 @@
     --color-warning: #f59e0b;
     --color-error: #ef4444;
     --color-info: #3b82f6;
+
+    /* Typography scale with responsive sizing */
+    --heading-1: clamp(2.5rem, 5vw, 4rem);
+    --heading-2: clamp(1.75rem, 3vw, 2.5rem);
+    --heading-3: clamp(1.25rem, 2vw, 1.5rem);
+    --body-large: 1.125rem;
+    --body-base: 1rem;
+    --body-small: 0.875rem;
   }
 
   .dark {
@@ -196,7 +204,13 @@
 /* Enhanced focus indicators for keyboard navigation */
 @layer base {
   *:focus-visible {
-    @apply outline-2 outline-offset-2 outline-primary-500 dark:outline-primary-400;
+    outline: 3px solid hsl(var(--primary) / 1);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  *:focus:not(:focus-visible) {
+    outline: none;
   }
 
   /* Ensure buttons and interactive elements have visible focus */
@@ -205,7 +219,9 @@
   input:focus-visible,
   select:focus-visible,
   textarea:focus-visible {
-    @apply outline-2 outline-offset-2 outline-primary-500 dark:outline-primary-400;
+    outline: 3px solid hsl(var(--primary) / 1);
+    outline-offset: 2px;
+    border-radius: 4px;
   }
 }
 
