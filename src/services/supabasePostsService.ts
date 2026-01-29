@@ -1,5 +1,7 @@
 import { supabase, postToDatabase, postFromDatabase } from './supabase';
 import { Post } from '../types/types';
+import { PostSchema } from '../utils/validation';
+import DOMPurify from 'dompurify';
 
 const POSTS_TABLE = 'posts';
 
@@ -65,7 +67,28 @@ export const createPost = async (post: Omit<Post, 'id'>): Promise<Post> => {
   }
 
   try {
-    const dbPost = postToDatabase(post);
+    // Validate input
+    const validatedPost = PostSchema.parse({
+      title: post.title,
+      content: post.content,
+      excerpt: post.excerpt,
+      category: post.category,
+      tags: post.tags,
+      status: post.status,
+      coverImage: post.coverImage,
+    });
+
+    // Sanitize content
+    const sanitizedPost = {
+      ...post,
+      title: DOMPurify.sanitize(validatedPost.title, { ALLOWED_TAGS: [] }),
+      content: DOMPurify.sanitize(validatedPost.content),
+      excerpt: validatedPost.excerpt
+        ? DOMPurify.sanitize(validatedPost.excerpt, { ALLOWED_TAGS: [] })
+        : undefined,
+    };
+
+    const dbPost = postToDatabase(sanitizedPost);
     const { data, error } = await supabase
       .from(POSTS_TABLE)
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -94,17 +117,34 @@ export const updatePost = async (id: string, post: Partial<Post>): Promise<void>
   }
 
   try {
+    // Validate input if provided fields
+    if (Object.keys(post).length > 0) {
+      const validationData: any = {};
+      if (post.title !== undefined) validationData.title = post.title;
+      if (post.content !== undefined) validationData.content = post.content;
+      if (post.excerpt !== undefined) validationData.excerpt = post.excerpt;
+      if (post.category !== undefined) validationData.category = post.category;
+      if (post.tags !== undefined) validationData.tags = post.tags;
+      if (post.status !== undefined) validationData.status = post.status;
+      if (post.coverImage !== undefined) validationData.coverImage = post.coverImage;
+
+      // Partial validation - only validate fields that are present
+      PostSchema.partial().parse(validationData);
+    }
+
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const updateData: any = {};
 
-    if (post.title !== undefined) updateData.title = post.title;
+    if (post.title !== undefined)
+      updateData.title = DOMPurify.sanitize(post.title, { ALLOWED_TAGS: [] });
     if (post.date !== undefined) updateData.date = post.date;
     if (post.category !== undefined) updateData.category = post.category;
     if (post.tags !== undefined) updateData.tags = post.tags;
-    if (post.excerpt !== undefined) updateData.excerpt = post.excerpt;
+    if (post.excerpt !== undefined)
+      updateData.excerpt = DOMPurify.sanitize(post.excerpt, { ALLOWED_TAGS: [] });
     if (post.status !== undefined) updateData.status = post.status;
     if (post.coverImage !== undefined) updateData.cover_image = post.coverImage || null;
-    if (post.content !== undefined) updateData.content = post.content;
+    if (post.content !== undefined) updateData.content = DOMPurify.sanitize(post.content);
 
     updateData.updated_at = new Date().toISOString();
 
