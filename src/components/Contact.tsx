@@ -33,12 +33,7 @@ const faqs: FAQ[] = [
   {
     question: "What's the best way to reach you?",
     answer:
-      'Email is the best way to reach me for professional inquiries. I typically respond within 24-48 hours during business days.',
-  },
-  {
-    question: 'Do you offer consulting services?',
-    answer:
-      "Yes! I'm available for consulting on web development, React applications, and technical content creation. Please email me with details about your project.",
+      'Email is the best way to reach me for any inquiries. I typically reply quickly.',
   },
   {
     question: 'Can you help with my project?',
@@ -48,7 +43,7 @@ const faqs: FAQ[] = [
   {
     question: 'Do you accept guest posts?',
     answer:
-      "I occasionally accept high-quality guest posts that align with my blog's topics. Please email me with your proposed topic and a brief outline.",
+      "Yes, I accept high-quality guest posts that align with my blog's topics. Please email me with your proposed topic and a brief outline.",
   },
   {
     question: 'How can I collaborate with you?',
