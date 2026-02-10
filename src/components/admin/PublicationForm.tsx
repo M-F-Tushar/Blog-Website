@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { usePublications, Publication } from '../../hooks/usePublications';
+import { cosmic } from './ui/cosmicClassNames';
 
 type PublicationType = Publication['type'];
 
@@ -103,19 +104,15 @@ const PublicationForm: React.FC = () => {
     }
   };
 
-  const inputClasses =
-    'w-full px-3 py-2 text-gray-700 dark:text-secondary-200 bg-white dark:bg-elevated border border-gray-300 dark:border-white/10 rounded-md focus:outline-none focus:ring-2 focus:ring-accent transition-colors duration-200';
-  const labelClasses = 'block text-sm font-medium text-gray-700 dark:text-secondary-300 mb-1';
-
   return (
-    <div className="max-w-3xl mx-auto bg-white dark:bg-surface rounded-lg shadow-lg p-8">
-      <h1 className="text-3xl font-bold font-serif text-center mb-6 text-gray-900 dark:text-secondary-50">
+    <div className={cosmic.containerSm}>
+      <h1 className={`${cosmic.pageTitle} text-center mb-6`}>
         {isEditMode ? 'Edit Publication' : 'Add New Publication'}
       </h1>
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Title */}
         <div>
-          <label htmlFor="title" className={labelClasses}>
+          <label htmlFor="title" className={cosmic.label}>
             Title <span className="text-red-500">*</span>
           </label>
           <input
@@ -123,7 +120,7 @@ const PublicationForm: React.FC = () => {
             id="title"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            className={inputClasses}
+            className={cosmic.input}
             placeholder="Publication title"
             required
           />
@@ -131,7 +128,7 @@ const PublicationForm: React.FC = () => {
 
         {/* Authors */}
         <div>
-          <label htmlFor="authors" className={labelClasses}>
+          <label htmlFor="authors" className={cosmic.label}>
             Authors <span className="text-red-500">*</span>
           </label>
           <input
@@ -139,19 +136,17 @@ const PublicationForm: React.FC = () => {
             id="authors"
             value={authorsText}
             onChange={(e) => setAuthorsText(e.target.value)}
-            className={inputClasses}
+            className={cosmic.input}
             placeholder="Author One, Author Two, Author Three"
             required
           />
-          <p className="mt-1 text-xs text-gray-500 dark:text-secondary-400">
-            Separate multiple authors with commas
-          </p>
+          <p className="mt-1 text-xs text-secondary-400">Separate multiple authors with commas</p>
         </div>
 
         {/* Venue and Year row */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label htmlFor="venue" className={labelClasses}>
+            <label htmlFor="venue" className={cosmic.label}>
               Venue <span className="text-red-500">*</span>
             </label>
             <input
@@ -159,13 +154,13 @@ const PublicationForm: React.FC = () => {
               id="venue"
               value={venue}
               onChange={(e) => setVenue(e.target.value)}
-              className={inputClasses}
+              className={cosmic.input}
               placeholder="e.g., NeurIPS 2024, Nature, arXiv"
               required
             />
           </div>
           <div>
-            <label htmlFor="year" className={labelClasses}>
+            <label htmlFor="year" className={cosmic.label}>
               Year <span className="text-red-500">*</span>
             </label>
             <input
@@ -173,7 +168,7 @@ const PublicationForm: React.FC = () => {
               id="year"
               value={year}
               onChange={(e) => setYear(Number(e.target.value))}
-              className={inputClasses}
+              className={cosmic.input}
               min={1900}
               max={2100}
               required
@@ -183,14 +178,14 @@ const PublicationForm: React.FC = () => {
 
         {/* Type */}
         <div>
-          <label htmlFor="type" className={labelClasses}>
+          <label htmlFor="type" className={cosmic.label}>
             Type <span className="text-red-500">*</span>
           </label>
           <select
             id="type"
             value={type}
             onChange={(e) => setType(e.target.value as PublicationType)}
-            className={inputClasses}
+            className={cosmic.select}
             required
           >
             {PUBLICATION_TYPES.map((pt) => (
@@ -203,14 +198,14 @@ const PublicationForm: React.FC = () => {
 
         {/* Abstract */}
         <div>
-          <label htmlFor="abstract" className={labelClasses}>
+          <label htmlFor="abstract" className={cosmic.label}>
             Abstract
           </label>
           <textarea
             id="abstract"
             value={abstract}
             onChange={(e) => setAbstract(e.target.value)}
-            className={`${inputClasses} h-32`}
+            className={`${cosmic.textarea} h-32`}
             placeholder="Publication abstract..."
           />
         </div>
@@ -218,7 +213,7 @@ const PublicationForm: React.FC = () => {
         {/* DOI and arXiv URL row */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label htmlFor="doi" className={labelClasses}>
+            <label htmlFor="doi" className={cosmic.label}>
               DOI
             </label>
             <input
@@ -226,12 +221,12 @@ const PublicationForm: React.FC = () => {
               id="doi"
               value={doi}
               onChange={(e) => setDoi(e.target.value)}
-              className={inputClasses}
+              className={cosmic.input}
               placeholder="10.1000/example"
             />
           </div>
           <div>
-            <label htmlFor="arxiv_url" className={labelClasses}>
+            <label htmlFor="arxiv_url" className={cosmic.label}>
               arXiv URL
             </label>
             <input
@@ -239,7 +234,7 @@ const PublicationForm: React.FC = () => {
               id="arxiv_url"
               value={arxivUrl}
               onChange={(e) => setArxivUrl(e.target.value)}
-              className={inputClasses}
+              className={cosmic.input}
               placeholder="https://arxiv.org/abs/..."
             />
           </div>
@@ -248,7 +243,7 @@ const PublicationForm: React.FC = () => {
         {/* PDF and Code URL row */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label htmlFor="pdf_url" className={labelClasses}>
+            <label htmlFor="pdf_url" className={cosmic.label}>
               PDF URL
             </label>
             <input
@@ -256,12 +251,12 @@ const PublicationForm: React.FC = () => {
               id="pdf_url"
               value={pdfUrl}
               onChange={(e) => setPdfUrl(e.target.value)}
-              className={inputClasses}
+              className={cosmic.input}
               placeholder="https://example.com/paper.pdf"
             />
           </div>
           <div>
-            <label htmlFor="code_url" className={labelClasses}>
+            <label htmlFor="code_url" className={cosmic.label}>
               Code URL
             </label>
             <input
@@ -269,7 +264,7 @@ const PublicationForm: React.FC = () => {
               id="code_url"
               value={codeUrl}
               onChange={(e) => setCodeUrl(e.target.value)}
-              className={inputClasses}
+              className={cosmic.input}
               placeholder="https://github.com/..."
             />
           </div>
@@ -277,7 +272,7 @@ const PublicationForm: React.FC = () => {
 
         {/* Slides URL */}
         <div>
-          <label htmlFor="slides_url" className={labelClasses}>
+          <label htmlFor="slides_url" className={cosmic.label}>
             Slides URL
           </label>
           <input
@@ -285,21 +280,21 @@ const PublicationForm: React.FC = () => {
             id="slides_url"
             value={slidesUrl}
             onChange={(e) => setSlidesUrl(e.target.value)}
-            className={inputClasses}
+            className={cosmic.input}
             placeholder="https://example.com/slides"
           />
         </div>
 
         {/* BibTeX */}
         <div>
-          <label htmlFor="bibtex" className={labelClasses}>
+          <label htmlFor="bibtex" className={cosmic.label}>
             BibTeX
           </label>
           <textarea
             id="bibtex"
             value={bibtex}
             onChange={(e) => setBibtex(e.target.value)}
-            className={`${inputClasses} h-40 font-mono text-sm`}
+            className={`${cosmic.textarea} h-40 font-mono text-sm`}
             placeholder={'@article{key,\n  title={...},\n  author={...},\n  year={...}\n}'}
           />
         </div>
@@ -311,9 +306,9 @@ const PublicationForm: React.FC = () => {
             id="featured"
             checked={featured}
             onChange={(e) => setFeatured(e.target.checked)}
-            className="h-4 w-4 text-accent focus:ring-accent border-gray-300 dark:border-white/10 rounded"
+            className="h-4 w-4 border-white/10 rounded accent-primary-500"
           />
-          <label htmlFor="featured" className="ml-2 text-sm text-gray-700 dark:text-secondary-300">
+          <label htmlFor="featured" className="ml-2 text-sm text-secondary-300">
             Featured publication
           </label>
         </div>
@@ -324,14 +319,14 @@ const PublicationForm: React.FC = () => {
             type="button"
             onClick={() => navigate('/publications')}
             disabled={isSaving}
-            className="px-6 py-2 bg-gray-200 text-gray-800 font-semibold rounded-md hover:bg-gray-300 dark:bg-gray-600 dark:text-secondary-50 dark:hover:bg-gray-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className={`${cosmic.buttonSecondary} disabled:opacity-50 disabled:cursor-not-allowed`}
           >
             Cancel
           </button>
           <button
             type="submit"
             disabled={isSaving}
-            className="px-6 py-2 bg-accent text-white font-semibold rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent dark:focus:ring-offset-dark-gray transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
+            className={`${cosmic.buttonPrimary} flex items-center disabled:opacity-50 disabled:cursor-not-allowed`}
           >
             {isSaving && (
               <svg

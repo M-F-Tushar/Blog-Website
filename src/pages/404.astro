@@ -3,6 +3,10 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import NebulaGradient from '@/components/astro/NebulaGradient.astro';
 import ShootingStar from '@/components/astro/ShootingStar.astro';
 import MagneticButton from '@/components/react/MagneticButton';
+import { getPageSection } from '@/lib/supabase';
+
+const errorPage = await getPageSection('error', 'main');
+const content = errorPage?.content || {};
 ---
 
 <BaseLayout title="Page Not Found" noindex>
@@ -12,20 +16,20 @@ import MagneticButton from '@/components/react/MagneticButton';
 
     <div class="text-center max-w-lg relative z-10">
       <div class="text-9xl font-bold text-gradient-cyan mb-4 animate-pulse-glow" style="text-shadow: 0 0 40px rgba(6,182,212,0.3), 0 0 80px rgba(6,182,212,0.1);">
-        404
+        {content.code || '404'}
       </div>
       <h1 class="text-3xl md:text-4xl font-bold font-serif text-gradient-cosmic mb-4">
-        Lost in Space
+        {content.title || 'Lost in Space'}
       </h1>
       <p class="text-lg text-secondary-400 mb-10">
-        The page you're looking for doesn't exist or has been moved.
+        {content.description || "The page you're looking for doesn't exist or has been moved."}
       </p>
       <div class="flex flex-col sm:flex-row justify-center gap-4">
         <MagneticButton client:visible href="/" className="px-8 py-3 bg-primary-600 text-white font-semibold rounded-full shadow-lg shadow-primary-500/30 hover:bg-primary-500 transition-all duration-300">
-          Go Home
+          {content.primaryButtonText || 'Go Home'}
         </MagneticButton>
         <MagneticButton client:visible href="/blog" className="px-8 py-3 bg-surface text-secondary-200 font-semibold rounded-full border border-white/10 hover:border-primary-500/30 transition-all duration-300">
-          Browse Blog
+          {content.secondaryButtonText || 'Browse Blog'}
         </MagneticButton>
       </div>
     </div>

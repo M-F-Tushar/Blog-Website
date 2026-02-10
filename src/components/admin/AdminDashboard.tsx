@@ -1,9 +1,9 @@
-// FIX: Replaced placeholder content with a functional AdminDashboard component.
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { usePosts } from '../../hooks/usePosts';
 import { Post } from '../../types/types';
 import DashboardAnalytics from './DashboardAnalytics';
+import { cosmic } from './ui/cosmicClassNames';
 
 const AdminDashboard: React.FC = () => {
   const { posts, deletePost, featuredPostId, setFeaturedPost, loading, error } = usePosts();
@@ -34,12 +34,10 @@ const AdminDashboard: React.FC = () => {
 
   return (
     <div className="space-y-10">
-      <h1 className="text-3xl font-bold font-serif text-gray-900 dark:text-secondary-50">
-        Admin Dashboard
-      </h1>
+      <h1 className={cosmic.pageTitle}>Admin Dashboard</h1>
 
       {error && (
-        <div className="bg-red-100 dark:bg-red-900 border-l-4 border-red-500 text-red-700 dark:text-red-200 p-4">
+        <div className={cosmic.alertError}>
           <p className="font-bold">Error</p>
           <p>{error}</p>
         </div>
@@ -47,44 +45,30 @@ const AdminDashboard: React.FC = () => {
 
       <DashboardAnalytics />
 
-      <div className="max-w-7xl mx-auto bg-white dark:bg-surface rounded-lg shadow-lg p-8">
-        <div className="flex justify-between items-center mb-6 border-b border-gray-200 dark:border-white/[0.06] pb-4">
-          <h2 className="text-2xl font-bold font-serif text-gray-900 dark:text-secondary-50">
-            Manage Posts
-          </h2>
-          <Link
-            to="/posts/create"
-            className="px-5 py-2 bg-accent text-white font-semibold rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent dark:focus:ring-offset-dark-gray transition-colors"
-          >
+      <div className={cosmic.container}>
+        <div className="flex justify-between items-center mb-6 pb-4 border-b border-white/[0.06]">
+          <h2 className={cosmic.sectionTitle}>Manage Posts</h2>
+          <Link to="/posts/create" className={cosmic.buttonPrimary}>
             Create New Post
           </Link>
         </div>
 
         {loading ? (
           <div className="flex justify-center items-center py-12">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-accent"></div>
+            <div className="w-12 h-12 border-2 border-primary-500/30 border-t-primary-400 rounded-full animate-spin" />
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-              <thead className="bg-gray-50 dark:bg-elevated">
+          <div className={cosmic.tableWrapper}>
+            <table className={cosmic.table}>
+              <thead className={cosmic.tableHead}>
                 <tr>
-                  <th
-                    scope="col"
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-secondary-300 uppercase tracking-wider"
-                  >
+                  <th scope="col" className={cosmic.tableHeadCell}>
                     Title
                   </th>
-                  <th
-                    scope="col"
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-secondary-300 uppercase tracking-wider"
-                  >
+                  <th scope="col" className={cosmic.tableHeadCell}>
                     Status
                   </th>
-                  <th
-                    scope="col"
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-secondary-300 uppercase tracking-wider"
-                  >
+                  <th scope="col" className={cosmic.tableHeadCell}>
                     Date
                   </th>
                   <th scope="col" className="relative px-6 py-3">
@@ -92,62 +76,47 @@ const AdminDashboard: React.FC = () => {
                   </th>
                 </tr>
               </thead>
-              <tbody className="bg-white dark:bg-surface divide-y divide-gray-200 dark:divide-gray-700">
+              <tbody className={cosmic.tableBody}>
                 {sortedPosts.map((post: Post) => (
-                  <tr key={post.id}>
+                  <tr key={post.id} className={cosmic.tableRow}>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-medium text-gray-900 dark:text-secondary-50">
-                        {post.title}
-                      </div>
-                      <div className="text-sm text-gray-500 dark:text-secondary-400">
-                        {post.category}
-                      </div>
+                      <div className="text-sm font-medium text-secondary-100">{post.title}</div>
+                      <div className="text-sm text-secondary-500">{post.category}</div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span
-                        className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                          post.status === 'Published'
-                            ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200'
-                            : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200'
-                        }`}
+                        className={
+                          post.status === 'Published' ? cosmic.badgeSuccess : cosmic.badgeWarning
+                        }
                       >
                         {post.status}
                       </span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-secondary-400">
-                      {post.date}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-2 md:space-x-4">
+                    <td className={cosmic.tableCell}>{post.date}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-3">
                       <button
                         onClick={() => handleToggleFeatured(post.id)}
-                        className={`text-sm ${
-                          featuredPostId === post.id
-                            ? 'text-yellow-500 hover:text-yellow-700'
-                            : 'text-gray-400 hover:text-gray-600'
+                        className={`text-base transition-all duration-200 ${
+                          featuredPostId === post.id ? cosmic.starActive : cosmic.starInactive
                         }`}
                         title={featuredPostId === post.id ? 'Unfeature Post' : 'Feature Post'}
                       >
-                        &#9733; {/* Star Icon */}
+                        &#9733;
                       </button>
                       {!post.isInitial ? (
                         <>
-                          <Link
-                            to={`/posts/edit/${post.id}`}
-                            className="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-200"
-                          >
+                          <Link to={`/posts/edit/${post.id}`} className={cosmic.linkEdit}>
                             Edit
                           </Link>
                           <button
                             onClick={() => handleDelete(post.id, post.title)}
-                            className="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-200"
+                            className={cosmic.linkDelete}
                           >
                             Delete
                           </button>
                         </>
                       ) : (
-                        <span className="text-gray-400 dark:text-gray-500 italic text-xs">
-                          Read-only
-                        </span>
+                        <span className="text-secondary-600 italic text-xs">Read-only</span>
                       )}
                     </td>
                   </tr>

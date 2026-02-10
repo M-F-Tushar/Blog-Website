@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useProjects, Project } from '../../hooks/useProjects';
+import { cosmic } from './ui/cosmicClassNames';
 
 type ProjectStatus = Project['status'];
 
@@ -90,19 +91,15 @@ const ProjectForm: React.FC = () => {
     }
   };
 
-  const inputClasses =
-    'w-full px-3 py-2 text-gray-700 dark:text-secondary-200 bg-white dark:bg-elevated border border-gray-300 dark:border-white/10 rounded-md focus:outline-none focus:ring-2 focus:ring-accent transition-colors duration-200';
-  const labelClasses = 'block text-sm font-medium text-gray-700 dark:text-secondary-300 mb-1';
-
   return (
-    <div className="max-w-3xl mx-auto bg-white dark:bg-surface rounded-lg shadow-lg p-8">
-      <h1 className="text-3xl font-bold font-serif text-center mb-6 text-gray-900 dark:text-secondary-50">
+    <div className={cosmic.containerSm}>
+      <h1 className={`${cosmic.pageTitle} text-center mb-6`}>
         {isEditMode ? 'Edit Project' : 'Add New Project'}
       </h1>
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Title */}
         <div>
-          <label htmlFor="title" className={labelClasses}>
+          <label htmlFor="title" className={cosmic.label}>
             Title <span className="text-red-500">*</span>
           </label>
           <input
@@ -110,7 +107,7 @@ const ProjectForm: React.FC = () => {
             id="title"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            className={inputClasses}
+            className={cosmic.input}
             placeholder="Project title"
             required
           />
@@ -118,14 +115,14 @@ const ProjectForm: React.FC = () => {
 
         {/* Description */}
         <div>
-          <label htmlFor="description" className={labelClasses}>
+          <label htmlFor="description" className={cosmic.label}>
             Description <span className="text-red-500">*</span>
           </label>
           <textarea
             id="description"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            className={`${inputClasses} h-24`}
+            className={`${cosmic.textarea} h-24`}
             placeholder="Short project description"
             required
           />
@@ -133,23 +130,23 @@ const ProjectForm: React.FC = () => {
 
         {/* Long Description */}
         <div>
-          <label htmlFor="long_description" className={labelClasses}>
+          <label htmlFor="long_description" className={cosmic.label}>
             Long Description
           </label>
           <textarea
             id="long_description"
             value={longDescription}
             onChange={(e) => setLongDescription(e.target.value)}
-            className={`${inputClasses} h-40`}
+            className={`${cosmic.textarea} h-40`}
             placeholder="Detailed project description..."
           />
-          <p className="mt-1 text-xs text-gray-500 dark:text-secondary-400">Supports markdown</p>
+          <p className="mt-1 text-xs text-secondary-400">Supports markdown</p>
         </div>
 
         {/* GitHub URL and Demo URL row */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label htmlFor="github_url" className={labelClasses}>
+            <label htmlFor="github_url" className={cosmic.label}>
               GitHub URL
             </label>
             <input
@@ -157,12 +154,12 @@ const ProjectForm: React.FC = () => {
               id="github_url"
               value={githubUrl}
               onChange={(e) => setGithubUrl(e.target.value)}
-              className={inputClasses}
+              className={cosmic.input}
               placeholder="https://github.com/..."
             />
           </div>
           <div>
-            <label htmlFor="demo_url" className={labelClasses}>
+            <label htmlFor="demo_url" className={cosmic.label}>
               Demo URL
             </label>
             <input
@@ -170,7 +167,7 @@ const ProjectForm: React.FC = () => {
               id="demo_url"
               value={demoUrl}
               onChange={(e) => setDemoUrl(e.target.value)}
-              className={inputClasses}
+              className={cosmic.input}
               placeholder="https://example.com/demo"
             />
           </div>
@@ -178,7 +175,7 @@ const ProjectForm: React.FC = () => {
 
         {/* Image URL */}
         <div>
-          <label htmlFor="image_url" className={labelClasses}>
+          <label htmlFor="image_url" className={cosmic.label}>
             Image URL
           </label>
           <input
@@ -186,14 +183,14 @@ const ProjectForm: React.FC = () => {
             id="image_url"
             value={imageUrl}
             onChange={(e) => setImageUrl(e.target.value)}
-            className={inputClasses}
+            className={cosmic.input}
             placeholder="https://example.com/image.png"
           />
         </div>
 
         {/* Tags */}
         <div>
-          <label htmlFor="tags" className={labelClasses}>
+          <label htmlFor="tags" className={cosmic.label}>
             Tags
           </label>
           <input
@@ -201,24 +198,22 @@ const ProjectForm: React.FC = () => {
             id="tags"
             value={tagsText}
             onChange={(e) => setTagsText(e.target.value)}
-            className={inputClasses}
+            className={cosmic.input}
             placeholder="React, TypeScript, Firebase"
           />
-          <p className="mt-1 text-xs text-gray-500 dark:text-secondary-400">
-            Separate multiple tags with commas
-          </p>
+          <p className="mt-1 text-xs text-secondary-400">Separate multiple tags with commas</p>
         </div>
 
         {/* Status */}
         <div>
-          <label htmlFor="status" className={labelClasses}>
+          <label htmlFor="status" className={cosmic.label}>
             Status <span className="text-red-500">*</span>
           </label>
           <select
             id="status"
             value={status}
             onChange={(e) => setStatus(e.target.value as ProjectStatus)}
-            className={inputClasses}
+            className={cosmic.select}
             required
           >
             {PROJECT_STATUSES.map((s) => (
@@ -236,9 +231,9 @@ const ProjectForm: React.FC = () => {
             id="featured"
             checked={featured}
             onChange={(e) => setFeatured(e.target.checked)}
-            className="h-4 w-4 text-accent focus:ring-accent border-gray-300 dark:border-white/10 rounded"
+            className="h-4 w-4 border-white/10 rounded accent-primary-500"
           />
-          <label htmlFor="featured" className="ml-2 text-sm text-gray-700 dark:text-secondary-300">
+          <label htmlFor="featured" className="ml-2 text-sm text-secondary-300">
             Featured project
           </label>
         </div>
@@ -249,14 +244,14 @@ const ProjectForm: React.FC = () => {
             type="button"
             onClick={() => navigate('/projects')}
             disabled={isSaving}
-            className="px-6 py-2 bg-gray-200 text-gray-800 font-semibold rounded-md hover:bg-gray-300 dark:bg-gray-600 dark:text-secondary-50 dark:hover:bg-gray-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className={`${cosmic.buttonSecondary} disabled:opacity-50 disabled:cursor-not-allowed`}
           >
             Cancel
           </button>
           <button
             type="submit"
             disabled={isSaving}
-            className="px-6 py-2 bg-accent text-white font-semibold rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent dark:focus:ring-offset-dark-gray transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
+            className={`${cosmic.buttonPrimary} flex items-center disabled:opacity-50 disabled:cursor-not-allowed`}
           >
             {isSaving && (
               <svg

@@ -1,0 +1,180 @@
+---
+import type { CustomPageSectionData } from '@/lib/supabase';
+
+interface Props {
+  section: CustomPageSectionData;
+}
+
+const { section } = Astro.props;
+const { section_type, title, subtitle, content, image_url, metadata } = section;
+
+// Pre-compute values that need type assertions (avoids angle brackets in template)
+const twoColClass = metadata?.imagePosition === 'left' ? 'grid grid-cols-1 md:grid-cols-2 gap-8 items-center md:grid-flow-dense' : 'grid grid-cols-1 md:grid-cols-2 gap-8 items-center';
+const contentColClass = metadata?.imagePosition === 'left' ? 'md:col-start-2' : '';
+const imageColClass = metadata?.imagePosition === 'left' ? 'md:col-start-1' : '';
+
+const statsItems = (metadata?.items && Array.isArray(metadata.items)) ? metadata.items as {label: string; value: string | number}[] : [];
+const faqItems = (metadata?.items && Array.isArray(metadata.items)) ? metadata.items as {question: string; answer: string}[] : [];
+const galleryImages = (metadata?.images && Array.isArray(metadata.images)) ? metadata.images as {url: string; alt?: string; caption?: string}[] : [];
+const ctaButtonText = metadata?.buttonText as string | undefined;
+const ctaButtonLink = metadata?.buttonLink as string | undefined;
+---
+
+{section_type === 'hero' && (
+  <section class="relative py-20 md:py-32 text-center">
+    {image_url && (
+      <div class="absolute inset-0 z-0">
+        <img src={image_url} alt="" class="w-full h-full object-cover opacity-30" />
+        <div class="absolute inset-0 bg-gradient-to-b from-void/50 to-void"></div>
+      </div>
+    )}
+    <div class="container mx-auto px-4 relative z-10">
+      {title && <h1 class="text-4xl md:text-6xl font-bold font-serif text-secondary-50 mb-4">{title}</h1>}
+      {subtitle && <p class="text-xl md:text-2xl text-secondary-300 max-w-3xl mx-auto">{subtitle}</p>}
+      {content && <div class="mt-6 text-secondary-400 max-w-2xl mx-auto" set:html={content} />}
+    </div>
+  </section>
+)}
+
+{section_type === 'text-block' && (
+  <section class="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    {title && <h2 class="text-3xl font-bold font-serif text-secondary-50 mb-4">{title}</h2>}
+    {subtitle && <p class="text-lg text-secondary-300 mb-6">{subtitle}</p>}
+    {content && (
+      <div class="prose prose-invert prose-primary max-w-none text-secondary-300 leading-relaxed" set:html={content} />
+    )}
+  </section>
+)}
+
+{section_type === 'image-banner' && (
+  <section class="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    {title && <h2 class="text-3xl font-bold font-serif text-secondary-50 mb-6">{title}</h2>}
+    {subtitle && <p class="text-lg text-secondary-300 mb-6">{subtitle}</p>}
+    {image_url && (
+      <div class="rounded-2xl overflow-hidden border border-white/[0.06]">
+        <img
+          src={image_url}
+          alt={title || 'Image'}
+          class="w-full h-auto object-cover"
+          loading="lazy"
+        />
+      </div>
+    )}
+  </section>
+)}
+
+{section_type === 'two-column' && (
+  <section class="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    {title && <h2 class="text-3xl font-bold font-serif text-secondary-50 mb-8">{title}</h2>}
+    <div class={twoColClass}>
+      <div class={contentColClass}>
+        {content && (
+          <div class="prose prose-invert prose-primary max-w-none text-secondary-300" set:html={content} />
+        )}
+      </div>
+      {image_url && (
+        <div class={imageColClass}>
+          <div class="rounded-2xl overflow-hidden border border-white/[0.06]">
+            <img
+              src={image_url}
+              alt={title || 'Image'}
+              class="w-full h-auto object-cover"
+              loading="lazy"
+            />
+          </div>
+        </div>
+      )}
+    </div>
+  </section>
+)}
+
+{section_type === 'cta' && (
+  <section class="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div class="relative rounded-3xl overflow-hidden bg-abyss px-6 py-16 md:px-16 md:py-20 text-center border border-white/[0.06]">
+      <div class="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-primary-500/30 to-transparent"></div>
+      <div class="relative z-10 max-w-2xl mx-auto">
+        {title && <h2 class="text-3xl md:text-4xl font-bold font-serif text-secondary-50 mb-4">{title}</h2>}
+        {subtitle && <p class="text-lg text-secondary-300 mb-8">{subtitle}</p>}
+        {content && <div class="text-secondary-400 mb-8" set:html={content} />}
+        {ctaButtonText && ctaButtonLink && (
+          <a
+            href={ctaButtonLink}
+            class="inline-flex items-center gap-2 px-8 py-4 bg-primary-600 text-white font-semibold rounded-full shadow-lg shadow-primary-500/30 hover:bg-primary-500 transition-all duration-300"
+          >
+            {ctaButtonText}
+          </a>
+        )}
+      </div>
+    </div>
+  </section>
+)}
+
+{section_type === 'stats' && (
+  <section class="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    {title && <h2 class="text-3xl font-bold font-serif text-secondary-50 mb-8 text-center">{title}</h2>}
+    {statsItems.length > 0 && (
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        {statsItems.map((item) => (
+          <div class="glass-cosmic rounded-xl p-6 text-center hover:shadow-cosmic-card transition-all">
+            <div class="text-2xl md:text-3xl font-bold text-secondary-50">{item.value}</div>
+            <p class="text-sm text-secondary-400 font-medium mt-1">{item.label}</p>
+          </div>
+        ))}
+      </div>
+    )}
+  </section>
+)}
+
+{section_type === 'faq' && (
+  <section class="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    {title && <h2 class="text-3xl font-bold font-serif text-secondary-50 mb-8">{title}</h2>}
+    {faqItems.length > 0 && (
+      <div class="space-y-4 max-w-3xl mx-auto">
+        {faqItems.map((item) => (
+          <details class="group glass-cosmic rounded-xl border border-white/[0.06] overflow-hidden">
+            <summary class="flex items-center justify-between cursor-pointer px-6 py-4 text-secondary-100 font-medium hover:text-primary-300 transition-colors">
+              {item.question}
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="flex-shrink-0 ml-4 transition-transform group-open:rotate-180">
+                <path d="m6 9 6 6 6-6"></path>
+              </svg>
+            </summary>
+            <div class="px-6 pb-4 text-secondary-300">{item.answer}</div>
+          </details>
+        ))}
+      </div>
+    )}
+  </section>
+)}
+
+{section_type === 'gallery' && (
+  <section class="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    {title && <h2 class="text-3xl font-bold font-serif text-secondary-50 mb-6">{title}</h2>}
+    {subtitle && <p class="text-lg text-secondary-300 mb-8">{subtitle}</p>}
+    {galleryImages.length > 0 && (
+      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        {galleryImages.map((img) => (
+          <div class="rounded-xl overflow-hidden border border-white/[0.06] group">
+            <img
+              src={img.url}
+              alt={img.alt || ''}
+              class="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
+              loading="lazy"
+            />
+            {img.caption && (
+              <p class="text-xs text-secondary-400 p-2 bg-elevated/50">{img.caption}</p>
+            )}
+          </div>
+        ))}
+      </div>
+    )}
+  </section>
+)}
+
+{section_type === 'markdown' && (
+  <section class="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    {title && <h2 class="text-3xl font-bold font-serif text-secondary-50 mb-6">{title}</h2>}
+    {content && (
+      <div class="prose prose-invert prose-primary max-w-none" set:html={content} />
+    )}
+  </section>
+)}

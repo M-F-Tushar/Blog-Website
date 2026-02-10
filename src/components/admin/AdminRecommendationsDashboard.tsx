@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { useRecommendations } from '../../hooks/useRecommendations';
+import { cosmic } from './ui/cosmicClassNames';
 
 const AdminRecommendationsDashboard: React.FC = () => {
   const { recommendations, deleteRecommendation, loading, error } = useRecommendations();
@@ -19,45 +20,34 @@ const AdminRecommendationsDashboard: React.FC = () => {
   const sortedRecs = [...recommendations].sort((a, b) => a.title.localeCompare(b.title));
 
   return (
-    <div className="max-w-5xl mx-auto bg-white dark:bg-surface rounded-lg shadow-lg p-8">
+    <div className={cosmic.container}>
       {error && (
-        <div className="mb-6 bg-red-100 dark:bg-red-900 border-l-4 border-red-500 text-red-700 dark:text-red-200 p-4">
+        <div className={`mb-6 ${cosmic.alertError}`}>
           <p className="font-bold">Error</p>
           <p>{error}</p>
         </div>
       )}
 
-      <div className="flex justify-between items-center mb-8 border-b border-gray-200 dark:border-white/[0.06] pb-6">
-        <h1 className="text-3xl font-bold font-serif text-gray-900 dark:text-secondary-50">
-          Manage Recommendations
-        </h1>
-        <Link
-          to="/recommendations/create"
-          className="px-5 py-2 bg-accent text-white font-semibold rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent dark:focus:ring-offset-dark-gray transition-colors"
-        >
+      <div className="flex justify-between items-center mb-8 border-b border-white/[0.06] pb-6">
+        <h1 className={cosmic.pageTitle}>Manage Recommendations</h1>
+        <Link to="/recommendations/create" className={cosmic.buttonPrimary}>
           Add New Recommendation
         </Link>
       </div>
 
       {loading ? (
         <div className="flex justify-center items-center py-12">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-accent"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-400"></div>
         </div>
       ) : (
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-            <thead className="bg-gray-50 dark:bg-elevated">
+        <div className={cosmic.tableWrapper}>
+          <table className={cosmic.table}>
+            <thead className={cosmic.tableHead}>
               <tr>
-                <th
-                  scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-secondary-300 uppercase tracking-wider"
-                >
+                <th scope="col" className={cosmic.tableHeadCell}>
                   Title
                 </th>
-                <th
-                  scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-secondary-300 uppercase tracking-wider"
-                >
+                <th scope="col" className={cosmic.tableHeadCell}>
                   Type
                 </th>
                 <th scope="col" className="relative px-6 py-3">
@@ -65,45 +55,40 @@ const AdminRecommendationsDashboard: React.FC = () => {
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-white dark:bg-surface divide-y divide-gray-200 dark:divide-gray-700">
+            <tbody className={cosmic.tableBody}>
               {sortedRecs.map((rec) => (
-                <tr key={rec.id}>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm font-medium text-gray-900 dark:text-secondary-50">
-                      {rec.title}
-                    </div>
+                <tr key={rec.id} className={cosmic.tableRow}>
+                  <td className={`${cosmic.tableCell} whitespace-nowrap`}>
+                    <div className="text-sm font-medium text-secondary-50">{rec.title}</div>
                     <a
                       href={rec.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="text-sm text-gray-400 hover:underline truncate"
+                      className="text-sm text-secondary-500 hover:underline truncate"
                     >
                       {rec.url}
                     </a>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
-                      {rec.type}
-                    </span>
+                  <td className={`${cosmic.tableCell} whitespace-nowrap`}>
+                    <span className={cosmic.badgeAccent}>{rec.type}</span>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium space-x-4">
+                  <td
+                    className={`${cosmic.tableCell} whitespace-nowrap text-right text-sm font-medium space-x-4`}
+                  >
                     {!rec.isInitial ? (
                       <>
-                        <Link
-                          to={`/recommendations/edit/${rec.id}`}
-                          className="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-200"
-                        >
+                        <Link to={`/recommendations/edit/${rec.id}`} className={cosmic.linkEdit}>
                           Edit
                         </Link>
                         <button
                           onClick={() => handleDelete(rec.id, rec.title)}
-                          className="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-200"
+                          className={cosmic.linkDelete}
                         >
                           Delete
                         </button>
                       </>
                     ) : (
-                      <span className="text-gray-400 dark:text-gray-500 italic">Read-only</span>
+                      <span className="text-secondary-500 italic">Read-only</span>
                     )}
                   </td>
                 </tr>

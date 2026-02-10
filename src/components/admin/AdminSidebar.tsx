@@ -2,6 +2,7 @@ import React from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import { useSiteSettings } from '../../hooks/useSiteSettings';
+import { cosmic } from './ui/cosmicClassNames';
 
 const AdminSidebar: React.FC = () => {
   const { signOut } = useAuth();
@@ -14,29 +15,25 @@ const AdminSidebar: React.FC = () => {
   };
 
   const navLinkClasses = ({ isActive }: { isActive: boolean }) =>
-    `block w-full text-left px-4 py-2 text-sm transition-colors ${
-      isActive
-        ? 'bg-accent/10 text-accent dark:bg-accent-light/20 dark:text-accent-light'
-        : 'text-gray-700 dark:text-secondary-200 hover:bg-gray-100 dark:hover:bg-elevated'
-    }`;
+    isActive ? cosmic.navActive : cosmic.navInactive;
 
   return (
-    <aside className="w-64 bg-white dark:bg-surface shadow-md flex-shrink-0 flex flex-col">
-      <div className="p-6 border-b border-gray-200 dark:border-white/[0.06]">
-        <Link
-          to="/dashboard"
-          className="text-xl font-bold font-serif text-gray-900 dark:text-secondary-50"
-        >
-          {authorName}
+    <aside className={cosmic.sidebar}>
+      {/* Brand */}
+      <div className={cosmic.sidebarBrand}>
+        <Link to="/dashboard" className="block">
+          <span className="text-xl font-bold font-serif admin-text-gradient">{authorName}</span>
         </Link>
-        <span className="block text-sm text-gray-500">Admin Panel</span>
+        <span className="inline-block mt-1 px-2 py-0.5 text-xs font-medium rounded-md bg-gold-500/10 text-gold-400 border border-gold-500/20">
+          Admin Panel
+        </span>
       </div>
-      <nav className="mt-6 flex-grow">
+
+      <nav className="mt-4 flex-grow admin-scrollbar overflow-y-auto">
         {/* Content */}
-        <div className="px-4 pt-4 pb-1">
-          <span className="text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500">
-            Content
-          </span>
+        <div className="px-4 pt-4 pb-2">
+          <span className={cosmic.sectionLabel}>Content</span>
+          <div className="admin-cosmic-divider mt-2" />
         </div>
         <NavLink to="/dashboard" className={navLinkClasses} end>
           Dashboard
@@ -49,10 +46,9 @@ const AdminSidebar: React.FC = () => {
         </NavLink>
 
         {/* Research */}
-        <div className="px-4 pt-6 pb-1">
-          <span className="text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500">
-            Research
-          </span>
+        <div className="px-4 pt-6 pb-2">
+          <span className={cosmic.sectionLabel}>Research</span>
+          <div className="admin-cosmic-divider mt-2" />
         </div>
         <NavLink to="/projects" className={navLinkClasses}>
           Projects
@@ -62,10 +58,9 @@ const AdminSidebar: React.FC = () => {
         </NavLink>
 
         {/* Pages */}
-        <div className="px-4 pt-6 pb-1">
-          <span className="text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500">
-            Pages
-          </span>
+        <div className="px-4 pt-6 pb-2">
+          <span className={cosmic.sectionLabel}>Pages</span>
+          <div className="admin-cosmic-divider mt-2" />
         </div>
         <NavLink to="/pages" className={navLinkClasses}>
           Page Content
@@ -73,12 +68,17 @@ const AdminSidebar: React.FC = () => {
         <NavLink to="/cv" className={navLinkClasses}>
           CV Manager
         </NavLink>
+        <NavLink to="/settings/homepage" className={navLinkClasses}>
+          Homepage Layout
+        </NavLink>
+        <NavLink to="/custom-pages" className={navLinkClasses}>
+          Custom Pages
+        </NavLink>
 
         {/* Settings */}
-        <div className="px-4 pt-6 pb-1">
-          <span className="text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500">
-            Settings
-          </span>
+        <div className="px-4 pt-6 pb-2">
+          <span className={cosmic.sectionLabel}>Settings</span>
+          <div className="admin-cosmic-divider mt-2" />
         </div>
         <NavLink to="/settings/site" className={navLinkClasses}>
           Site Settings
@@ -86,19 +86,44 @@ const AdminSidebar: React.FC = () => {
         <NavLink to="/settings/profile" className={navLinkClasses}>
           Profile Settings
         </NavLink>
+        <NavLink to="/settings/appearance" className={navLinkClasses}>
+          Appearance
+        </NavLink>
+        <NavLink to="/settings/seo" className={navLinkClasses}>
+          SEO
+        </NavLink>
+        <NavLink to="/settings/ui-text" className={navLinkClasses}>
+          UI Text
+        </NavLink>
+        <NavLink to="/settings/navigation" className={navLinkClasses}>
+          Navigation
+        </NavLink>
+
+        {/* Tools */}
+        <div className="px-4 pt-6 pb-2">
+          <span className={cosmic.sectionLabel}>Tools</span>
+          <div className="admin-cosmic-divider mt-2" />
+        </div>
+        <NavLink to="/media" className={navLinkClasses}>
+          Media Library
+        </NavLink>
+        <NavLink to="/inbox" className={navLinkClasses}>
+          Inbox
+        </NavLink>
       </nav>
-      <div className="p-4 mt-6 border-t border-gray-200 dark:border-white/[0.06]">
+
+      <div className="p-4 border-t border-white/[0.06]">
         <a
           href="/"
           target="_blank"
           rel="noopener noreferrer"
-          className="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-secondary-200 hover:bg-gray-100 dark:hover:bg-elevated"
+          className="block w-full text-left px-4 py-2.5 text-sm text-secondary-400 hover:text-primary-300 hover:bg-white/[0.04] rounded-lg transition-all duration-200"
         >
-          View Site
+          View Site &rarr;
         </a>
         <button
           onClick={handleLogout}
-          className="block w-full text-left px-4 py-2 text-sm text-red-500 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-elevated"
+          className="block w-full text-left px-4 py-2.5 text-sm text-error-400 hover:bg-error-500/10 rounded-lg transition-all duration-200"
         >
           Logout
         </button>

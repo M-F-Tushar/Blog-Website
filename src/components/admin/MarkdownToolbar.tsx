@@ -35,13 +35,13 @@ const MarkdownToolbar: React.FC<MarkdownToolbarProps> = ({ onInsert }) => {
   ];
 
   return (
-    <div className="flex flex-wrap gap-1 p-2 bg-gray-100 dark:bg-elevated border-b border-gray-300 dark:border-white/10 rounded-t-md">
+    <div className="flex flex-wrap gap-1 p-2 bg-elevated border-b border-white/10 rounded-t-md">
       {tools.map((tool, index) => (
         <button
           key={index}
           type="button"
           onClick={() => onInsert(tool.action)}
-          className="p-2 text-gray-600 dark:text-secondary-300 hover:bg-gray-200 dark:hover:bg-elevated rounded transition-colors"
+          className="p-2 text-secondary-300 hover:bg-white/[0.06] hover:text-primary-300 rounded transition-colors duration-200"
           title={tool.label}
         >
           <tool.icon size={18} />

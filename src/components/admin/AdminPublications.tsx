@@ -1,13 +1,14 @@
 import React, { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { usePublications, Publication } from '../../hooks/usePublications';
+import { cosmic } from './ui/cosmicClassNames';
 
 const TYPE_BADGE_CLASSES: Record<Publication['type'], string> = {
-  conference: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
-  journal: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
-  preprint: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200',
-  thesis: 'bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200',
-  book_chapter: 'bg-orange-100 text-orange-800 dark:bg-orange-900 dark:text-orange-200',
+  conference: cosmic.badgeAccent,
+  journal: cosmic.badgeSuccess,
+  preprint: cosmic.badgeWarning,
+  thesis: cosmic.badgeNeutral,
+  book_chapter: cosmic.badgeDanger,
 };
 
 const TYPE_LABELS: Record<Publication['type'], string> = {
@@ -71,22 +72,17 @@ const AdminPublications: React.FC = () => {
   };
 
   return (
-    <div className="max-w-5xl mx-auto bg-white dark:bg-surface rounded-lg shadow-lg p-8">
+    <div className={cosmic.container}>
       {error && (
-        <div className="mb-6 bg-red-100 dark:bg-red-900 border-l-4 border-red-500 text-red-700 dark:text-red-200 p-4">
+        <div className={`mb-6 ${cosmic.alertError}`}>
           <p className="font-bold">Error</p>
           <p>{error}</p>
         </div>
       )}
 
-      <div className="flex justify-between items-center mb-8 border-b border-gray-200 dark:border-white/[0.06] pb-6">
-        <h1 className="text-3xl font-bold font-serif text-gray-900 dark:text-secondary-50">
-          Manage Publications
-        </h1>
-        <Link
-          to="/publications/create"
-          className="px-5 py-2 bg-accent text-white font-semibold rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent dark:focus:ring-offset-dark-gray transition-colors"
-        >
+      <div className="flex justify-between items-center mb-8 border-b border-white/[0.06] pb-6">
+        <h1 className={cosmic.pageTitle}>Manage Publications</h1>
+        <Link to="/publications/create" className={cosmic.buttonPrimary}>
           Add Publication
         </Link>
       </div>
@@ -94,17 +90,14 @@ const AdminPublications: React.FC = () => {
       {/* Filters */}
       <div className="flex flex-wrap gap-4 mb-6">
         <div>
-          <label
-            htmlFor="yearFilter"
-            className="block text-sm font-medium text-gray-700 dark:text-secondary-300 mb-1"
-          >
+          <label htmlFor="yearFilter" className={cosmic.label}>
             Year
           </label>
           <select
             id="yearFilter"
             value={yearFilter}
             onChange={(e) => setYearFilter(e.target.value)}
-            className="px-3 py-2 text-gray-700 dark:text-secondary-200 bg-white dark:bg-elevated border border-gray-300 dark:border-white/10 rounded-md focus:outline-none focus:ring-2 focus:ring-accent transition-colors duration-200"
+            className={cosmic.select}
           >
             <option value="all">All Years</option>
             {availableYears.map((year) => (
@@ -115,17 +108,14 @@ const AdminPublications: React.FC = () => {
           </select>
         </div>
         <div>
-          <label
-            htmlFor="typeFilter"
-            className="block text-sm font-medium text-gray-700 dark:text-secondary-300 mb-1"
-          >
+          <label htmlFor="typeFilter" className={cosmic.label}>
             Type
           </label>
           <select
             id="typeFilter"
             value={typeFilter}
             onChange={(e) => setTypeFilter(e.target.value)}
-            className="px-3 py-2 text-gray-700 dark:text-secondary-200 bg-white dark:bg-elevated border border-gray-300 dark:border-white/10 rounded-md focus:outline-none focus:ring-2 focus:ring-accent transition-colors duration-200"
+            className={cosmic.select}
           >
             <option value="all">All Types</option>
             {availableTypes.map((t) => (
@@ -143,7 +133,7 @@ const AdminPublications: React.FC = () => {
                 setYearFilter('all');
                 setTypeFilter('all');
               }}
-              className="px-3 py-2 text-sm text-gray-600 dark:text-secondary-400 hover:text-gray-900 dark:hover:text-gray-100 underline transition-colors"
+              className="px-3 py-2 text-sm text-secondary-400 hover:text-secondary-200 underline transition-colors"
             >
               Clear Filters
             </button>
@@ -153,10 +143,10 @@ const AdminPublications: React.FC = () => {
 
       {loading ? (
         <div className="flex justify-center items-center py-12">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-accent"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-400"></div>
         </div>
       ) : filteredPublications.length === 0 ? (
-        <div className="text-center py-12 text-gray-500 dark:text-secondary-400">
+        <div className={cosmic.emptyState}>
           <p className="text-lg">
             {publications.length === 0
               ? 'No publications yet. Click "Add Publication" to create one.'
@@ -164,38 +154,23 @@ const AdminPublications: React.FC = () => {
           </p>
         </div>
       ) : (
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-            <thead className="bg-gray-50 dark:bg-elevated">
+        <div className={cosmic.tableWrapper}>
+          <table className={cosmic.table}>
+            <thead className={cosmic.tableHead}>
               <tr>
-                <th
-                  scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-secondary-300 uppercase tracking-wider"
-                >
+                <th scope="col" className={cosmic.tableHeadCell}>
                   Title
                 </th>
-                <th
-                  scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-secondary-300 uppercase tracking-wider"
-                >
+                <th scope="col" className={cosmic.tableHeadCell}>
                   Authors
                 </th>
-                <th
-                  scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-secondary-300 uppercase tracking-wider"
-                >
+                <th scope="col" className={cosmic.tableHeadCell}>
                   Year
                 </th>
-                <th
-                  scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-secondary-300 uppercase tracking-wider"
-                >
+                <th scope="col" className={cosmic.tableHeadCell}>
                   Type
                 </th>
-                <th
-                  scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-secondary-300 uppercase tracking-wider"
-                >
+                <th scope="col" className={cosmic.tableHeadCell}>
                   Venue
                 </th>
                 <th scope="col" className="relative px-6 py-3">
@@ -203,44 +178,39 @@ const AdminPublications: React.FC = () => {
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-white dark:bg-surface divide-y divide-gray-200 dark:divide-gray-700">
+            <tbody className={cosmic.tableBody}>
               {filteredPublications.map((pub) => (
-                <tr key={pub.id}>
-                  <td className="px-6 py-4">
+                <tr key={pub.id} className={cosmic.tableRow}>
+                  <td className={cosmic.tableCell}>
                     <div
-                      className="text-sm font-medium text-gray-900 dark:text-secondary-50 max-w-xs truncate"
+                      className="text-sm font-medium text-secondary-50 max-w-xs truncate"
                       title={pub.title}
                     >
                       {pub.title}
                     </div>
                   </td>
-                  <td className="px-6 py-4">
+                  <td className={cosmic.tableCell}>
                     <div
-                      className="text-sm text-gray-500 dark:text-secondary-400 max-w-xs truncate"
+                      className="text-sm text-secondary-400 max-w-xs truncate"
                       title={pub.authors.join(', ')}
                     >
                       {pub.authors.join(', ')}
                     </div>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900 dark:text-secondary-50">{pub.year}</div>
+                  <td className={cosmic.tableCell}>
+                    <div className="text-sm text-secondary-50">{pub.year}</div>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span
-                      className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${TYPE_BADGE_CLASSES[pub.type] || 'bg-gray-100 text-gray-800 dark:bg-gray-600 dark:text-secondary-200'}`}
-                    >
+                  <td className={cosmic.tableCell}>
+                    <span className={TYPE_BADGE_CLASSES[pub.type] || cosmic.badgeNeutral}>
                       {TYPE_LABELS[pub.type] || pub.type}
                     </span>
                   </td>
-                  <td className="px-6 py-4">
-                    <div
-                      className="text-sm text-gray-500 dark:text-secondary-400 max-w-xs truncate"
-                      title={pub.venue}
-                    >
+                  <td className={cosmic.tableCell}>
+                    <div className="text-sm text-secondary-400 max-w-xs truncate" title={pub.venue}>
                       {pub.venue}
                     </div>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                  <td className={`${cosmic.tableCell} text-right text-sm font-medium`}>
                     <div className="flex items-center justify-end space-x-3">
                       <button
                         onClick={() => handleToggleFeatured(pub)}
@@ -250,7 +220,7 @@ const AdminPublications: React.FC = () => {
                       >
                         {pub.featured ? (
                           <svg
-                            className="h-5 w-5 text-yellow-400"
+                            className={`h-5 w-5 ${cosmic.starActive}`}
                             xmlns="http://www.w3.org/2000/svg"
                             viewBox="0 0 20 20"
                             fill="currentColor"
@@ -259,7 +229,7 @@ const AdminPublications: React.FC = () => {
                           </svg>
                         ) : (
                           <svg
-                            className="h-5 w-5 text-gray-300 dark:text-gray-500 hover:text-yellow-400 dark:hover:text-yellow-400"
+                            className={`h-5 w-5 ${cosmic.starInactive}`}
                             xmlns="http://www.w3.org/2000/svg"
                             fill="none"
                             viewBox="0 0 24 24"
@@ -274,15 +244,12 @@ const AdminPublications: React.FC = () => {
                           </svg>
                         )}
                       </button>
-                      <Link
-                        to={`/publications/edit/${pub.id}`}
-                        className="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-200"
-                      >
+                      <Link to={`/publications/edit/${pub.id}`} className={cosmic.linkEdit}>
                         Edit
                       </Link>
                       <button
                         onClick={() => handleDelete(pub.id, pub.title)}
-                        className="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-200"
+                        className={cosmic.linkDelete}
                       >
                         Delete
                       </button>
@@ -292,7 +259,7 @@ const AdminPublications: React.FC = () => {
               ))}
             </tbody>
           </table>
-          <div className="mt-4 text-sm text-gray-500 dark:text-secondary-400">
+          <div className="mt-4 text-sm text-secondary-400">
             Showing {filteredPublications.length} of {publications.length} publication
             {publications.length !== 1 ? 's' : ''}
           </div>

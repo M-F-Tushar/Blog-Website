@@ -48,6 +48,7 @@ import { isSupabaseConfigured } from '../services/supabase';
 import { uploadImage, generateUniqueFilename } from '../services/supabaseStorageService';
 import MarkdownRenderer from './markdown/MarkdownRenderer';
 import { DEFAULT_AVATAR } from '../constants/constants';
+import { cosmic } from './admin/ui/cosmicClassNames';
 
 interface ToolbarButton {
   icon: React.FC<{ size?: number; className?: string }>;
@@ -489,41 +490,37 @@ const CreatePost: React.FC = () => {
     }
   };
 
-  const inputClasses =
-    'w-full px-3 py-2 text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-accent transition-colors duration-200';
-  const labelClasses = 'block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1';
-  const toolBtnClasses =
-    'p-1.5 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 rounded transition-colors';
+  const toolBtnClasses = 'p-1.5 text-secondary-300 hover:bg-white/[0.04] rounded transition-colors';
 
   return (
-    <div className="max-w-full mx-auto bg-white dark:bg-gray-800 rounded-lg shadow-lg">
+    <div className="max-w-full mx-auto admin-glass-cosmic rounded-2xl">
       {/* Top Bar */}
-      <div className="flex justify-between items-center p-4 border-b border-gray-200 dark:border-gray-700">
+      <div className="flex justify-between items-center p-4 border-b border-white/[0.06]">
         <div className="flex items-center gap-4">
-          <h1 className="text-2xl font-bold font-serif text-gray-900 dark:text-white">
+          <h1 className="text-2xl font-bold font-serif admin-text-gradient">
             {isEditMode ? 'Edit Post' : 'New Post'}
           </h1>
-          <div className="flex items-center gap-2 text-sm text-gray-500">
+          <div className="flex items-center gap-2 text-sm text-secondary-400">
             <Clock size={14} />
             <span>
               {readingTime.words} words • {readingTime.minutes} min read
             </span>
           </div>
           {autoSaveStatus === 'saving' && (
-            <span className="text-xs text-yellow-600">Saving draft...</span>
+            <span className="text-xs text-warning-400">Saving draft...</span>
           )}
           {autoSaveStatus === 'saved' && !isEditMode && (
-            <span className="text-xs text-green-600">Draft saved</span>
+            <span className="text-xs text-success-400">Draft saved</span>
           )}
         </div>
 
         <div className="flex items-center gap-2">
           {/* View Mode Toggle */}
-          <div className="flex border rounded-md overflow-hidden">
+          <div className="flex border border-white/[0.06] rounded-md overflow-hidden">
             <button
               type="button"
               onClick={() => setViewMode('edit')}
-              className={`px-3 py-1.5 text-sm ${viewMode === 'edit' ? 'bg-accent text-white' : 'bg-gray-100 dark:bg-gray-700'}`}
+              className={`px-3 py-1.5 text-sm ${viewMode === 'edit' ? 'bg-primary-500 text-white' : 'bg-elevated/50 text-secondary-300'}`}
               title="Edit only"
             >
               <Edit size={16} />
@@ -531,7 +528,7 @@ const CreatePost: React.FC = () => {
             <button
               type="button"
               onClick={() => setViewMode('split')}
-              className={`px-3 py-1.5 text-sm ${viewMode === 'split' ? 'bg-accent text-white' : 'bg-gray-100 dark:bg-gray-700'}`}
+              className={`px-3 py-1.5 text-sm ${viewMode === 'split' ? 'bg-primary-500 text-white' : 'bg-elevated/50 text-secondary-300'}`}
               title="Split view"
             >
               <Split size={16} />
@@ -539,7 +536,7 @@ const CreatePost: React.FC = () => {
             <button
               type="button"
               onClick={() => setViewMode('preview')}
-              className={`px-3 py-1.5 text-sm ${viewMode === 'preview' ? 'bg-accent text-white' : 'bg-gray-100 dark:bg-gray-700'}`}
+              className={`px-3 py-1.5 text-sm ${viewMode === 'preview' ? 'bg-primary-500 text-white' : 'bg-elevated/50 text-secondary-300'}`}
               title="Preview only"
             >
               <Eye size={16} />
@@ -549,7 +546,7 @@ const CreatePost: React.FC = () => {
           <button
             type="button"
             onClick={() => setShowShortcuts(!showShortcuts)}
-            className="p-2 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
+            className="p-2 text-secondary-400 hover:text-secondary-200 transition-colors"
             title="Keyboard shortcuts"
           >
             <Keyboard size={18} />
@@ -559,8 +556,8 @@ const CreatePost: React.FC = () => {
 
       {/* Keyboard Shortcuts Modal */}
       {showShortcuts && (
-        <div className="absolute right-4 top-16 z-50 bg-white dark:bg-gray-800 rounded-lg shadow-xl border p-4 w-72">
-          <h3 className="font-semibold mb-3">Keyboard Shortcuts</h3>
+        <div className="absolute right-4 top-16 z-50 admin-glass-cosmic rounded-lg shadow-xl border border-white/[0.06] p-4 w-72">
+          <h3 className="font-semibold text-secondary-50 mb-3">Keyboard Shortcuts</h3>
           <div className="space-y-2 text-sm">
             {[
               ['Ctrl+B', 'Bold'],
@@ -572,8 +569,10 @@ const CreatePost: React.FC = () => {
               ['Ctrl+Shift+P', 'Toggle preview'],
             ].map(([key, action]) => (
               <div key={key} className="flex justify-between">
-                <code className="bg-gray-100 dark:bg-gray-700 px-1 rounded">{key}</code>
-                <span className="text-gray-500">{action}</span>
+                <code className="bg-elevated/50 border border-white/[0.06] px-1 rounded text-secondary-200">
+                  {key}
+                </code>
+                <span className="text-secondary-400">{action}</span>
               </div>
             ))}
           </div>
@@ -584,19 +583,19 @@ const CreatePost: React.FC = () => {
         {/* Main Editor Area */}
         <div className="flex-1 flex flex-col">
           {/* Title Input */}
-          <div className="p-4 border-b border-gray-200 dark:border-gray-700">
+          <div className="p-4 border-b border-white/[0.06]">
             <input
               type="text"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="Post title..."
-              className="w-full text-3xl font-bold font-serif bg-transparent border-none focus:outline-none text-gray-900 dark:text-white placeholder-gray-400"
+              className="w-full text-3xl font-bold font-serif bg-transparent border-none focus:outline-none text-secondary-50 placeholder-secondary-600"
               required
             />
           </div>
 
           {/* Enhanced Toolbar */}
-          <div className="flex flex-wrap items-center gap-1 p-2 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-750">
+          <div className="flex flex-wrap items-center gap-1 p-2 border-b border-white/[0.06] bg-elevated/50">
             {/* Undo/Redo */}
             <button
               type="button"
@@ -619,7 +618,7 @@ const CreatePost: React.FC = () => {
               <Redo size={16} />
             </button>
 
-            <div className="w-px h-6 bg-gray-300 dark:bg-gray-600 mx-1" />
+            <div className="w-px h-6 bg-white/10 mx-1" />
 
             {/* Text Formatting */}
             <button
@@ -650,7 +649,7 @@ const CreatePost: React.FC = () => {
               <Strikethrough size={16} />
             </button>
 
-            <div className="w-px h-6 bg-gray-300 dark:bg-gray-600 mx-1" />
+            <div className="w-px h-6 bg-white/10 mx-1" />
 
             {/* Headings */}
             <button
@@ -681,7 +680,7 @@ const CreatePost: React.FC = () => {
               <Heading3 size={16} />
             </button>
 
-            <div className="w-px h-6 bg-gray-300 dark:bg-gray-600 mx-1" />
+            <div className="w-px h-6 bg-white/10 mx-1" />
 
             {/* Lists */}
             <button
@@ -712,7 +711,7 @@ const CreatePost: React.FC = () => {
               <CheckSquare size={16} />
             </button>
 
-            <div className="w-px h-6 bg-gray-300 dark:bg-gray-600 mx-1" />
+            <div className="w-px h-6 bg-white/10 mx-1" />
 
             {/* Blocks */}
             <button
@@ -752,7 +751,7 @@ const CreatePost: React.FC = () => {
               <Minus size={16} />
             </button>
 
-            <div className="w-px h-6 bg-gray-300 dark:bg-gray-600 mx-1" />
+            <div className="w-px h-6 bg-white/10 mx-1" />
 
             {/* Links & Media */}
             <button
@@ -785,7 +784,7 @@ const CreatePost: React.FC = () => {
               <Table size={16} />
             </button>
 
-            <div className="w-px h-6 bg-gray-300 dark:bg-gray-600 mx-1" />
+            <div className="w-px h-6 bg-white/10 mx-1" />
 
             {/* Embed */}
             <button
@@ -825,11 +824,11 @@ const CreatePost: React.FC = () => {
             {/* Editor */}
             {viewMode !== 'preview' && (
               <div
-                className={`${viewMode === 'split' ? 'w-1/2 border-r border-gray-200 dark:border-gray-700' : 'flex-1'} relative`}
+                className={`${viewMode === 'split' ? 'w-1/2 border-r border-white/[0.06]' : 'flex-1'} relative`}
               >
                 {isDragging && (
-                  <div className="absolute inset-0 bg-accent/20 border-2 border-dashed border-accent z-10 flex items-center justify-center">
-                    <div className="text-accent font-medium">
+                  <div className="absolute inset-0 bg-primary-500/20 border-2 border-dashed border-primary-400 z-10 flex items-center justify-center">
+                    <div className="text-primary-400 font-medium">
                       Drop files here (images or markdown)
                     </div>
                   </div>
@@ -839,7 +838,7 @@ const CreatePost: React.FC = () => {
                   value={content}
                   onChange={(e) => setContent(e.target.value)}
                   placeholder="Start writing your content in Markdown..."
-                  className="w-full h-[500px] p-4 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 focus:outline-none resize-none font-mono text-sm leading-relaxed"
+                  className="w-full h-[500px] p-4 bg-surface text-secondary-200 focus:outline-none resize-none font-mono text-sm leading-relaxed placeholder-secondary-600"
                   required
                 />
               </div>
@@ -848,9 +847,9 @@ const CreatePost: React.FC = () => {
             {/* Preview */}
             {viewMode !== 'edit' && (
               <div
-                className={`${viewMode === 'split' ? 'w-1/2' : 'flex-1'} h-[500px] overflow-y-auto p-6 bg-white dark:bg-gray-900`}
+                className={`${viewMode === 'split' ? 'w-1/2' : 'flex-1'} h-[500px] overflow-y-auto p-6 bg-surface/50`}
               >
-                <div className="prose prose-lg dark:prose-invert max-w-none prose-headings:text-gray-900 dark:prose-headings:text-white prose-p:text-gray-700 dark:prose-p:text-gray-200 prose-strong:text-gray-900 dark:prose-strong:text-white prose-a:text-accent">
+                <div className="prose prose-lg prose-invert max-w-none prose-headings:text-secondary-50 prose-p:text-secondary-200 prose-strong:text-white prose-a:text-primary-400">
                   <MarkdownRenderer content={content} />
                 </div>
               </div>
@@ -859,19 +858,19 @@ const CreatePost: React.FC = () => {
         </div>
 
         {/* Sidebar */}
-        <div className="w-full lg:w-80 border-t lg:border-t-0 lg:border-l border-gray-200 dark:border-gray-700 p-4 space-y-4">
+        <div className="w-full lg:w-80 border-t lg:border-t-0 lg:border-l border-white/[0.06] p-4 space-y-4">
           {/* Cover Image */}
           <div>
-            <label className={labelClasses}>Cover Image</label>
+            <label className={cosmic.label}>Cover Image</label>
             <input
               type="url"
               value={coverImage}
               onChange={(e) => setCoverImage(e.target.value)}
-              className={inputClasses}
+              className={cosmic.input}
               placeholder="Image URL..."
             />
             {supabaseEnabled && (
-              <label className="mt-2 flex items-center justify-center gap-2 px-4 py-2 border-2 border-dashed rounded-md cursor-pointer hover:border-accent transition-colors">
+              <label className="mt-2 flex items-center justify-center gap-2 px-4 py-2 border-2 border-dashed border-white/10 rounded-md cursor-pointer hover:border-primary-500 transition-colors text-secondary-300">
                 <Upload size={16} />
                 <span className="text-sm">Upload image</span>
                 <input
@@ -885,9 +884,9 @@ const CreatePost: React.FC = () => {
             )}
             {isUploading && (
               <div className="mt-2">
-                <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
+                <div className="h-2 bg-elevated rounded-full overflow-hidden">
                   <div
-                    className="h-full bg-accent transition-all"
+                    className="h-full bg-primary-500 transition-all"
                     style={{ width: `${uploadProgress}%` }}
                   />
                 </div>
@@ -904,11 +903,11 @@ const CreatePost: React.FC = () => {
 
           {/* Category */}
           <div>
-            <label className={labelClasses}>Category</label>
+            <label className={cosmic.label}>Category</label>
             <select
               value={category}
               onChange={(e) => setCategory(e.target.value)}
-              className={inputClasses}
+              className={cosmic.select}
               required
             >
               {categories.map((cat) => (
@@ -921,23 +920,23 @@ const CreatePost: React.FC = () => {
 
           {/* Tags */}
           <div>
-            <label className={labelClasses}>Tags (comma-separated)</label>
+            <label className={cosmic.label}>Tags (comma-separated)</label>
             <input
               type="text"
               value={tags}
               onChange={(e) => setTags(e.target.value)}
-              className={inputClasses}
+              className={cosmic.input}
               placeholder="react, typescript, tutorial"
             />
           </div>
 
           {/* Status */}
           <div>
-            <label className={labelClasses}>Status</label>
+            <label className={cosmic.label}>Status</label>
             <select
               value={status}
               onChange={(e) => setStatus(e.target.value as PostStatus)}
-              className={inputClasses}
+              className={cosmic.select}
             >
               <option value={PostStatus.DRAFT}>Draft</option>
               <option value={PostStatus.PUBLISHED}>Published</option>
@@ -945,18 +944,16 @@ const CreatePost: React.FC = () => {
           </div>
 
           {/* SEO Preview */}
-          <div className="p-3 bg-gray-50 dark:bg-gray-750 rounded-lg">
-            <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+          <div className="p-3 bg-elevated/50 border border-white/[0.06] rounded-lg">
+            <label className="flex items-center gap-2 text-sm font-medium text-secondary-300 mb-2">
               <Search size={14} /> SEO Preview
             </label>
             <div className="text-sm">
-              <p className="text-blue-600 dark:text-blue-400 truncate font-medium">
-                {title || 'Post Title'}
-              </p>
-              <p className="text-green-700 dark:text-green-500 text-xs truncate">
+              <p className="text-primary-400 truncate font-medium">{title || 'Post Title'}</p>
+              <p className="text-success-400 text-xs truncate">
                 yoursite.com/blog/{title ? title.toLowerCase().replace(/\s+/g, '-') : 'post-slug'}
               </p>
-              <p className="text-gray-600 dark:text-gray-400 text-xs line-clamp-2 mt-1">
+              <p className="text-secondary-400 text-xs line-clamp-2 mt-1">
                 {content.substring(0, 160) || 'Post description will appear here...'}
               </p>
             </div>
@@ -964,15 +961,15 @@ const CreatePost: React.FC = () => {
 
           {/* Table of Contents */}
           {tableOfContents.length > 0 && (
-            <div className="p-3 bg-gray-50 dark:bg-gray-750 rounded-lg">
-              <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <div className="p-3 bg-elevated/50 border border-white/[0.06] rounded-lg">
+              <label className="flex items-center gap-2 text-sm font-medium text-secondary-300 mb-2">
                 <Hash size={14} /> Table of Contents
               </label>
               <div className="space-y-1 max-h-32 overflow-y-auto">
                 {tableOfContents.map((item, i) => (
                   <div
                     key={i}
-                    className="text-xs text-gray-600 dark:text-gray-400 truncate"
+                    className="text-xs text-secondary-400 truncate"
                     style={{ paddingLeft: `${(item.level - 1) * 8}px` }}
                   >
                     {item.text}
@@ -983,11 +980,11 @@ const CreatePost: React.FC = () => {
           )}
 
           {/* Action Buttons */}
-          <div className="pt-4 border-t border-gray-200 dark:border-gray-700 space-y-2">
+          <div className="pt-4 border-t border-white/[0.06] space-y-2">
             <button
               type="submit"
               disabled={isSaving || isUploading}
-              className="w-full px-4 py-3 bg-accent text-white font-semibold rounded-md hover:bg-indigo-700 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+              className={`w-full flex items-center justify-center gap-2 ${cosmic.buttonPrimary}`}
             >
               <Save size={18} />
               {isSaving ? 'Saving...' : isEditMode ? 'Update Post' : 'Publish Post'}
@@ -996,7 +993,7 @@ const CreatePost: React.FC = () => {
               type="button"
               onClick={() => navigate('/admin/dashboard')}
               disabled={isSaving}
-              className="w-full px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors flex items-center justify-center gap-2"
+              className={`w-full flex items-center justify-center gap-2 ${cosmic.buttonSecondary}`}
             >
               <X size={18} />
               Cancel
@@ -1008,9 +1005,9 @@ const CreatePost: React.FC = () => {
       {/* Embed Modal */}
       {showEmbedModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-white dark:bg-gray-800 rounded-lg p-6 w-96 shadow-xl">
-            <h3 className="text-lg font-semibold mb-4">Embed Content</h3>
-            <p className="text-sm text-gray-500 mb-3">
+          <div className="admin-glass-cosmic rounded-lg p-6 w-96 shadow-xl border border-white/[0.06]">
+            <h3 className="text-lg font-semibold text-secondary-50 mb-4">Embed Content</h3>
+            <p className="text-sm text-secondary-400 mb-3">
               Paste a URL from YouTube, Twitter/X, or CodePen
             </p>
             <input
@@ -1018,21 +1015,17 @@ const CreatePost: React.FC = () => {
               value={embedUrl}
               onChange={(e) => setEmbedUrl(e.target.value)}
               placeholder="https://youtube.com/watch?v=..."
-              className={inputClasses}
+              className={cosmic.input}
             />
             <div className="flex justify-end gap-2 mt-4">
               <button
                 type="button"
                 onClick={() => setShowEmbedModal(false)}
-                className="px-4 py-2 text-gray-600 hover:text-gray-800"
+                className={cosmic.buttonSecondary}
               >
                 Cancel
               </button>
-              <button
-                type="button"
-                onClick={handleEmbed}
-                className="px-4 py-2 bg-accent text-white rounded-md hover:bg-indigo-700"
-              >
+              <button type="button" onClick={handleEmbed} className={cosmic.buttonPrimary}>
                 Embed
               </button>
             </div>

@@ -1,6 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
+import AdminStarryBackground from './ui/AdminStarryBackground';
+import AdminNebulaGradient from './ui/AdminNebulaGradient';
+import AdminShootingStar from './ui/AdminShootingStar';
+import { cosmic } from './ui/cosmicClassNames';
 
 const AdminLogin: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -32,54 +36,77 @@ const AdminLogin: React.FC = () => {
     setLoading(false);
   };
 
-  const inputClasses =
-    'w-full px-4 py-2 border border-gray-300 dark:border-white/10 rounded-md focus:ring-2 focus:ring-accent focus:border-transparent dark:bg-elevated dark:text-secondary-50';
-  const labelClasses = 'block text-sm font-medium text-gray-700 dark:text-secondary-300 mb-2';
-
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-void">
-      <div className="max-w-md w-full bg-white dark:bg-surface shadow-lg rounded-lg p-8">
-        <h1 className="text-3xl font-bold text-center text-gray-900 dark:text-secondary-50 mb-8">
-          Admin Login
-        </h1>
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div>
-            <label htmlFor="email" className={labelClasses}>
-              Email
-            </label>
-            <input
-              type="email"
-              id="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className={inputClasses}
-              required
-              disabled={loading}
-            />
+    <div className="min-h-screen flex items-center justify-center bg-void relative overflow-hidden">
+      <AdminStarryBackground density="normal" />
+      <AdminNebulaGradient variant="hero" />
+      <AdminShootingStar />
+
+      <div className="relative z-10 max-w-md w-full mx-4">
+        <div className="admin-glow-border rounded-2xl">
+          <div className="admin-glass-cosmic rounded-2xl p-8">
+            <h1 className="text-3xl font-bold font-serif text-center admin-text-gradient-cosmic mb-2">
+              Admin Login
+            </h1>
+            <p className="text-center text-secondary-500 text-sm mb-8">
+              Sign in to manage your website
+            </p>
+
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div>
+                <label htmlFor="email" className={cosmic.label}>
+                  Email
+                </label>
+                <input
+                  type="email"
+                  id="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className={cosmic.input}
+                  placeholder="admin@example.com"
+                  required
+                  disabled={loading}
+                />
+              </div>
+              <div>
+                <label htmlFor="password" className={cosmic.label}>
+                  Password
+                </label>
+                <input
+                  type="password"
+                  id="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className={cosmic.input}
+                  placeholder="Enter your password"
+                  required
+                  disabled={loading}
+                />
+              </div>
+
+              {error && (
+                <div className={cosmic.alertError}>
+                  <p className="text-sm">{error}</p>
+                </div>
+              )}
+
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full px-6 py-3 bg-gradient-to-r from-primary-600 to-accent-600 text-white font-semibold rounded-lg shadow-lg shadow-primary-500/25 hover:shadow-primary-500/40 hover:from-primary-500 hover:to-accent-500 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {loading ? (
+                  <span className="flex items-center justify-center gap-2">
+                    <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    Signing in...
+                  </span>
+                ) : (
+                  'Sign In'
+                )}
+              </button>
+            </form>
           </div>
-          <div>
-            <label htmlFor="password" className={labelClasses}>
-              Password
-            </label>
-            <input
-              type="password"
-              id="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className={inputClasses}
-              required
-              disabled={loading}
-            />
-          </div>
-          {error && <p className="text-red-500 text-sm text-center">{error}</p>}
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full px-6 py-2 bg-accent text-white font-semibold rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent transition-colors disabled:opacity-50"
-          >
-            {loading ? 'Logging in...' : 'Login'}
-          </button>
-        </form>
+        </div>
       </div>
     </div>
   );

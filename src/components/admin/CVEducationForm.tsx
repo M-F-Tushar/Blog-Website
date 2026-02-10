@@ -1,15 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Education } from '../../hooks/useCVData';
+import { cosmic } from './ui/cosmicClassNames';
 
 interface Props {
   education?: Education;
   onSave: (data: Omit<Education, 'id' | 'created_at' | 'updated_at'>) => Promise<void>;
   onCancel: () => void;
 }
-
-const inputClasses =
-  'w-full px-3 py-2 text-gray-700 dark:text-secondary-200 bg-white dark:bg-elevated border border-gray-300 dark:border-white/10 rounded-md focus:outline-none focus:ring-2 focus:ring-accent transition-colors duration-200';
-const labelClasses = 'block text-sm font-medium text-gray-700 dark:text-secondary-300 mb-1';
 
 const CVEducationForm: React.FC<Props> = ({ education, onSave, onCancel }) => {
   const [institution, setInstitution] = useState('');
@@ -69,34 +66,32 @@ const CVEducationForm: React.FC<Props> = ({ education, onSave, onCancel }) => {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      <h3 className="text-lg font-semibold text-gray-900 dark:text-secondary-50">
-        {education ? 'Edit Education' : 'Add Education'}
-      </h3>
+      <h3 className={cosmic.subTitle}>{education ? 'Edit Education' : 'Add Education'}</h3>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label className={labelClasses}>
+          <label className={cosmic.label}>
             Institution <span className="text-red-500">*</span>
           </label>
           <input
             type="text"
             value={institution}
             onChange={(e) => setInstitution(e.target.value)}
-            className={inputClasses}
+            className={cosmic.input}
             placeholder="e.g. MIT"
             required
           />
         </div>
 
         <div>
-          <label className={labelClasses}>
+          <label className={cosmic.label}>
             Degree <span className="text-red-500">*</span>
           </label>
           <input
             type="text"
             value={degree}
             onChange={(e) => setDegree(e.target.value)}
-            className={inputClasses}
+            className={cosmic.input}
             placeholder="e.g. Bachelor of Science"
             required
           />
@@ -105,26 +100,26 @@ const CVEducationForm: React.FC<Props> = ({ education, onSave, onCancel }) => {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label className={labelClasses}>
+          <label className={cosmic.label}>
             Field of Study <span className="text-red-500">*</span>
           </label>
           <input
             type="text"
             value={fieldOfStudy}
             onChange={(e) => setFieldOfStudy(e.target.value)}
-            className={inputClasses}
+            className={cosmic.input}
             placeholder="e.g. Computer Science"
             required
           />
         </div>
 
         <div>
-          <label className={labelClasses}>Location</label>
+          <label className={cosmic.label}>Location</label>
           <input
             type="text"
             value={location}
             onChange={(e) => setLocation(e.target.value)}
-            className={inputClasses}
+            className={cosmic.input}
             placeholder="e.g. Cambridge, MA"
           />
         </div>
@@ -132,25 +127,25 @@ const CVEducationForm: React.FC<Props> = ({ education, onSave, onCancel }) => {
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div>
-          <label className={labelClasses}>
+          <label className={cosmic.label}>
             Start Date <span className="text-red-500">*</span>
           </label>
           <input
             type="date"
             value={startDate}
             onChange={(e) => setStartDate(e.target.value)}
-            className={inputClasses}
+            className={cosmic.input}
             required
           />
         </div>
 
         <div>
-          <label className={labelClasses}>End Date</label>
+          <label className={cosmic.label}>End Date</label>
           <input
             type="date"
             value={endDate}
             onChange={(e) => setEndDate(e.target.value)}
-            className={inputClasses}
+            className={cosmic.input}
             disabled={current}
           />
         </div>
@@ -161,61 +156,55 @@ const CVEducationForm: React.FC<Props> = ({ education, onSave, onCancel }) => {
               type="checkbox"
               checked={current}
               onChange={(e) => setCurrent(e.target.checked)}
-              className="w-4 h-4 text-accent border-gray-300 dark:border-white/10 rounded focus:ring-accent"
+              className="w-4 h-4 border-white/10 rounded accent-primary-500"
             />
-            <span className="text-sm text-gray-700 dark:text-secondary-300">
-              Currently studying here
-            </span>
+            <span className="text-sm text-secondary-300">Currently studying here</span>
           </label>
         </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label className={labelClasses}>GPA</label>
+          <label className={cosmic.label}>GPA</label>
           <input
             type="text"
             value={gpa}
             onChange={(e) => setGpa(e.target.value)}
-            className={inputClasses}
+            className={cosmic.input}
             placeholder="e.g. 3.8/4.0"
           />
         </div>
 
         <div>
-          <label className={labelClasses}>Sort Order</label>
+          <label className={cosmic.label}>Sort Order</label>
           <input
             type="number"
             value={sortOrder}
             onChange={(e) => setSortOrder(parseInt(e.target.value, 10) || 0)}
-            className={inputClasses}
+            className={cosmic.input}
           />
         </div>
       </div>
 
       <div>
-        <label className={labelClasses}>Description</label>
+        <label className={cosmic.label}>Description</label>
         <textarea
           value={description}
           onChange={(e) => setDescription(e.target.value)}
-          className={`${inputClasses} min-h-[100px]`}
+          className={`${cosmic.textarea} min-h-[100px]`}
           placeholder="Describe your studies, achievements, activities..."
           rows={4}
         />
       </div>
 
-      <div className="flex justify-end gap-3 pt-4 border-t border-gray-200 dark:border-white/[0.06]">
-        <button
-          type="button"
-          onClick={onCancel}
-          className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-secondary-300 bg-white dark:bg-elevated border border-gray-300 dark:border-white/10 rounded-md hover:bg-gray-50 dark:hover:bg-elevated transition-colors duration-200"
-        >
+      <div className="flex justify-end gap-3 pt-4 border-t border-white/[0.06]">
+        <button type="button" onClick={onCancel} className={cosmic.buttonSecondary}>
           Cancel
         </button>
         <button
           type="submit"
           disabled={isSaving}
-          className="px-4 py-2 text-sm font-medium text-white bg-accent hover:bg-accent/90 rounded-md disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200 flex items-center gap-2"
+          className={`${cosmic.buttonPrimary} flex items-center gap-2`}
         >
           {isSaving && (
             <svg

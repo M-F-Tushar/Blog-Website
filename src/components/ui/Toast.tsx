@@ -43,25 +43,25 @@ const Toast: React.FC<ToastProps> = ({ toast, onDismiss }) => {
 
   const colorClasses = {
     success:
-      'bg-success-50 dark:bg-success-900/20 border-success-200 dark:border-success-800 text-success-900 dark:text-success-100',
+      'bg-success-900/30 border-success-500/20 text-success-100 shadow-[0_0_20px_rgba(16,185,129,0.1)]',
     error:
-      'bg-error-50 dark:bg-error-900/20 border-error-200 dark:border-error-800 text-error-900 dark:text-error-100',
+      'bg-error-900/30 border-error-500/20 text-error-100 shadow-[0_0_20px_rgba(239,68,68,0.1)]',
     warning:
-      'bg-warning-50 dark:bg-warning-900/20 border-warning-200 dark:border-warning-800 text-warning-900 dark:text-warning-100',
-    info: 'bg-info-50 dark:bg-info-900/20 border-info-200 dark:border-info-800 text-info-900 dark:text-info-100',
+      'bg-warning-900/30 border-warning-500/20 text-warning-100 shadow-[0_0_20px_rgba(245,158,11,0.1)]',
+    info: 'bg-info-900/30 border-info-500/20 text-info-100 shadow-[0_0_20px_rgba(59,130,246,0.1)]',
   };
 
   const iconColorClasses = {
-    success: 'text-success-600 dark:text-success-400',
-    error: 'text-error-600 dark:text-error-400',
-    warning: 'text-warning-600 dark:text-warning-400',
-    info: 'text-info-600 dark:text-info-400',
+    success: 'text-success-400',
+    error: 'text-error-400',
+    warning: 'text-warning-400',
+    info: 'text-info-400',
   };
 
   return (
     <div
       className={clsx(
-        'flex items-start gap-3 p-4 rounded-lg border shadow-lg max-w-md w-full pointer-events-auto transition-all duration-200',
+        'flex items-start gap-3 p-4 rounded-xl border backdrop-blur-xl max-w-md w-full pointer-events-auto transition-all duration-200',
         isExiting ? 'opacity-0 scale-50' : 'animate-toast-in',
         colorClasses[toast.type]
       )}
@@ -78,7 +78,7 @@ const Toast: React.FC<ToastProps> = ({ toast, onDismiss }) => {
 
       <button
         onClick={dismiss}
-        className="flex-shrink-0 p-1 rounded-md hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
+        className="flex-shrink-0 p-1 rounded-md hover:bg-white/10 transition-colors"
         aria-label="Dismiss notification"
       >
         <X className="w-4 h-4" />

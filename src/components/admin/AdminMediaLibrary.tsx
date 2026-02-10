@@ -21,6 +21,7 @@ import {
   initializeMediaBucket,
 } from '../../services/mediaStorageService';
 import { isSupabaseConfigured } from '../../services/supabase';
+import { cosmic } from './ui/cosmicClassNames';
 
 interface MediaItem {
   id: string;
@@ -241,19 +242,14 @@ const AdminMediaLibrary: React.FC = () => {
     return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
   };
 
-  const inputClasses =
-    'w-full px-3 py-2 text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-accent transition-colors duration-200';
-
   return (
-    <div className="max-w-6xl mx-auto bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8">
-      <div className="flex justify-between items-center mb-6 border-b border-gray-200 dark:border-gray-700 pb-4">
+    <div className={cosmic.container}>
+      <div className="flex justify-between items-center mb-6 border-b border-white/[0.06] pb-4">
         <div className="flex items-center gap-3">
-          <Image size={28} className="text-accent" />
+          <Image size={28} className="text-primary-400" />
           <div>
-            <h1 className="text-2xl font-bold font-serif text-gray-900 dark:text-white">
-              Media Library
-            </h1>
-            <p className="text-sm text-gray-500 dark:text-gray-400">
+            <h1 className={cosmic.pageTitle}>Media Library</h1>
+            <p className="text-sm text-secondary-400">
               {allMediaItems.length} items • {uploadedMedia.length} uploaded • {mediaItems.length}{' '}
               from posts
             </p>
@@ -271,10 +267,10 @@ const AdminMediaLibrary: React.FC = () => {
           />
           <label
             htmlFor="media-upload"
-            className={`flex items-center gap-2 px-4 py-2 rounded-md transition-colors cursor-pointer ${
+            className={`flex items-center gap-2 cursor-pointer ${
               storageAvailable && !isUploading
-                ? 'bg-accent text-white hover:bg-indigo-700'
-                : 'bg-gray-100 dark:bg-gray-700 text-gray-400 cursor-not-allowed'
+                ? cosmic.buttonPrimary
+                : 'px-6 py-2.5 bg-elevated border border-white/10 text-secondary-500 rounded-lg cursor-not-allowed opacity-50'
             }`}
             title={
               storageAvailable
@@ -290,8 +286,8 @@ const AdminMediaLibrary: React.FC = () => {
 
       {/* Storage not available warning */}
       {!storageAvailable && isSupabaseConfigured() && (
-        <div className="mb-4 p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg border border-yellow-200 dark:border-yellow-800">
-          <div className="flex items-center gap-2 text-yellow-700 dark:text-yellow-300 text-sm">
+        <div className={`mb-4 ${cosmic.alertWarning}`}>
+          <div className="flex items-center gap-2 text-sm">
             <AlertCircle size={16} />
             <span>
               Media storage not available. Create a &quot;media&quot; bucket in Supabase Storage to
@@ -302,14 +298,14 @@ const AdminMediaLibrary: React.FC = () => {
       )}
 
       {successMessage && (
-        <div className="mb-4 p-4 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 rounded-md flex items-center gap-2">
+        <div className={`mb-4 flex items-center gap-2 ${cosmic.alertSuccess}`}>
           <Check size={18} />
           {successMessage}
         </div>
       )}
 
       {errorMessage && (
-        <div className="mb-4 p-4 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 rounded-md flex items-center gap-2">
+        <div className={`mb-4 flex items-center gap-2 ${cosmic.alertError}`}>
           <X size={18} />
           {errorMessage}
         </div>
@@ -319,35 +315,35 @@ const AdminMediaLibrary: React.FC = () => {
       <div className="flex flex-wrap gap-4 mb-6">
         <div className="flex-1 min-w-[200px]">
           <div className="relative">
-            <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+            <Search
+              size={18}
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-secondary-500"
+            />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search by name, URL, or post..."
-              className={`${inputClasses} pl-10`}
+              className={`${cosmic.input} pl-10`}
             />
           </div>
         </div>
 
         <div className="flex gap-2">
-          <button
-            onClick={selectAll}
-            className="px-3 py-2 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
-          >
+          <button onClick={selectAll} className={cosmic.buttonSmall}>
             {selectedItems.size === filteredItemsAll.length ? 'Deselect All' : 'Select All'}
           </button>
 
-          <div className="flex border rounded-md overflow-hidden">
+          <div className="flex rounded-lg overflow-hidden border border-white/[0.06]">
             <button
               onClick={() => setViewMode('grid')}
-              className={`p-2 ${viewMode === 'grid' ? 'bg-accent text-white' : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400'}`}
+              className={`p-2 ${viewMode === 'grid' ? cosmic.tabActive : cosmic.tabInactive} rounded-none border-0`}
             >
               <Grid size={18} />
             </button>
             <button
               onClick={() => setViewMode('list')}
-              className={`p-2 ${viewMode === 'list' ? 'bg-accent text-white' : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400'}`}
+              className={`p-2 ${viewMode === 'list' ? cosmic.tabActive : cosmic.tabInactive} rounded-none border-0`}
             >
               <List size={18} />
             </button>
@@ -358,7 +354,7 @@ const AdminMediaLibrary: React.FC = () => {
           <button
             onClick={handleDelete}
             disabled={isDeleting}
-            className="flex items-center gap-2 px-4 py-2 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 rounded-md hover:bg-red-200 dark:hover:bg-red-900/50 transition-colors disabled:opacity-50"
+            className={`flex items-center gap-2 ${cosmic.buttonDanger} disabled:opacity-50`}
             title="Delete selected uploaded files"
           >
             {isDeleting ? <Loader2 size={18} className="animate-spin" /> : <Trash2 size={18} />}
@@ -373,14 +369,14 @@ const AdminMediaLibrary: React.FC = () => {
           {filteredItemsAll.map((item) => (
             <div
               key={item.id}
-              className={`relative group cursor-pointer rounded-lg overflow-hidden border-2 transition-all ${
+              className={`relative group cursor-pointer admin-glass rounded-xl overflow-hidden border-2 transition-all ${
                 selectedItems.has(item.id)
-                  ? 'border-accent ring-2 ring-accent/50'
-                  : 'border-gray-200 dark:border-gray-700 hover:border-gray-400'
+                  ? 'border-primary-500 ring-2 ring-primary-500/30 shadow-glow-cyan'
+                  : 'border-white/[0.06] hover:border-primary-500/30'
               }`}
               onClick={() => toggleSelect(item.id)}
             >
-              <div className="aspect-square bg-gray-100 dark:bg-gray-700">
+              <div className="aspect-square bg-elevated/50">
                 <img
                   src={item.url}
                   alt={item.name}
@@ -400,11 +396,11 @@ const AdminMediaLibrary: React.FC = () => {
                       e.stopPropagation();
                       copyUrl(item.url);
                     }}
-                    className="p-1.5 bg-white/20 rounded hover:bg-white/40 transition-colors"
+                    className="p-1.5 bg-white/20 rounded-lg hover:bg-white/40 transition-colors"
                     title="Copy URL"
                   >
                     {copiedUrl === item.url ? (
-                      <Check size={14} className="text-green-400" />
+                      <Check size={14} className="text-primary-400" />
                     ) : (
                       <Copy size={14} className="text-white" />
                     )}
@@ -412,13 +408,13 @@ const AdminMediaLibrary: React.FC = () => {
                 </div>
                 <div>
                   <p className="text-white text-xs truncate">{item.name}</p>
-                  <p className="text-gray-300 text-xs">{formatSize(item.size)}</p>
+                  <p className="text-secondary-400 text-xs">{formatSize(item.size)}</p>
                 </div>
               </div>
 
               {/* Selection indicator */}
               {selectedItems.has(item.id) && (
-                <div className="absolute top-2 left-2 w-6 h-6 bg-accent rounded-full flex items-center justify-center">
+                <div className="absolute top-2 left-2 w-6 h-6 bg-primary-500 rounded-full flex items-center justify-center shadow-lg shadow-primary-500/30">
                   <Check size={14} className="text-white" />
                 </div>
               )}
@@ -433,14 +429,14 @@ const AdminMediaLibrary: React.FC = () => {
           {filteredItemsAll.map((item) => (
             <div
               key={item.id}
-              className={`flex items-center gap-4 p-3 rounded-lg border-2 cursor-pointer transition-all ${
+              className={`flex items-center gap-4 p-3 admin-glass rounded-xl cursor-pointer transition-all ${
                 selectedItems.has(item.id)
-                  ? 'border-accent bg-accent/5'
-                  : 'border-gray-200 dark:border-gray-700 hover:border-gray-400 bg-white dark:bg-gray-800'
+                  ? 'border border-primary-500/20 shadow-glow-cyan'
+                  : 'border border-white/[0.06] hover:border-white/10'
               }`}
               onClick={() => toggleSelect(item.id)}
             >
-              <div className="w-16 h-16 rounded overflow-hidden bg-gray-100 dark:bg-gray-700 flex-shrink-0">
+              <div className="w-16 h-16 rounded-lg overflow-hidden bg-elevated/50 flex-shrink-0">
                 <img
                   src={item.url}
                   alt={item.name}
@@ -453,15 +449,15 @@ const AdminMediaLibrary: React.FC = () => {
               </div>
 
               <div className="flex-1 min-w-0">
-                <p className="font-medium text-gray-900 dark:text-white truncate">{item.name}</p>
-                <p className="text-sm text-gray-500 dark:text-gray-400 truncate">{item.url}</p>
-                <p className="text-xs text-gray-400">
+                <p className="font-medium text-secondary-50 truncate">{item.name}</p>
+                <p className="text-sm text-secondary-400 truncate">{item.url}</p>
+                <p className="text-xs text-secondary-500">
                   Used in: {item.usedIn.slice(0, 2).join(', ')}
                   {item.usedIn.length > 2 ? ` +${item.usedIn.length - 2} more` : ''}
                 </p>
               </div>
 
-              <div className="text-right text-sm text-gray-500 dark:text-gray-400">
+              <div className="text-right text-sm text-secondary-400">
                 <p>{formatSize(item.size)}</p>
                 <p>{item.uploadedAt}</p>
               </div>
@@ -471,11 +467,11 @@ const AdminMediaLibrary: React.FC = () => {
                   e.stopPropagation();
                   copyUrl(item.url);
                 }}
-                className="p-2 text-gray-400 hover:text-accent transition-colors"
+                className={cosmic.buttonIcon}
                 title="Copy URL"
               >
                 {copiedUrl === item.url ? (
-                  <Check size={18} className="text-green-500" />
+                  <Check size={18} className="text-primary-400" />
                 ) : (
                   <Copy size={18} />
                 )}
@@ -486,23 +482,26 @@ const AdminMediaLibrary: React.FC = () => {
       )}
 
       {filteredItemsAll.length === 0 && (
-        <div className="text-center py-16 text-gray-500">
+        <div className={cosmic.emptyState}>
           <Image size={48} className="mx-auto mb-4 opacity-30" />
-          <p>
+          <p className="text-secondary-400">
             {searchQuery
               ? 'No media found matching your search.'
               : 'No media found. Upload files or add images to your posts.'}
           </p>
-          <p className="text-sm mt-2">Use the Upload button above or add images to your posts.</p>
+          <p className="text-sm mt-2 text-secondary-500">
+            Use the Upload button above or add images to your posts.
+          </p>
         </div>
       )}
 
-      <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
-        <p className="text-sm text-blue-700 dark:text-blue-300">
+      <div className={`mt-6 ${cosmic.alertInfo}`}>
+        <p className="text-sm">
           <strong>Media Library</strong>
           <br />• Images are automatically extracted from all your posts
           <br />• Click on an image to select, click the copy icon to copy its URL
-          <br />• Use the copied URL in markdown: <code>![alt text](url)</code>
+          <br />• Use the copied URL in markdown:{' '}
+          <code className="bg-elevated/80 px-2 py-1 rounded">![alt text](url)</code>
         </p>
       </div>
     </div>

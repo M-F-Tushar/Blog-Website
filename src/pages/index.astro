@@ -11,28 +11,50 @@ import CosmicStarfield from '@/components/react/CosmicStarfield';
 import NebulaGradient from '@/components/astro/NebulaGradient.astro';
 import ShootingStar from '@/components/astro/ShootingStar.astro';
 import ConstellationDecor from '@/components/astro/ConstellationDecor.astro';
-import CosmicDivider from '@/components/astro/CosmicDivider.astro';
 
 const settings = await getSiteSettings();
+const uiText = (settings as any).ui_text?.home || {};
 const posts = await getPublishedPosts();
 
 const heroSection = await getPageSection('home', 'hero');
 const heroTaglines = heroSection?.content?.taglines || ['AI/ML Researcher', 'CS Student', 'Open Source Contributor', 'Tech Blogger'];
+
+// Homepage layout config
+const layout = (settings as any).homepage_layout || {};
+const showHero = layout.showHero !== false;
+const showStats = layout.showStats !== false;
+const showFeatured = layout.showFeaturedPost !== false;
+const showTrending = layout.showTrendingTopics !== false;
+const showArticles = layout.showLatestArticles !== false;
+const showNewsletter = layout.showNewsletter !== false;
+
+// Section ordering via CSS order
+const DEFAULT_ORDER = ['hero', 'stats', 'featured', 'trending', 'articles', 'newsletter'];
+const sectionOrder: string[] = layout.sectionOrder || DEFAULT_ORDER;
+const orderMap: Record<string, number> = {};
+sectionOrder.forEach((id: string, i: number) => { orderMap[id] = i; });
+// Fill in defaults for any sections not in the array
+DEFAULT_ORDER.forEach((id, i) => { if (!(id in orderMap)) orderMap[id] = DEFAULT_ORDER.length + i; });
+
+// Section config
+const sectionConfig = layout.sectionConfig || {};
+const maxArticles = (sectionConfig.articles?.count as number) || 6;
+const maxTags = (sectionConfig.trending?.maxTags as number) || 8;
 
 const featuredPost = settings.featured_post_id
   ? posts.find((p) => p.id === settings.featured_post_id) || posts[0]
   : posts[0];
 
 const recentPosts = featuredPost
-  ? posts.filter((p) => p.id !== featuredPost.id).slice(0, 6)
-  : posts.slice(0, 6);
+  ? posts.filter((p) => p.id !== featuredPost.id).slice(0, maxArticles)
+  : posts.slice(0, maxArticles);
 
 // Popular tags
 const tagCounts: Record<string, number> = {};
 posts.forEach((p) => p.tags?.forEach((tag) => { tagCounts[tag] = (tagCounts[tag] || 0) + 1; }));
 const popularTags = Object.entries(tagCounts)
   .sort((a, b) => b[1] - a[1])
-  .slice(0, 8)
+  .slice(0, maxTags)
   .map(([tag]) => tag);
 
 const structuredData = generateWebSiteSchema(
@@ -50,150 +72,152 @@ const yearsActive = postDates.length > 0 ? new Date().getFullYear() - Math.min(.
 ---
 
 <BaseLayout structuredData={structuredData}>
-  <div class="space-y-20 pb-16">
+  <div class="flex flex-col pb-16" style="gap: 5rem;">
 
     <!-- ======================== HERO SECTION ======================== -->
-    <section class="relative min-h-screen flex items-center justify-center -mt-20 pt-20 overflow-hidden">
-      <!-- Cosmic background -->
-      <CosmicStarfield
-        client:idle
-        starCount={2500}
-        speed={0.2}
-        className="z-0"
-      />
-      <NebulaGradient variant="hero" />
-      <ShootingStar count={2} />
-      <ConstellationDecor variant="left" class="absolute top-20 left-0 opacity-20 w-64 hidden lg:block" />
+    {showHero && (
+      <section class="relative min-h-screen flex items-center justify-center -mt-20 pt-20 overflow-hidden" style={`order: ${orderMap.hero ?? 0}`}>
+        <!-- Cosmic background -->
+        <CosmicStarfield
+          client:idle
+          starCount={2500}
+          speed={0.2}
+          className="z-0"
+        />
+        <NebulaGradient variant="hero" />
+        <ShootingStar count={2} />
+        <ConstellationDecor variant="left" class="absolute top-20 left-0 opacity-20 w-64 hidden lg:block" />
 
-      <!-- Aurora gradient overlay -->
-      <div class="absolute inset-0 aurora-bg opacity-30 z-0"></div>
+        <!-- Aurora gradient overlay -->
+        <div class="absolute inset-0 aurora-bg opacity-30 z-0"></div>
 
-      <!-- Content -->
-      <div class="container mx-auto max-w-5xl text-center relative z-10 px-4">
-        <!-- Welcome badge -->
-        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-surface/50 backdrop-blur-sm border border-white/10 mb-8">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gold-400">
-            <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"></path>
-            <path d="M5 3v4"></path>
-            <path d="M19 17v4"></path>
-            <path d="M3 5h4"></path>
-            <path d="M17 19h4"></path>
+        <!-- Content -->
+        <div class="container mx-auto max-w-5xl text-center relative z-10 px-4">
+          <!-- Welcome badge -->
+          <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-surface/50 backdrop-blur-sm border border-white/10 mb-8">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gold-400">
+              <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"></path>
+              <path d="M5 3v4"></path>
+              <path d="M19 17v4"></path>
+              <path d="M3 5h4"></path>
+              <path d="M17 19h4"></path>
+            </svg>
+            <span class="text-sm font-medium text-secondary-300">
+              {uiText.welcomeBadge || 'Welcome to my research blog'}
+            </span>
+          </div>
+
+          <!-- Name -->
+          <h1 class="text-5xl md:text-7xl font-bold font-serif text-secondary-50 mb-4 tracking-tight leading-tight">
+            Hi, I&apos;m <span class="text-gradient-cyan">{settings.author_name}</span>
+          </h1>
+
+          <!-- Typewriter effect -->
+          <div class="mb-6">
+            <TypewriterEffect
+              client:visible
+              texts={heroTaglines}
+              speed={80}
+              deleteSpeed={40}
+              pauseDuration={2000}
+              className="text-xl md:text-2xl text-secondary-300 mb-10"
+              cursorColor="#06b6d4"
+            />
+          </div>
+
+          <!-- Tagline -->
+          <p class="text-xl md:text-2xl text-secondary-400 mb-10 max-w-2xl mx-auto leading-relaxed">
+            {settings.author_tagline}
+          </p>
+
+          <!-- CTA buttons -->
+          <div class="flex flex-col sm:flex-row justify-center gap-4">
+            <MagneticButton
+              client:visible
+              href="/blog"
+              className="px-8 py-4 bg-primary-600 text-white font-semibold rounded-full shadow-lg shadow-primary-500/30 hover:bg-primary-500 hover:shadow-primary-500/40 transition-all duration-300 inline-flex items-center gap-2"
+            >
+              {uiText.startReading || 'Start Reading'}
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+            </MagneticButton>
+            <MagneticButton
+              client:visible
+              href="/cv"
+              className="px-8 py-4 bg-surface text-secondary-200 font-semibold rounded-full border border-white/10 hover:border-primary-500/30 transition-all duration-300"
+            >
+              {uiText.moreAboutMe || 'View CV'}
+            </MagneticButton>
+          </div>
+        </div>
+
+        <!-- Scroll indicator -->
+        <div class="absolute bottom-8 left-1/2 -translate-x-1/2 z-10">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="animate-bounce text-secondary-500">
+            <path d="m6 9 6 6 6-6"></path>
           </svg>
-          <span class="text-sm font-medium text-secondary-300">
-            Welcome to my research blog
-          </span>
         </div>
-
-        <!-- Name -->
-        <h1 class="text-5xl md:text-7xl font-bold font-serif text-secondary-50 mb-4 tracking-tight leading-tight">
-          Hi, I&apos;m <span class="text-gradient-cyan">{settings.author_name}</span>
-        </h1>
-
-        <!-- Typewriter effect -->
-        <div class="mb-6">
-          <TypewriterEffect
-            client:visible
-            texts={heroTaglines}
-            speed={80}
-            deleteSpeed={40}
-            pauseDuration={2000}
-            className="text-xl md:text-2xl text-secondary-300 mb-10"
-            cursorColor="#06b6d4"
-          />
-        </div>
-
-        <!-- Tagline -->
-        <p class="text-xl md:text-2xl text-secondary-400 mb-10 max-w-2xl mx-auto leading-relaxed">
-          {settings.author_tagline}
-        </p>
-
-        <!-- CTA buttons -->
-        <div class="flex flex-col sm:flex-row justify-center gap-4">
-          <MagneticButton
-            client:visible
-            href="/blog"
-            className="px-8 py-4 bg-primary-600 text-white font-semibold rounded-full shadow-lg shadow-primary-500/30 hover:bg-primary-500 hover:shadow-primary-500/40 transition-all duration-300 inline-flex items-center gap-2"
-          >
-            Start Reading
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
-          </MagneticButton>
-          <MagneticButton
-            client:visible
-            href="/cv"
-            className="px-8 py-4 bg-surface text-secondary-200 font-semibold rounded-full border border-white/10 hover:border-primary-500/30 transition-all duration-300"
-          >
-            View CV
-          </MagneticButton>
-        </div>
-      </div>
-
-      <!-- Scroll indicator -->
-      <div class="absolute bottom-8 left-1/2 -translate-x-1/2 z-10">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="animate-bounce text-secondary-500">
-          <path d="m6 9 6 6 6-6"></path>
-        </svg>
-      </div>
-    </section>
-
-    <CosmicDivider variant="star" />
+      </section>
+    )}
 
     <!-- ======================== STATS BAR ======================== -->
-    <section class="container mx-auto px-4 sm:px-6 lg:px-8 -mt-16 relative z-10">
-      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <!-- Articles -->
-        <div class="glass-cosmic rounded-xl p-6 text-center hover:shadow-cosmic-card transition-all">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mx-auto mb-2 text-primary-400">
-            <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"></path>
-          </svg>
-          <div class="text-2xl md:text-3xl font-bold text-secondary-50">
-            <AnimatedCounter client:visible end={posts.length} duration={2000} />
+    {showStats && (
+      <section class="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10" style={`order: ${orderMap.stats ?? 1}`}>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <!-- Articles -->
+          <div class="glass-cosmic rounded-xl p-6 text-center hover:shadow-cosmic-card transition-all">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mx-auto mb-2 text-primary-400">
+              <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"></path>
+            </svg>
+            <div class="text-2xl md:text-3xl font-bold text-secondary-50">
+              <AnimatedCounter client:visible end={posts.length} duration={2000} />
+            </div>
+            <p class="text-sm text-secondary-400 font-medium">Articles</p>
           </div>
-          <p class="text-sm text-secondary-400 font-medium">Articles</p>
-        </div>
 
-        <!-- Total Words -->
-        <div class="glass-cosmic rounded-xl p-6 text-center hover:shadow-cosmic-card transition-all">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mx-auto mb-2 text-gold-400">
-            <path d="M17 6.1H3"></path>
-            <path d="M21 12.1H3"></path>
-            <path d="M15.1 18H3"></path>
-          </svg>
-          <div class="text-2xl md:text-3xl font-bold text-secondary-50">
-            <AnimatedCounter client:visible end={Math.round(totalWords / 1000)} duration={2000} suffix="k" />
+          <!-- Total Words -->
+          <div class="glass-cosmic rounded-xl p-6 text-center hover:shadow-cosmic-card transition-all">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mx-auto mb-2 text-gold-400">
+              <path d="M17 6.1H3"></path>
+              <path d="M21 12.1H3"></path>
+              <path d="M15.1 18H3"></path>
+            </svg>
+            <div class="text-2xl md:text-3xl font-bold text-secondary-50">
+              <AnimatedCounter client:visible end={Math.round(totalWords / 1000)} duration={2000} suffix="k" />
+            </div>
+            <p class="text-sm text-secondary-400 font-medium">Total Words</p>
           </div>
-          <p class="text-sm text-secondary-400 font-medium">Total Words</p>
-        </div>
 
-        <!-- Years Active -->
-        <div class="glass-cosmic rounded-xl p-6 text-center hover:shadow-cosmic-card transition-all">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mx-auto mb-2 text-accent-400">
-            <circle cx="12" cy="12" r="10"></circle>
-            <polyline points="12 6 12 12 16 14"></polyline>
-          </svg>
-          <div class="text-2xl md:text-3xl font-bold text-secondary-50">
-            <AnimatedCounter client:visible end={yearsActive} duration={2000} suffix="+" />
+          <!-- Years Active -->
+          <div class="glass-cosmic rounded-xl p-6 text-center hover:shadow-cosmic-card transition-all">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mx-auto mb-2 text-accent-400">
+              <circle cx="12" cy="12" r="10"></circle>
+              <polyline points="12 6 12 12 16 14"></polyline>
+            </svg>
+            <div class="text-2xl md:text-3xl font-bold text-secondary-50">
+              <AnimatedCounter client:visible end={yearsActive} duration={2000} suffix="+" />
+            </div>
+            <p class="text-sm text-secondary-400 font-medium">Years Active</p>
           </div>
-          <p class="text-sm text-secondary-400 font-medium">Years Active</p>
-        </div>
 
-        <!-- Topics -->
-        <div class="glass-cosmic rounded-xl p-6 text-center hover:shadow-cosmic-card transition-all">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mx-auto mb-2 text-primary-400">
-            <path d="M12 2H2v10l9.29 9.29c.94.94 2.48.94 3.42 0l6.58-6.58c.94-.94.94-2.48 0-3.42L12 2Z"></path>
-            <path d="M7 7h.01"></path>
-          </svg>
-          <div class="text-2xl md:text-3xl font-bold text-secondary-50">
-            <AnimatedCounter client:visible end={uniqueCategories.size} duration={2000} />
+          <!-- Topics -->
+          <div class="glass-cosmic rounded-xl p-6 text-center hover:shadow-cosmic-card transition-all">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mx-auto mb-2 text-primary-400">
+              <path d="M12 2H2v10l9.29 9.29c.94.94 2.48.94 3.42 0l6.58-6.58c.94-.94.94-2.48 0-3.42L12 2Z"></path>
+              <path d="M7 7h.01"></path>
+            </svg>
+            <div class="text-2xl md:text-3xl font-bold text-secondary-50">
+              <AnimatedCounter client:visible end={uniqueCategories.size} duration={2000} />
+            </div>
+            <p class="text-sm text-secondary-400 font-medium">Topics</p>
           </div>
-          <p class="text-sm text-secondary-400 font-medium">Topics</p>
         </div>
-      </div>
-    </section>
+      </section>
+    )}
 
     <!-- ======================== FEATURED POST ======================== -->
-    {featuredPost && (
+    {showFeatured && featuredPost && (
       <Reveal direction="up">
-        <section class="container mx-auto px-4 sm:px-6 lg:px-8">
+        <section class="container mx-auto px-4 sm:px-6 lg:px-8" style={`order: ${orderMap.featured ?? 2}`}>
           <div class="flex items-center gap-3 mb-8">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gold-400">
               <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"></path>
@@ -202,7 +226,7 @@ const yearsActive = postDates.length > 0 ? new Date().getFullYear() - Math.min(.
               <path d="M3 5h4"></path>
               <path d="M17 19h4"></path>
             </svg>
-            <h2 class="text-3xl font-bold font-serif text-secondary-50">Featured Story</h2>
+            <h2 class="text-3xl font-bold font-serif text-secondary-50">{uiText.featuredStory || 'Featured Story'}</h2>
             <span class="text-sm font-semibold text-gold-400 bg-gold-400/10 px-3 py-1 rounded-full">Featured</span>
           </div>
           <BlogCard post={featuredPost} featured />
@@ -211,15 +235,15 @@ const yearsActive = postDates.length > 0 ? new Date().getFullYear() - Math.min(.
     )}
 
     <!-- ======================== POPULAR TAGS ======================== -->
-    {popularTags.length > 0 && (
+    {showTrending && popularTags.length > 0 && (
       <Reveal direction="up">
-        <section class="container mx-auto px-4 sm:px-6 lg:px-8">
+        <section class="container mx-auto px-4 sm:px-6 lg:px-8" style={`order: ${orderMap.trending ?? 3}`}>
           <div class="flex items-center gap-2 mb-6">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-primary-400">
               <path d="M12 2H2v10l9.29 9.29c.94.94 2.48.94 3.42 0l6.58-6.58c.94-.94.94-2.48 0-3.42L12 2Z"></path>
               <path d="M7 7h.01"></path>
             </svg>
-            <h2 class="text-2xl font-bold font-serif text-secondary-50">Trending Topics</h2>
+            <h2 class="text-2xl font-bold font-serif text-secondary-50">{uiText.trendingTopics || 'Trending Topics'}</h2>
           </div>
           <div class="flex gap-3 flex-wrap">
             {popularTags.map((tag) => (
@@ -235,19 +259,17 @@ const yearsActive = postDates.length > 0 ? new Date().getFullYear() - Math.min(.
       </Reveal>
     )}
 
-    <CosmicDivider variant="constellation" />
-
     <!-- ======================== RECENT POSTS ======================== -->
-    {recentPosts.length > 0 && (
+    {showArticles && recentPosts.length > 0 && (
       <Reveal direction="up">
-        <section class="container mx-auto px-4 sm:px-6 lg:px-8">
+        <section class="container mx-auto px-4 sm:px-6 lg:px-8" style={`order: ${orderMap.articles ?? 4}`}>
           <div class="flex items-center justify-between mb-8">
             <div class="flex items-center gap-2">
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-primary-400">
                 <polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline>
                 <polyline points="16 7 22 7 22 13"></polyline>
               </svg>
-              <h2 class="text-3xl font-bold font-serif text-secondary-50">Latest Articles</h2>
+              <h2 class="text-3xl font-bold font-serif text-secondary-50">{uiText.latestArticles || 'Latest Articles'}</h2>
             </div>
             <a href="/blog" class="hidden md:flex items-center gap-1 text-primary-400 hover:text-primary-300 font-medium transition-colors">
               View all
@@ -272,53 +294,53 @@ const yearsActive = postDates.length > 0 ? new Date().getFullYear() - Math.min(.
     )}
 
     <!-- ======================== NEWSLETTER CTA ======================== -->
-    <Reveal direction="up">
-      <section class="container mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="relative rounded-3xl overflow-hidden bg-abyss px-6 py-16 md:px-16 md:py-20 text-center border border-white/[0.06]">
-          <!-- Dot pattern overlay -->
-          <div class="absolute inset-0 opacity-10 star-pattern"></div>
+    {showNewsletter && (
+      <Reveal direction="up">
+        <section class="container mx-auto px-4 sm:px-6 lg:px-8" style={`order: ${orderMap.newsletter ?? 5}`}>
+          <div class="relative rounded-3xl overflow-hidden bg-abyss px-6 py-16 md:px-16 md:py-20 text-center border border-white/[0.06]">
+            <!-- Dot pattern overlay -->
+            <div class="absolute inset-0 opacity-10 star-pattern"></div>
 
-          <!-- Gradient border glow at top -->
-          <div class="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-primary-500/30 to-transparent"></div>
+            <!-- Gradient border glow at top -->
+            <div class="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-primary-500/30 to-transparent"></div>
 
-          <div class="relative z-10 max-w-2xl mx-auto space-y-8">
-            <!-- Mail icon -->
-            <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-primary-500/20 text-primary-400 mb-4">
-              <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <rect width="20" height="16" x="2" y="4" rx="2"></rect>
-                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
-              </svg>
+            <div class="relative z-10 max-w-2xl mx-auto space-y-8">
+              <!-- Mail icon -->
+              <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-primary-500/20 text-primary-400 mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect width="20" height="16" x="2" y="4" rx="2"></rect>
+                  <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
+                </svg>
+              </div>
+
+              <!-- Title -->
+              <h2 class="text-3xl md:text-4xl font-bold font-serif text-secondary-50" set:html={uiText.newsletterTitle || 'Subscribe to my <span class="text-gradient-gold">newsletter</span>'} />
+
+              <!-- Description -->
+              <p class="text-lg text-secondary-300">
+                {uiText.newsletterDescription || 'Get the latest articles, tutorials, and research insights delivered straight to your inbox. No spam, just quality content.'}
+              </p>
+
+              <!-- Form -->
+              <form class="flex flex-col sm:flex-row gap-4 max-w-md mx-auto" action="#" method="POST">
+                <input
+                  type="email"
+                  placeholder="Enter your email"
+                  class="flex-1 px-6 py-3.5 rounded-full bg-white/5 border border-white/10 text-secondary-200 placeholder-secondary-500 focus:outline-none focus:border-primary-500/50 focus:shadow-[0_0_0_3px_rgba(6,182,212,0.1)] backdrop-blur-sm transition-all duration-200"
+                  required
+                />
+                <button
+                  type="submit"
+                  class="px-8 py-3.5 bg-primary-600 hover:bg-primary-500 text-white font-semibold rounded-full transition-colors shadow-lg shadow-primary-500/20"
+                >
+                  {uiText.subscribeButton || 'Subscribe'}
+                </button>
+              </form>
             </div>
-
-            <!-- Title -->
-            <h2 class="text-3xl md:text-4xl font-bold font-serif text-secondary-50">
-              Subscribe to my <span class="text-gradient-gold">newsletter</span>
-            </h2>
-
-            <!-- Description -->
-            <p class="text-lg text-secondary-300">
-              Get the latest articles, tutorials, and research insights delivered straight to your inbox. No spam, just quality content.
-            </p>
-
-            <!-- Form -->
-            <form class="flex flex-col sm:flex-row gap-4 max-w-md mx-auto" action="#" method="POST">
-              <input
-                type="email"
-                placeholder="Enter your email"
-                class="flex-1 px-6 py-3.5 rounded-full bg-white/5 border border-white/10 text-secondary-200 placeholder-secondary-500 focus:outline-none focus:border-primary-500/50 focus:shadow-[0_0_0_3px_rgba(6,182,212,0.1)] backdrop-blur-sm transition-all duration-200"
-                required
-              />
-              <button
-                type="submit"
-                class="px-8 py-3.5 bg-primary-600 hover:bg-primary-500 text-white font-semibold rounded-full transition-colors shadow-lg shadow-primary-500/20"
-              >
-                Subscribe
-              </button>
-            </form>
           </div>
-        </div>
-      </section>
-    </Reveal>
+        </section>
+      </Reveal>
+    )}
 
   </div>
 </BaseLayout>

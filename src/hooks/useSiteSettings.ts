@@ -80,6 +80,8 @@ interface SiteSettings {
     showTrendingTopics: boolean;
     showLatestArticles: boolean;
     showNewsletter: boolean;
+    sectionOrder?: string[];
+    sectionConfig?: Record<string, Record<string, unknown>>;
   };
   appearance: {
     primaryColor: string;
@@ -146,11 +148,13 @@ const getSettingsFromStorage = (): SiteSettings => {
         trendingTopics: 'Trending Topics',
         latestArticles: 'Latest Articles',
         newsletterTitle: 'Subscribe to my newsletter',
-        newsletterDescription: 'Get the latest articles, tutorials, and insights delivered straight to your inbox. No spam, just quality content.',
+        newsletterDescription:
+          'Get the latest articles, tutorials, and insights delivered straight to your inbox. No spam, just quality content.',
         subscribeButton: 'Subscribe',
       },
       footer: {
-        tagline: 'Exploring the frontiers of web development, computer science, and technology. Join me on this journey of continuous learning and creation.',
+        tagline:
+          'Exploring the frontiers of web development, computer science, and technology. Join me on this journey of continuous learning and creation.',
         exploreTitle: 'Explore',
         latestTitle: 'Latest Articles',
         stayConnectedTitle: 'Stay Connected',
@@ -188,8 +192,22 @@ const getSettingsFromStorage = (): SiteSettings => {
         { id: 'home', label: 'Home', path: '/', isExternal: false, visible: true, order: 1 },
         { id: 'about', label: 'About', path: '/about', isExternal: false, visible: true, order: 2 },
         { id: 'blog', label: 'Blog', path: '/blog', isExternal: false, visible: true, order: 3 },
-        { id: 'recommendations', label: 'Recommendations', path: '/recommendations', isExternal: false, visible: true, order: 4 },
-        { id: 'contact', label: 'Contact', path: '/contact', isExternal: false, visible: true, order: 5 },
+        {
+          id: 'recommendations',
+          label: 'Recommendations',
+          path: '/recommendations',
+          isExternal: false,
+          visible: true,
+          order: 4,
+        },
+        {
+          id: 'contact',
+          label: 'Contact',
+          path: '/contact',
+          isExternal: false,
+          visible: true,
+          order: 5,
+        },
       ],
     },
     seo: FALLBACK_SETTINGS.seo || {
@@ -264,8 +282,10 @@ export const SiteSettingsProvider: React.FC<{ children: React.ReactNode }> = ({ 
             },
             categories: settingsData.categories || FALLBACK_SETTINGS.categories,
             skills: (settingsData.skills || FALLBACK_SETTINGS.skills) as unknown as Skill[],
-            timeline: (settingsData.timeline || FALLBACK_SETTINGS.timeline) as unknown as TimelineItem[],
-            achievements: (settingsData.achievements || FALLBACK_SETTINGS.achievements) as unknown as Achievement[],
+            timeline: (settingsData.timeline ||
+              FALLBACK_SETTINGS.timeline) as unknown as TimelineItem[],
+            achievements: (settingsData.achievements ||
+              FALLBACK_SETTINGS.achievements) as unknown as Achievement[],
             uiText: settingsData.ui_text || settings.uiText,
             homepageLayout: settingsData.homepage_layout || settings.homepageLayout,
             appearance: settingsData.appearance || settings.appearance,

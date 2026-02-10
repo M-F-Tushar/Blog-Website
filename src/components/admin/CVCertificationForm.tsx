@@ -1,15 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Certification } from '../../hooks/useCVData';
+import { cosmic } from './ui/cosmicClassNames';
 
 interface Props {
   certification?: Certification;
   onSave: (data: Omit<Certification, 'id' | 'created_at' | 'updated_at'>) => Promise<void>;
   onCancel: () => void;
 }
-
-const inputClasses =
-  'w-full px-3 py-2 text-gray-700 dark:text-secondary-200 bg-white dark:bg-elevated border border-gray-300 dark:border-white/10 rounded-md focus:outline-none focus:ring-2 focus:ring-accent transition-colors duration-200';
-const labelClasses = 'block text-sm font-medium text-gray-700 dark:text-secondary-300 mb-1';
 
 const CVCertificationForm: React.FC<Props> = ({ certification, onSave, onCancel }) => {
   const [name, setName] = useState('');
@@ -63,34 +60,34 @@ const CVCertificationForm: React.FC<Props> = ({ certification, onSave, onCancel 
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      <h3 className="text-lg font-semibold text-gray-900 dark:text-secondary-50">
+      <h3 className={cosmic.subTitle}>
         {certification ? 'Edit Certification' : 'Add Certification'}
       </h3>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label className={labelClasses}>
+          <label className={cosmic.label}>
             Certification Name <span className="text-red-500">*</span>
           </label>
           <input
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className={inputClasses}
+            className={cosmic.input}
             placeholder="e.g. AWS Solutions Architect"
             required
           />
         </div>
 
         <div>
-          <label className={labelClasses}>
+          <label className={cosmic.label}>
             Issuer <span className="text-red-500">*</span>
           </label>
           <input
             type="text"
             value={issuer}
             onChange={(e) => setIssuer(e.target.value)}
-            className={inputClasses}
+            className={cosmic.input}
             placeholder="e.g. Amazon Web Services"
             required
           />
@@ -99,86 +96,82 @@ const CVCertificationForm: React.FC<Props> = ({ certification, onSave, onCancel 
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label className={labelClasses}>
+          <label className={cosmic.label}>
             Issue Date <span className="text-red-500">*</span>
           </label>
           <input
             type="date"
             value={issueDate}
             onChange={(e) => setIssueDate(e.target.value)}
-            className={inputClasses}
+            className={cosmic.input}
             required
           />
         </div>
 
         <div>
-          <label className={labelClasses}>Expiry Date</label>
+          <label className={cosmic.label}>Expiry Date</label>
           <input
             type="date"
             value={expiryDate}
             onChange={(e) => setExpiryDate(e.target.value)}
-            className={inputClasses}
+            className={cosmic.input}
           />
         </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label className={labelClasses}>Credential ID</label>
+          <label className={cosmic.label}>Credential ID</label>
           <input
             type="text"
             value={credentialId}
             onChange={(e) => setCredentialId(e.target.value)}
-            className={inputClasses}
+            className={cosmic.input}
             placeholder="e.g. ABC123XYZ"
           />
         </div>
 
         <div>
-          <label className={labelClasses}>Credential URL</label>
+          <label className={cosmic.label}>Credential URL</label>
           <input
             type="url"
             value={credentialUrl}
             onChange={(e) => setCredentialUrl(e.target.value)}
-            className={inputClasses}
+            className={cosmic.input}
             placeholder="e.g. https://verify.example.com/cert/123"
           />
         </div>
       </div>
 
       <div>
-        <label className={labelClasses}>Description</label>
+        <label className={cosmic.label}>Description</label>
         <textarea
           value={description}
           onChange={(e) => setDescription(e.target.value)}
-          className={`${inputClasses} min-h-[100px]`}
+          className={`${cosmic.textarea} min-h-[100px]`}
           placeholder="Describe what this certification covers..."
           rows={4}
         />
       </div>
 
       <div>
-        <label className={labelClasses}>Sort Order</label>
+        <label className={cosmic.label}>Sort Order</label>
         <input
           type="number"
           value={sortOrder}
           onChange={(e) => setSortOrder(parseInt(e.target.value, 10) || 0)}
-          className={inputClasses}
+          className={cosmic.input}
         />
       </div>
 
-      <div className="flex justify-end gap-3 pt-4 border-t border-gray-200 dark:border-white/[0.06]">
-        <button
-          type="button"
-          onClick={onCancel}
-          className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-secondary-300 bg-white dark:bg-elevated border border-gray-300 dark:border-white/10 rounded-md hover:bg-gray-50 dark:hover:bg-elevated transition-colors duration-200"
-        >
+      <div className="flex justify-end gap-3 pt-4 border-t border-white/[0.06]">
+        <button type="button" onClick={onCancel} className={cosmic.buttonSecondary}>
           Cancel
         </button>
         <button
           type="submit"
           disabled={isSaving}
-          className="px-4 py-2 text-sm font-medium text-white bg-accent hover:bg-accent/90 rounded-md disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200 flex items-center gap-2"
+          className={`${cosmic.buttonPrimary} flex items-center gap-2`}
         >
           {isSaving && (
             <svg

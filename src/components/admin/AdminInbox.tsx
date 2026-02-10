@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Mail, Users, Trash2, RefreshCw, MessageSquare } from 'lucide-react';
 import { messageService, Message, Subscriber } from '../../services/messageService';
+import { cosmic } from './ui/cosmicClassNames';
 
 const AdminInbox: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'messages' | 'subscribers'>('messages');
@@ -86,40 +87,32 @@ const AdminInbox: React.FC = () => {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold font-serif text-gray-900 dark:text-white">Inbox</h1>
-        <button
-          onClick={fetchData}
-          className="p-2 text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white transition-colors"
-          title="Refresh"
-        >
+        <h1 className={cosmic.pageTitle}>Inbox</h1>
+        <button onClick={fetchData} className={cosmic.buttonIcon} title="Refresh">
           <RefreshCw size={20} className={loading ? 'animate-spin' : ''} />
         </button>
       </div>
 
       {/* Tabs */}
-      <div className="flex border-b border-gray-200 dark:border-gray-700">
+      <div className="flex gap-2 border-b border-white/[0.06] pb-3">
         <button
           onClick={() => setActiveTab('messages')}
-          className={`flex items-center gap-2 px-6 py-3 border-b-2 font-medium text-sm transition-colors ${
-            activeTab === 'messages'
-              ? 'border-primary-500 text-primary-600 dark:text-primary-400'
-              : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200'
+          className={`flex items-center gap-2 ${
+            activeTab === 'messages' ? cosmic.tabActive : cosmic.tabInactive
           }`}
         >
           <MessageSquare size={18} />
           Messages
           {messages.some((m) => !m.read) && (
-            <span className="ml-1 px-2 py-0.5 text-xs bg-red-500 text-white rounded-full">
+            <span className="ml-1 px-2 py-0.5 text-xs bg-primary-500 text-white rounded-full shadow-lg shadow-primary-500/30">
               {messages.filter((m) => !m.read).length}
             </span>
           )}
         </button>
         <button
           onClick={() => setActiveTab('subscribers')}
-          className={`flex items-center gap-2 px-6 py-3 border-b-2 font-medium text-sm transition-colors ${
-            activeTab === 'subscribers'
-              ? 'border-primary-500 text-primary-600 dark:text-primary-400'
-              : 'border-transparent text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200'
+          className={`flex items-center gap-2 ${
+            activeTab === 'subscribers' ? cosmic.tabActive : cosmic.tabInactive
           }`}
         >
           <Users size={18} />
@@ -127,15 +120,11 @@ const AdminInbox: React.FC = () => {
         </button>
       </div>
 
-      {error && (
-        <div className="bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 p-4 rounded-lg">
-          {error}
-        </div>
-      )}
+      {error && <div className={cosmic.alertError}>{error}</div>}
 
       {/* Content */}
       {loading ? (
-        <div className="flex justify-center py-12">
+        <div className={cosmic.loadingOverlay}>
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-500"></div>
         </div>
       ) : (
@@ -143,12 +132,12 @@ const AdminInbox: React.FC = () => {
           {activeTab === 'messages' ? (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 h-[600px]">
               {/* Message List */}
-              <div className="md:col-span-1 bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden flex flex-col">
-                <div className="overflow-y-auto flex-1">
+              <div className="md:col-span-1 admin-glass rounded-xl overflow-hidden flex flex-col border border-white/[0.06]">
+                <div className="overflow-y-auto flex-1 admin-scrollbar">
                   {messages.length === 0 ? (
-                    <div className="p-8 text-center text-gray-500">No messages found</div>
+                    <div className={cosmic.emptyState}>No messages found</div>
                   ) : (
-                    <div className="divide-y divide-gray-200 dark:divide-gray-700">
+                    <div className="divide-y divide-white/[0.06]">
                       {messages.map((msg) => (
                         <div
                           key={msg.id}
@@ -158,28 +147,29 @@ const AdminInbox: React.FC = () => {
                               // eslint-disable-next-line @typescript-eslint/no-explicit-any
                               handleMarkAsRead(msg.id, { stopPropagation: () => {} } as any);
                           }}
-                          className={`p-4 cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors ${
+                          className={`p-4 cursor-pointer hover:bg-white/[0.04] transition-colors ${
                             selectedMessage?.id === msg.id
-                              ? 'bg-indigo-50 dark:bg-indigo-900/20'
-                              : ''
-                          } ${!msg.read ? 'border-l-4 border-primary-500' : 'border-l-4 border-transparent'}`}
+                              ? 'bg-primary-500/10 border-l-2 border-primary-400'
+                              : 'border-l-2 border-transparent'
+                          } ${!msg.read ? 'border-l-2 border-primary-500' : ''}`}
                         >
                           <div className="flex justify-between items-start mb-1">
-                            <h3
-                              className={`font-medium text-sm truncate pr-2 ${!msg.read ? 'text-gray-900 dark:text-white font-bold' : 'text-gray-700 dark:text-gray-300'}`}
-                            >
-                              {msg.name}
-                            </h3>
-                            <span className="text-xs text-gray-500 flex-shrink-0">
+                            <div className="flex items-center gap-2">
+                              {!msg.read && (
+                                <span className="w-2 h-2 rounded-full bg-primary-500 shadow-[0_0_8px_rgba(6,182,212,0.5)] flex-shrink-0" />
+                              )}
+                              <h3
+                                className={`font-medium text-sm truncate pr-2 ${!msg.read ? 'text-secondary-50 font-bold' : 'text-secondary-300'}`}
+                              >
+                                {msg.name}
+                              </h3>
+                            </div>
+                            <span className="text-xs text-secondary-500 flex-shrink-0">
                               {new Date(msg.created_at).toLocaleDateString()}
                             </span>
                           </div>
-                          <p className="text-sm text-gray-600 dark:text-gray-400 truncate mb-1">
-                            {msg.subject}
-                          </p>
-                          <p className="text-xs text-gray-500 dark:text-gray-500 truncate">
-                            {msg.message}
-                          </p>
+                          <p className="text-sm text-secondary-400 truncate mb-1">{msg.subject}</p>
+                          <p className="text-xs text-secondary-500 truncate">{msg.message}</p>
                         </div>
                       ))}
                     </div>
@@ -188,41 +178,39 @@ const AdminInbox: React.FC = () => {
               </div>
 
               {/* Message Detail */}
-              <div className="md:col-span-2 bg-white dark:bg-gray-800 rounded-lg shadow p-6 overflow-y-auto">
+              <div className="md:col-span-2 admin-glass rounded-xl p-6 overflow-y-auto admin-scrollbar border border-white/[0.06]">
                 {selectedMessage ? (
                   <div className="space-y-6">
-                    <div className="flex justify-between items-start border-b border-gray-200 dark:border-gray-700 pb-4">
+                    <div className="flex justify-between items-start border-b border-white/[0.06] pb-4">
                       <div>
-                        <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-                          {selectedMessage.subject}
-                        </h2>
-                        <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
-                          <span className="font-medium text-gray-700 dark:text-gray-300">
+                        <h2 className={`${cosmic.sectionTitle} mb-2`}>{selectedMessage.subject}</h2>
+                        <div className="flex items-center gap-2 text-sm text-secondary-400">
+                          <span className="font-medium text-secondary-200">
                             {selectedMessage.name}
                           </span>
                           <span>&lt;{selectedMessage.email}&gt;</span>
                         </div>
-                        <div className="text-xs text-gray-400 mt-1">
+                        <div className="text-xs text-secondary-500 mt-1">
                           {formatDate(selectedMessage.created_at)}
                         </div>
                       </div>
                       <div className="flex gap-2">
                         <button
                           onClick={(e) => handleDeleteMessage(selectedMessage.id, e)}
-                          className="p-2 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-full transition-colors"
+                          className={cosmic.buttonIcon + ' text-error-400 hover:text-error-300'}
                           title="Delete"
                         >
                           <Trash2 size={20} />
                         </button>
                       </div>
                     </div>
-                    <div className="prose dark:prose-invert max-w-none whitespace-pre-wrap text-gray-700 dark:text-gray-300">
+                    <div className="prose prose-invert max-w-none whitespace-pre-wrap text-secondary-300">
                       {selectedMessage.message}
                     </div>
-                    <div className="pt-8 border-t border-gray-200 dark:border-gray-700">
+                    <div className="pt-8 border-t border-white/[0.06]">
                       <a
                         href={`mailto:${selectedMessage.email}?subject=Re: ${selectedMessage.subject}`}
-                        className="inline-flex items-center gap-2 px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700 transition-colors"
+                        className={`inline-flex items-center gap-2 ${cosmic.buttonPrimary}`}
                       >
                         <Mail size={16} />
                         Reply via Email
@@ -230,7 +218,7 @@ const AdminInbox: React.FC = () => {
                     </div>
                   </div>
                 ) : (
-                  <div className="h-full flex flex-col items-center justify-center text-gray-400">
+                  <div className="h-full flex flex-col items-center justify-center text-secondary-500">
                     <Mail size={48} className="mb-4 opacity-50" />
                     <p>Select a message to read</p>
                   </div>
@@ -238,54 +226,40 @@ const AdminInbox: React.FC = () => {
               </div>
             </div>
           ) : (
-            <div className="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
-              <div className="overflow-x-auto">
-                <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                  <thead className="bg-gray-50 dark:bg-gray-900/50">
+            <div className="admin-glass rounded-xl overflow-hidden border border-white/[0.06]">
+              <div className={cosmic.tableWrapper}>
+                <table className={cosmic.table}>
+                  <thead className={cosmic.tableHead}>
                     <tr>
-                      <th
-                        scope="col"
-                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
-                      >
+                      <th scope="col" className={cosmic.tableHeadCell}>
                         Email
                       </th>
-                      <th
-                        scope="col"
-                        className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
-                      >
+                      <th scope="col" className={cosmic.tableHeadCell}>
                         Subscribed Date
                       </th>
-                      <th
-                        scope="col"
-                        className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider"
-                      >
+                      <th scope="col" className={`${cosmic.tableHeadCell} text-right`}>
                         Actions
                       </th>
                     </tr>
                   </thead>
-                  <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                  <tbody className={cosmic.tableBody}>
                     {subscribers.length === 0 ? (
                       <tr>
-                        <td colSpan={3} className="px-6 py-12 text-center text-gray-500">
+                        <td colSpan={3} className="px-6 py-12 text-center text-secondary-500">
                           No subscribers yet
                         </td>
                       </tr>
                     ) : (
                       subscribers.map((sub) => (
-                        <tr
-                          key={sub.id}
-                          className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
-                        >
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white font-medium">
+                        <tr key={sub.id} className={cosmic.tableRow}>
+                          <td className={`${cosmic.tableCell} font-medium text-secondary-50`}>
                             {sub.email}
                           </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                            {formatDate(sub.subscribed_at)}
-                          </td>
-                          <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                          <td className={cosmic.tableCell}>{formatDate(sub.subscribed_at)}</td>
+                          <td className={`${cosmic.tableCell} text-right`}>
                             <button
                               onClick={() => handleDeleteSubscriber(sub.id)}
-                              className="text-red-500 hover:text-red-700 dark:hover:text-red-300 transition-colors p-1"
+                              className={`${cosmic.linkDelete} p-1`}
                               title="Remove Subscriber"
                             >
                               <Trash2 size={18} />
@@ -297,12 +271,10 @@ const AdminInbox: React.FC = () => {
                   </tbody>
                 </table>
               </div>
-              <div className="bg-gray-50 dark:bg-gray-900/50 px-6 py-4 border-t border-gray-200 dark:border-gray-700">
-                <div className="text-sm text-gray-500 dark:text-gray-400">
+              <div className="bg-elevated/50 px-6 py-4 border-t border-white/[0.06]">
+                <div className="text-sm text-secondary-400">
                   Total Subscribers:{' '}
-                  <span className="font-bold text-gray-900 dark:text-white">
-                    {subscribers.length}
-                  </span>
+                  <span className="font-bold text-secondary-50">{subscribers.length}</span>
                 </div>
               </div>
             </div>

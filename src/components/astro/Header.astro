@@ -1,12 +1,17 @@
 ---
 import ThemeToggle from '../react/ThemeToggle';
+import { getSiteSettings, getNavigationCustomPages } from '@/lib/supabase';
+
+const settings = await getSiteSettings();
+const navigation = (settings as any).navigation;
+const customPages = await getNavigationCustomPages();
 
 interface NavLink {
   path: string;
   label: string;
 }
 
-const navLinks: NavLink[] = [
+const defaultNavLinks: NavLink[] = [
   { path: '/', label: 'Home' },
   { path: '/about', label: 'About' },
   { path: '/blog', label: 'Blog' },
@@ -16,6 +21,17 @@ const navLinks: NavLink[] = [
   { path: '/cv', label: 'CV' },
   { path: '/contact', label: 'Contact' },
 ];
+
+const navLinks: NavLink[] = (navigation && Array.isArray(navigation) && navigation.length > 0)
+  ? navigation
+      .filter((item: any) => item.path && item.label)
+      .sort((a: any, b: any) => (a.order || 0) - (b.order || 0))
+      .map((item: any) => ({ path: item.path, label: item.label }))
+  : defaultNavLinks;
+
+// Append custom pages that have show_in_navigation enabled
+const customPageLinks: NavLink[] = customPages.map((p) => ({ path: `/p/${p.slug}`, label: p.title }));
+const allNavLinks = [...navLinks, ...customPageLinks];
 
 const currentPath = Astro.url.pathname;
 ---
@@ -32,12 +48,12 @@ const currentPath = Astro.url.pathname;
         class="text-2xl font-bold font-serif tracking-tight text-gradient-cyan hover:drop-shadow-[0_0_8px_rgba(6,182,212,0.5)] transition-all duration-300"
         aria-label="Mahir Faysal Tushar - Home"
       >
-        MFT Blog
+        {(settings as any).site_name || 'MFT Blog'}
       </a>
 
       <!-- Desktop Navigation -->
       <div class="hidden lg:flex items-center space-x-1" id="navigation">
-        {navLinks.map((link) => {
+        {allNavLinks.map((link) => {
           const isActive = currentPath === link.path || (link.path !== '/' && currentPath.startsWith(link.path));
           return (
             <a
@@ -100,7 +116,7 @@ const currentPath = Astro.url.pathname;
     <div class="p-4 space-y-4 h-full overflow-y-auto">
       <nav aria-label="Mobile navigation">
         <div class="space-y-1">
-          {navLinks.map((link, index) => {
+          {allNavLinks.map((link, index) => {
             const isActive = currentPath === link.path || (link.path !== '/' && currentPath.startsWith(link.path));
             return (
               <a

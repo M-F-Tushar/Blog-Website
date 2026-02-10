@@ -8,16 +8,20 @@ interface StatCardProps {
   title: string;
   value: string | number;
   icon: React.ReactNode;
+  glowColor: string;
 }
 
-const StatCard: React.FC<StatCardProps> = ({ title, value, icon }) => (
-  <div className="bg-white dark:bg-surface p-6 rounded-lg shadow-md flex items-center">
-    <div className="p-3 bg-accent/20 rounded-full mr-4 text-accent dark:text-accent-light">
-      {icon}
+const StatCard: React.FC<StatCardProps> = ({ title, value, icon, glowColor }) => (
+  <div className="admin-glass-cosmic rounded-2xl p-6 flex items-center hover:shadow-cosmic-card hover:-translate-y-0.5 transition-all duration-300 group">
+    <div
+      className="p-3 rounded-xl mr-4"
+      style={{ background: `${glowColor}15`, boxShadow: `0 0 20px ${glowColor}20` }}
+    >
+      <div style={{ color: glowColor }}>{icon}</div>
     </div>
     <div>
-      <p className="text-sm font-medium text-gray-500 dark:text-secondary-400">{title}</p>
-      <p className="text-2xl font-bold text-gray-900 dark:text-secondary-50">{value}</p>
+      <p className="text-sm font-medium text-secondary-400">{title}</p>
+      <p className="text-2xl font-bold text-secondary-50">{value}</p>
     </div>
   </div>
 );
@@ -38,6 +42,7 @@ const DocumentIcon = () => (
     />
   </svg>
 );
+
 const TagIcon = () => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -57,6 +62,7 @@ const TagIcon = () => (
     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 20h10a2 2 0 002-2V7" />
   </svg>
 );
+
 const StarIcon = () => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -69,16 +75,11 @@ const StarIcon = () => (
       strokeLinecap="round"
       strokeLinejoin="round"
       strokeWidth={2}
-      d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-12v4m-2-2h4m5 4v4m-2-2h4M17 3l-1.172 3.516a1 1 0 00.95 1.484h3.444"
-    />
-    <path
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      strokeWidth={2}
-      d="M12 21l-1.172-3.516a1 1 0 00-.95-1.484H6.434"
+      d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"
     />
   </svg>
 );
+
 const CategoryIcon = () => (
   <svg
     xmlns="http://www.w3.org/2000/svg"
@@ -119,16 +120,42 @@ const DashboardAnalytics: React.FC = () => {
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-      <StatCard title="Total Posts" value={stats.totalPosts} icon={<DocumentIcon />} />
-      <StatCard title="Published Posts" value={stats.publishedPosts} icon={<DocumentIcon />} />
-      <StatCard title="Drafts" value={stats.draftPosts} icon={<DocumentIcon />} />
       <StatCard
-        title="Total Recommendations"
+        title="Total Posts"
+        value={stats.totalPosts}
+        icon={<DocumentIcon />}
+        glowColor="#06b6d4"
+      />
+      <StatCard
+        title="Published"
+        value={stats.publishedPosts}
+        icon={<DocumentIcon />}
+        glowColor="#22c55e"
+      />
+      <StatCard
+        title="Drafts"
+        value={stats.draftPosts}
+        icon={<DocumentIcon />}
+        glowColor="#f59e0b"
+      />
+      <StatCard
+        title="Recommendations"
         value={stats.totalRecommendations}
         icon={<StarIcon />}
+        glowColor="#8b5cf6"
       />
-      <StatCard title="Unique Tags" value={stats.totalTags} icon={<TagIcon />} />
-      <StatCard title="Categories" value={stats.totalCategories} icon={<CategoryIcon />} />
+      <StatCard
+        title="Unique Tags"
+        value={stats.totalTags}
+        icon={<TagIcon />}
+        glowColor="#ec4899"
+      />
+      <StatCard
+        title="Categories"
+        value={stats.totalCategories}
+        icon={<CategoryIcon />}
+        glowColor="#14b8a6"
+      />
     </div>
   );
 };

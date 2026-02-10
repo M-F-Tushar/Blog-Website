@@ -1,14 +1,17 @@
 ---
-import { getSiteSettings, getPublishedPosts } from '@/lib/supabase';
+import { getSiteSettings, getPublishedPosts, getNavigationCustomPages } from '@/lib/supabase';
 import ConstellationDecor from './ConstellationDecor.astro';
 
 const settings = await getSiteSettings();
+const uiText = (settings as any).ui_text?.footer || {};
+const navigation = (settings as any).navigation;
+const customPages = await getNavigationCustomPages();
 const posts = await getPublishedPosts();
 const recentPosts = posts.slice(0, 3);
 
 const currentYear = new Date().getFullYear();
 
-const footerLinks = [
+const defaultFooterLinks = [
   { path: '/', label: 'Home' },
   { path: '/about', label: 'About' },
   { path: '/blog', label: 'Blog' },
@@ -16,6 +19,17 @@ const footerLinks = [
   { path: '/projects', label: 'Projects' },
   { path: '/contact', label: 'Contact' },
 ];
+
+const footerLinks = (navigation && Array.isArray(navigation) && navigation.length > 0)
+  ? navigation
+      .filter((item: any) => item.path && item.label)
+      .sort((a: any, b: any) => (a.order || 0) - (b.order || 0))
+      .map((item: any) => ({ path: item.path, label: item.label }))
+  : defaultFooterLinks;
+
+// Append custom pages that have show_in_navigation enabled
+const customPageLinks = customPages.map((p) => ({ path: `/p/${p.slug}`, label: p.title }));
+const allFooterLinks = [...footerLinks, ...customPageLinks];
 ---
 
 <div class="h-[1px] bg-gradient-to-r from-transparent via-primary-500/30 to-transparent"></div>
@@ -29,8 +43,7 @@ const footerLinks = [
           {settings.site_name}
         </a>
         <p class="text-secondary-400 leading-relaxed max-w-sm">
-          Exploring the frontiers of AI, machine learning, and technology.
-          Join me on this journey of continuous learning and research.
+          {uiText.tagline || 'Exploring the frontiers of AI, machine learning, and technology. Join me on this journey of continuous learning and research.'}
         </p>
         <div class="flex items-center gap-4">
           {settings.social_github && (
@@ -69,9 +82,9 @@ const footerLinks = [
 
       <!-- Quick Links -->
       <div class="lg:col-span-2">
-        <h3 class="text-secondary-50 font-semibold text-lg mb-6">Explore</h3>
+        <h3 class="text-secondary-50 font-semibold text-lg mb-6">{uiText.exploreTitle || 'Explore'}</h3>
         <nav class="space-y-3" aria-label="Footer navigation">
-          {footerLinks.map((link) => (
+          {allFooterLinks.map((link) => (
             <a
               href={link.path}
               class="block text-secondary-400 hover:text-primary-400 hover:translate-x-1 transition-all duration-200"
@@ -84,7 +97,7 @@ const footerLinks = [
 
       <!-- Latest Articles -->
       <div class="lg:col-span-3">
-        <h3 class="text-secondary-50 font-semibold text-lg mb-6">Latest Articles</h3>
+        <h3 class="text-secondary-50 font-semibold text-lg mb-6">{uiText.latestTitle || 'Latest Articles'}</h3>
         <div class="space-y-4">
           {recentPosts.length > 0 ? (
             recentPosts.map((post) => (
@@ -109,9 +122,9 @@ const footerLinks = [
 
       <!-- Newsletter CTA -->
       <div class="lg:col-span-3">
-        <h3 class="text-secondary-50 font-semibold text-lg mb-6">Stay Connected</h3>
+        <h3 class="text-secondary-50 font-semibold text-lg mb-6">{uiText.stayConnectedTitle || 'Stay Connected'}</h3>
         <p class="text-sm text-secondary-400 mb-4">
-          Get the latest posts and updates delivered straight to your inbox.
+          {uiText.newsletterDescription || 'Get the latest posts and updates delivered straight to your inbox.'}
         </p>
         <form class="space-y-3" action="#" method="POST">
           <div class="relative">
@@ -128,7 +141,7 @@ const footerLinks = [
             class="w-full px-4 py-2.5 bg-primary-600 hover:bg-primary-500 text-white rounded-lg text-sm font-medium transition-all duration-200 flex items-center justify-center gap-2 shadow-lg shadow-primary-500/20 hover:shadow-primary-500/30"
           >
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4Z"></path><path d="M22 2 11 13"></path></svg>
-            Subscribe
+            {uiText.subscribeButton || 'Subscribe'}
           </button>
         </form>
       </div>
@@ -137,7 +150,7 @@ const footerLinks = [
     <!-- Bottom Bar -->
     <div class="border-t border-white/5 pt-8 mt-8 flex flex-col md:flex-row justify-between items-center gap-4">
       <p class="text-sm text-secondary-500">
-        &copy; {currentYear} {settings.author_name}. Built with Astro &amp; React.
+        &copy; {currentYear} {settings.author_name}. {uiText.copyrightText || 'Built with Astro & React.'}
       </p>
       <div class="flex items-center gap-6">
         <a href="/rss.xml" class="text-sm text-secondary-500 hover:text-primary-400 transition-colors flex items-center gap-2">

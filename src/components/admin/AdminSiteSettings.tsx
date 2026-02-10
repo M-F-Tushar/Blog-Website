@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useSiteSettings, Skill, TimelineItem, Achievement } from '../../hooks/useSiteSettings';
 import { Plus, Trash2, Save } from 'lucide-react';
+import { cosmic } from './ui/cosmicClassNames';
 
 const AdminSiteSettings: React.FC = () => {
   const {
@@ -161,40 +162,32 @@ const AdminSiteSettings: React.FC = () => {
     }
   };
 
-  const inputClasses =
-    'w-full px-3 py-2 text-gray-700 dark:text-secondary-200 bg-white dark:bg-elevated border border-gray-300 dark:border-white/10 rounded-md focus:outline-none focus:ring-2 focus:ring-accent transition-colors duration-200';
-  const labelClasses = 'block text-sm font-medium text-gray-700 dark:text-secondary-300 mb-1';
-  const sectionTitleClasses =
-    'text-xl font-semibold border-b pb-2 pt-6 mb-4 text-gray-800 dark:text-gray-100';
-
   return (
-    <div className="max-w-5xl mx-auto bg-white dark:bg-surface rounded-lg shadow-lg p-8 space-y-10">
+    <div className={`${cosmic.containerSm} space-y-10`}>
       <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold font-serif text-gray-900 dark:text-secondary-50">
-          Site Settings
-        </h1>
+        <h1 className={cosmic.pageTitle}>Site Settings</h1>
         <button
           onClick={handleSettingsSubmit}
           disabled={saving}
-          className="flex items-center gap-2 px-6 py-2 bg-accent text-white font-semibold rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent disabled:opacity-50 disabled:cursor-not-allowed"
+          className={`flex items-center gap-2 ${cosmic.buttonPrimary}`}
         >
           <Save size={20} />
           {saving ? 'Saving...' : 'Save Changes'}
         </button>
       </div>
 
-      {successMessage && (
-        <div className="p-4 bg-green-100 text-green-700 rounded-md">{successMessage}</div>
-      )}
-      {errorMessage && <div className="p-4 bg-red-100 text-red-700 rounded-md">{errorMessage}</div>}
+      {successMessage && <div className={cosmic.alertSuccess}>{successMessage}</div>}
+      {errorMessage && <div className={cosmic.alertError}>{errorMessage}</div>}
 
       <form onSubmit={handleSettingsSubmit} className="space-y-8">
         {/* General Settings */}
         <section>
-          <h2 className={sectionTitleClasses}>General Information</h2>
+          <h2 className={`${cosmic.subTitle} border-b border-white/[0.06] pb-2 pt-6 mb-4`}>
+            General Information
+          </h2>
           <div className="grid md:grid-cols-2 gap-6">
             <div>
-              <label htmlFor="siteName" className={labelClasses}>
+              <label htmlFor="siteName" className={cosmic.label}>
                 Site Name
               </label>
               <input
@@ -202,11 +195,11 @@ const AdminSiteSettings: React.FC = () => {
                 name="siteName"
                 value={formState.siteName}
                 onChange={handleChange}
-                className={inputClasses}
+                className={cosmic.input}
               />
             </div>
             <div>
-              <label htmlFor="authorName" className={labelClasses}>
+              <label htmlFor="authorName" className={cosmic.label}>
                 Author Name
               </label>
               <input
@@ -214,12 +207,12 @@ const AdminSiteSettings: React.FC = () => {
                 name="authorName"
                 value={formState.authorName}
                 onChange={handleChange}
-                className={inputClasses}
+                className={cosmic.input}
               />
             </div>
           </div>
           <div className="mt-4">
-            <label htmlFor="authorTagline" className={labelClasses}>
+            <label htmlFor="authorTagline" className={cosmic.label}>
               Author Tagline
             </label>
             <input
@@ -227,39 +220,41 @@ const AdminSiteSettings: React.FC = () => {
               name="authorTagline"
               value={formState.authorTagline}
               onChange={handleChange}
-              className={inputClasses}
+              className={cosmic.input}
             />
           </div>
           <div className="mt-4">
-            <label htmlFor="siteDescription" className={labelClasses}>
+            <label htmlFor="siteDescription" className={cosmic.label}>
               Site SEO Description
             </label>
             <textarea
               name="siteDescription"
               value={formState.siteDescription}
               onChange={handleChange}
-              className={`${inputClasses} h-24`}
+              className={`${cosmic.textarea} h-24`}
             />
           </div>
           <div className="mt-4">
-            <label htmlFor="authorBio" className={labelClasses}>
+            <label htmlFor="authorBio" className={cosmic.label}>
               Author Bio (Markdown Supported)
             </label>
             <textarea
               name="authorBio"
               value={formState.authorBio}
               onChange={handleChange}
-              className={`${inputClasses} h-32 font-mono text-sm`}
+              className={`${cosmic.textarea} h-32 font-mono text-sm`}
             />
           </div>
         </section>
 
         {/* Social Links */}
         <section>
-          <h2 className={sectionTitleClasses}>Social Links</h2>
+          <h2 className={`${cosmic.subTitle} border-b border-white/[0.06] pb-2 pt-6 mb-4`}>
+            Social Links
+          </h2>
           <div className="grid md:grid-cols-3 gap-6">
             <div>
-              <label htmlFor="github" className={labelClasses}>
+              <label htmlFor="github" className={cosmic.label}>
                 GitHub URL
               </label>
               <input
@@ -267,11 +262,11 @@ const AdminSiteSettings: React.FC = () => {
                 name="github"
                 value={formState.socialLinks.github}
                 onChange={handleSocialChange}
-                className={inputClasses}
+                className={cosmic.input}
               />
             </div>
             <div>
-              <label htmlFor="linkedin" className={labelClasses}>
+              <label htmlFor="linkedin" className={cosmic.label}>
                 LinkedIn URL
               </label>
               <input
@@ -279,11 +274,11 @@ const AdminSiteSettings: React.FC = () => {
                 name="linkedin"
                 value={formState.socialLinks.linkedin}
                 onChange={handleSocialChange}
-                className={inputClasses}
+                className={cosmic.input}
               />
             </div>
             <div>
-              <label htmlFor="email" className={labelClasses}>
+              <label htmlFor="email" className={cosmic.label}>
                 Email Address
               </label>
               <input
@@ -291,7 +286,7 @@ const AdminSiteSettings: React.FC = () => {
                 name="email"
                 value={formState.socialLinks.email}
                 onChange={handleSocialChange}
-                className={inputClasses}
+                className={cosmic.input}
               />
             </div>
           </div>
@@ -299,14 +294,12 @@ const AdminSiteSettings: React.FC = () => {
 
         {/* Skills */}
         <section>
-          <div className="flex justify-between items-center mb-4 border-b pb-2 pt-6">
-            <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-100">
-              Skills & Technologies
-            </h2>
+          <div className="flex justify-between items-center mb-4 border-b border-white/[0.06] pb-2 pt-6">
+            <h2 className={cosmic.subTitle}>Skills & Technologies</h2>
             <button
               type="button"
               onClick={addSkill}
-              className="flex items-center gap-1 text-sm bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full hover:bg-indigo-200"
+              className={`flex items-center gap-1 ${cosmic.buttonSmall}`}
             >
               <Plus size={16} /> Add Skill
             </button>
@@ -315,40 +308,40 @@ const AdminSiteSettings: React.FC = () => {
             {localSkills.map((skill, index) => (
               <div
                 key={index}
-                className="flex gap-2 items-end bg-gray-50 dark:bg-surface p-3 rounded-md border border-gray-200 dark:border-white/[0.06]"
+                className="flex gap-2 items-end bg-elevated/50 border border-white/[0.06] rounded-xl p-3"
               >
                 <div className="flex-1">
-                  <label className="text-xs text-gray-500">Skill Name</label>
+                  <label className="text-xs text-secondary-500">Skill Name</label>
                   <input
                     type="text"
                     value={skill.name}
                     onChange={(e) => updateSkill(index, 'name', e.target.value)}
-                    className={inputClasses}
+                    className={cosmic.input}
                     placeholder="e.g. React"
                   />
                 </div>
                 <div className="w-20">
-                  <label className="text-xs text-gray-500">Level (1-5)</label>
+                  <label className="text-xs text-secondary-500">Level (1-5)</label>
                   <input
                     type="number"
                     min="1"
                     max="5"
                     value={skill.level}
                     onChange={(e) => updateSkill(index, 'level', parseInt(e.target.value))}
-                    className={inputClasses}
+                    className={cosmic.input}
                   />
                 </div>
                 <button
                   type="button"
                   onClick={() => removeSkill(index)}
-                  className="p-2 text-red-500 hover:bg-red-50 rounded-md"
+                  className="p-2 text-error-400 hover:bg-error-500/10 rounded-lg transition-colors"
                 >
                   <Trash2 size={20} />
                 </button>
               </div>
             ))}
             {localSkills.length === 0 && (
-              <p className="text-gray-500 italic col-span-2 text-center py-4">
+              <p className="text-secondary-500 italic col-span-2 text-center py-4">
                 No skills added yet.
               </p>
             )}
@@ -357,14 +350,12 @@ const AdminSiteSettings: React.FC = () => {
 
         {/* Timeline */}
         <section>
-          <div className="flex justify-between items-center mb-4 border-b pb-2 pt-6">
-            <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-100">
-              Journey / Timeline
-            </h2>
+          <div className="flex justify-between items-center mb-4 border-b border-white/[0.06] pb-2 pt-6">
+            <h2 className={cosmic.subTitle}>Journey / Timeline</h2>
             <button
               type="button"
               onClick={addTimelineItem}
-              className="flex items-center gap-1 text-sm bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full hover:bg-indigo-200"
+              className={`flex items-center gap-1 ${cosmic.buttonSmall}`}
             >
               <Plus size={16} /> Add Item
             </button>
@@ -373,81 +364,81 @@ const AdminSiteSettings: React.FC = () => {
             {localTimeline.map((item, index) => (
               <div
                 key={index}
-                className="bg-gray-50 dark:bg-surface p-4 rounded-md border border-gray-200 dark:border-white/[0.06] relative"
+                className="bg-elevated/50 border border-white/[0.06] rounded-xl p-4 relative"
               >
                 <button
                   type="button"
                   onClick={() => removeTimelineItem(index)}
-                  className="absolute top-4 right-4 text-red-500 hover:bg-red-50 rounded-md p-1"
+                  className="absolute top-4 right-4 text-error-400 hover:bg-error-500/10 rounded-lg p-1 transition-colors"
                 >
                   <Trash2 size={18} />
                 </button>
                 <div className="grid md:grid-cols-12 gap-4">
                   <div className="md:col-span-2">
-                    <label className="text-xs text-gray-500">Year</label>
+                    <label className="text-xs text-secondary-500">Year</label>
                     <input
                       type="text"
                       value={item.year}
                       onChange={(e) => updateTimelineItem(index, 'year', e.target.value)}
-                      className={inputClasses}
+                      className={cosmic.input}
                     />
                   </div>
                   <div className="md:col-span-4">
-                    <label className="text-xs text-gray-500">Title</label>
+                    <label className="text-xs text-secondary-500">Title</label>
                     <input
                       type="text"
                       value={item.title}
                       onChange={(e) => updateTimelineItem(index, 'title', e.target.value)}
-                      className={inputClasses}
+                      className={cosmic.input}
                     />
                   </div>
                   <div className="md:col-span-4">
-                    <label className="text-xs text-gray-500">Organization</label>
+                    <label className="text-xs text-secondary-500">Organization</label>
                     <input
                       type="text"
                       value={item.organization}
                       onChange={(e) => updateTimelineItem(index, 'organization', e.target.value)}
-                      className={inputClasses}
+                      className={cosmic.input}
                     />
                   </div>
                   <div className="md:col-span-2">
-                    <label className="text-xs text-gray-500">Type</label>
+                    <label className="text-xs text-secondary-500">Type</label>
                     <select
                       value={item.type}
                       onChange={(e) => updateTimelineItem(index, 'type', e.target.value)}
-                      className={inputClasses}
+                      className={cosmic.select}
                     >
                       <option value="work">Work</option>
                       <option value="education">Education</option>
                     </select>
                   </div>
                   <div className="md:col-span-12">
-                    <label className="text-xs text-gray-500">Description</label>
+                    <label className="text-xs text-secondary-500">Description</label>
                     <textarea
                       value={item.description}
                       onChange={(e) => updateTimelineItem(index, 'description', e.target.value)}
-                      className={`${inputClasses} h-20`}
+                      className={`${cosmic.textarea} h-20`}
                     />
                   </div>
                 </div>
               </div>
             ))}
             {localTimeline.length === 0 && (
-              <p className="text-gray-500 italic text-center py-4">No timeline items added yet.</p>
+              <p className="text-secondary-500 italic text-center py-4">
+                No timeline items added yet.
+              </p>
             )}
           </div>
         </section>
 
         {/* Achievements */}
         <section>
-          <div className="flex justify-between items-center mb-4 border-b pb-2 pt-6">
-            <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-100">
-              Achievements & Certifications
-            </h2>
+          <div className="flex justify-between items-center mb-4 border-b border-white/[0.06] pb-2 pt-6">
+            <h2 className={cosmic.subTitle}>Achievements & Certifications</h2>
             <button
               type="button"
               onClick={addAchievement}
-              className="flex items-center gap-1 text-sm bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full hover:bg-indigo-200"
+              className={`flex items-center gap-1 ${cosmic.buttonSmall}`}
             >
               <Plus size={16} /> Add Achievement
             </button>
@@ -456,42 +447,42 @@ const AdminSiteSettings: React.FC = () => {
             {localAchievements.map((item, index) => (
               <div
                 key={index}
-                className="bg-gray-50 dark:bg-surface p-3 rounded-md border border-gray-200 dark:border-white/[0.06] relative"
+                className="bg-elevated/50 border border-white/[0.06] rounded-xl p-3 relative"
               >
                 <button
                   type="button"
                   onClick={() => removeAchievement(index)}
-                  className="absolute top-2 right-2 text-red-500 hover:bg-red-50 rounded-md p-1"
+                  className="absolute top-2 right-2 text-error-400 hover:bg-error-500/10 rounded-lg p-1 transition-colors"
                 >
                   <Trash2 size={16} />
                 </button>
                 <div className="space-y-2">
                   <div>
-                    <label className="text-xs text-gray-500">Title</label>
+                    <label className="text-xs text-secondary-500">Title</label>
                     <input
                       type="text"
                       value={item.title}
                       onChange={(e) => updateAchievement(index, 'title', e.target.value)}
-                      className={inputClasses}
+                      className={cosmic.input}
                     />
                   </div>
                   <div className="flex gap-2">
                     <div className="flex-1">
-                      <label className="text-xs text-gray-500">Issuer</label>
+                      <label className="text-xs text-secondary-500">Issuer</label>
                       <input
                         type="text"
                         value={item.issuer}
                         onChange={(e) => updateAchievement(index, 'issuer', e.target.value)}
-                        className={inputClasses}
+                        className={cosmic.input}
                       />
                     </div>
                     <div className="w-24">
-                      <label className="text-xs text-gray-500">Year</label>
+                      <label className="text-xs text-secondary-500">Year</label>
                       <input
                         type="text"
                         value={item.year}
                         onChange={(e) => updateAchievement(index, 'year', e.target.value)}
-                        className={inputClasses}
+                        className={cosmic.input}
                       />
                     </div>
                   </div>
@@ -499,7 +490,7 @@ const AdminSiteSettings: React.FC = () => {
               </div>
             ))}
             {localAchievements.length === 0 && (
-              <p className="text-gray-500 italic col-span-2 text-center py-4">
+              <p className="text-secondary-500 italic col-span-2 text-center py-4">
                 No achievements added yet.
               </p>
             )}
@@ -508,7 +499,9 @@ const AdminSiteSettings: React.FC = () => {
 
         {/* Category Management */}
         <section>
-          <h2 className={sectionTitleClasses}>Manage Categories</h2>
+          <h2 className={`${cosmic.subTitle} border-b border-white/[0.06] pb-2 pt-6 mb-4`}>
+            Manage Categories
+          </h2>
           <div className="mt-4 space-y-4">
             <div className="flex items-center gap-4">
               <input
@@ -516,27 +509,20 @@ const AdminSiteSettings: React.FC = () => {
                 value={newCategory}
                 onChange={(e) => setNewCategory(e.target.value)}
                 placeholder="New category name"
-                className={inputClasses}
+                className={cosmic.input}
               />
-              <button
-                type="button"
-                onClick={handleAddCategory}
-                className="px-4 py-2 bg-green-600 text-white font-semibold rounded-md hover:bg-green-700"
-              >
+              <button type="button" onClick={handleAddCategory} className={cosmic.buttonPrimary}>
                 Add
               </button>
             </div>
             <div className="flex flex-wrap gap-2">
               {categories.map((cat) => (
-                <span
-                  key={cat}
-                  className="flex items-center gap-2 bg-gray-100 dark:bg-elevated px-3 py-1 rounded-full text-sm"
-                >
+                <span key={cat} className={cosmic.tag}>
                   {cat}
                   <button
                     type="button"
                     onClick={() => deleteCategory(cat)}
-                    className="text-red-500 hover:text-red-700 font-bold"
+                    className="text-error-400 hover:text-error-300 font-bold ml-1"
                   >
                     &times;
                   </button>

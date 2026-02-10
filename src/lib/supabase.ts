@@ -1296,3 +1296,89 @@ export async function getCVCertifications(): Promise<CVCertification[]> {
   }
   return data as CVCertification[];
 }
+
+// ---------- Custom Pages ----------
+
+export interface CustomPageData {
+  id: string;
+  title: string;
+  slug: string;
+  description: string | null;
+  meta_title: string | null;
+  meta_description: string | null;
+  og_image: string | null;
+  layout: string;
+  status: string;
+  sort_order: number;
+  show_in_navigation: boolean;
+}
+
+export interface CustomPageSectionData {
+  id: string;
+  page_id: string;
+  section_type: string;
+  title: string | null;
+  subtitle: string | null;
+  content: string | null;
+  image_url: string | null;
+  metadata: Record<string, any> | null;
+  sort_order: number;
+  visible: boolean;
+}
+
+export async function getCustomPages(): Promise<CustomPageData[]> {
+  if (!supabase) return [];
+  const { data, error } = await supabase
+    .from('custom_pages')
+    .select('*')
+    .eq('status', 'published')
+    .order('sort_order', { ascending: true });
+  if (error || !data) {
+    console.error('Error fetching custom pages:', error);
+    return [];
+  }
+  return data as CustomPageData[];
+}
+
+export async function getCustomPageBySlug(slug: string): Promise<CustomPageData | undefined> {
+  if (!supabase) return undefined;
+  const { data, error } = await supabase
+    .from('custom_pages')
+    .select('*')
+    .eq('slug', slug)
+    .eq('status', 'published')
+    .single();
+  if (error || !data) {
+    return undefined;
+  }
+  return data as CustomPageData;
+}
+
+export async function getCustomPageSections(pageId: string): Promise<CustomPageSectionData[]> {
+  if (!supabase) return [];
+  const { data, error } = await supabase
+    .from('custom_page_sections')
+    .select('*')
+    .eq('page_id', pageId)
+    .eq('visible', true)
+    .order('sort_order', { ascending: true });
+  if (error || !data) {
+    console.error('Error fetching custom page sections:', error);
+    return [];
+  }
+  return data as CustomPageSectionData[];
+}
+
+export async function getNavigationCustomPages(): Promise<CustomPageData[]> {
+  if (!supabase) return [];
+  const { data, error } = await supabase
+    .from('custom_pages')
+    .select('*')
+    .eq('status', 'published')
+    .eq('show_in_navigation', true)
+    .order('sort_order', { ascending: true });
+  if (error || !data) {
+    return [];
+  }
+  return data as CustomPageData[];
+}

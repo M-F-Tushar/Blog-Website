@@ -1,11 +1,12 @@
 import React, { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { useProjects, Project } from '../../hooks/useProjects';
+import { cosmic } from './ui/cosmicClassNames';
 
 const STATUS_BADGE_CLASSES: Record<Project['status'], string> = {
-  active: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200',
-  completed: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200',
-  archived: 'bg-gray-100 text-gray-800 dark:bg-gray-600 dark:text-secondary-200',
+  active: cosmic.badgeSuccess,
+  completed: cosmic.badgeAccent,
+  archived: cosmic.badgeNeutral,
 };
 
 const STATUS_LABELS: Record<Project['status'], string> = {
@@ -52,22 +53,17 @@ const AdminProjects: React.FC = () => {
   };
 
   return (
-    <div className="max-w-5xl mx-auto bg-white dark:bg-surface rounded-lg shadow-lg p-8">
+    <div className={cosmic.container}>
       {error && (
-        <div className="mb-6 bg-red-100 dark:bg-red-900 border-l-4 border-red-500 text-red-700 dark:text-red-200 p-4">
+        <div className={`mb-6 ${cosmic.alertError}`}>
           <p className="font-bold">Error</p>
           <p>{error}</p>
         </div>
       )}
 
-      <div className="flex justify-between items-center mb-8 border-b border-gray-200 dark:border-white/[0.06] pb-6">
-        <h1 className="text-3xl font-bold font-serif text-gray-900 dark:text-secondary-50">
-          Manage Projects
-        </h1>
-        <Link
-          to="/projects/create"
-          className="px-5 py-2 bg-accent text-white font-semibold rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent dark:focus:ring-offset-dark-gray transition-colors"
-        >
+      <div className="flex justify-between items-center mb-8 border-b border-white/[0.06] pb-6">
+        <h1 className={cosmic.pageTitle}>Manage Projects</h1>
+        <Link to="/projects/create" className={cosmic.buttonPrimary}>
           Add Project
         </Link>
       </div>
@@ -75,17 +71,14 @@ const AdminProjects: React.FC = () => {
       {/* Filters */}
       <div className="flex flex-wrap gap-4 mb-6">
         <div>
-          <label
-            htmlFor="statusFilter"
-            className="block text-sm font-medium text-gray-700 dark:text-secondary-300 mb-1"
-          >
+          <label htmlFor="statusFilter" className={cosmic.label}>
             Status
           </label>
           <select
             id="statusFilter"
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="px-3 py-2 text-gray-700 dark:text-secondary-200 bg-white dark:bg-elevated border border-gray-300 dark:border-white/10 rounded-md focus:outline-none focus:ring-2 focus:ring-accent transition-colors duration-200"
+            className={cosmic.select}
           >
             <option value="all">All Statuses</option>
             <option value="active">Active</option>
@@ -98,7 +91,7 @@ const AdminProjects: React.FC = () => {
             <button
               type="button"
               onClick={() => setStatusFilter('all')}
-              className="px-3 py-2 text-sm text-gray-600 dark:text-secondary-400 hover:text-gray-900 dark:hover:text-gray-100 underline transition-colors"
+              className="px-3 py-2 text-sm text-secondary-400 hover:text-secondary-200 underline transition-colors"
             >
               Clear Filters
             </button>
@@ -108,10 +101,10 @@ const AdminProjects: React.FC = () => {
 
       {loading ? (
         <div className="flex justify-center items-center py-12">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-accent"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-400"></div>
         </div>
       ) : filteredProjects.length === 0 ? (
-        <div className="text-center py-12 text-gray-500 dark:text-secondary-400">
+        <div className={cosmic.emptyState}>
           <p className="text-lg">
             {projects.length === 0
               ? 'No projects yet. Click "Add Project" to create one.'
@@ -119,32 +112,20 @@ const AdminProjects: React.FC = () => {
           </p>
         </div>
       ) : (
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-            <thead className="bg-gray-50 dark:bg-elevated">
+        <div className={cosmic.tableWrapper}>
+          <table className={cosmic.table}>
+            <thead className={cosmic.tableHead}>
               <tr>
-                <th
-                  scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-secondary-300 uppercase tracking-wider"
-                >
+                <th scope="col" className={cosmic.tableHeadCell}>
                   Title
                 </th>
-                <th
-                  scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-secondary-300 uppercase tracking-wider"
-                >
+                <th scope="col" className={cosmic.tableHeadCell}>
                   Status
                 </th>
-                <th
-                  scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-secondary-300 uppercase tracking-wider"
-                >
+                <th scope="col" className={cosmic.tableHeadCell}>
                   Tags
                 </th>
-                <th
-                  scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-secondary-300 uppercase tracking-wider"
-                >
+                <th scope="col" className={cosmic.tableHeadCell}>
                   Featured
                 </th>
                 <th scope="col" className="relative px-6 py-3">
@@ -152,33 +133,31 @@ const AdminProjects: React.FC = () => {
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-white dark:bg-surface divide-y divide-gray-200 dark:divide-gray-700">
+            <tbody className={cosmic.tableBody}>
               {filteredProjects.map((project) => (
-                <tr key={project.id}>
-                  <td className="px-6 py-4">
+                <tr key={project.id} className={cosmic.tableRow}>
+                  <td className={cosmic.tableCell}>
                     <div
-                      className="text-sm font-medium text-gray-900 dark:text-secondary-50 max-w-xs truncate"
+                      className="text-sm font-medium text-secondary-50 max-w-xs truncate"
                       title={project.title}
                     >
                       {project.title}
                     </div>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span
-                      className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${STATUS_BADGE_CLASSES[project.status] || 'bg-gray-100 text-gray-800 dark:bg-gray-600 dark:text-secondary-200'}`}
-                    >
+                  <td className={cosmic.tableCell}>
+                    <span className={STATUS_BADGE_CLASSES[project.status] || cosmic.badgeNeutral}>
                       {STATUS_LABELS[project.status] || project.status}
                     </span>
                   </td>
-                  <td className="px-6 py-4">
+                  <td className={cosmic.tableCell}>
                     <div
-                      className="text-sm text-gray-500 dark:text-secondary-400 max-w-xs truncate"
+                      className="text-sm text-secondary-400 max-w-xs truncate"
                       title={project.tags.join(', ')}
                     >
                       {project.tags.join(', ')}
                     </div>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
+                  <td className={cosmic.tableCell}>
                     <button
                       onClick={() => handleToggleFeatured(project)}
                       className="focus:outline-none transition-colors"
@@ -187,7 +166,7 @@ const AdminProjects: React.FC = () => {
                     >
                       {project.featured ? (
                         <svg
-                          className="h-5 w-5 text-yellow-400"
+                          className={`h-5 w-5 ${cosmic.starActive}`}
                           xmlns="http://www.w3.org/2000/svg"
                           viewBox="0 0 20 20"
                           fill="currentColor"
@@ -196,7 +175,7 @@ const AdminProjects: React.FC = () => {
                         </svg>
                       ) : (
                         <svg
-                          className="h-5 w-5 text-gray-300 dark:text-gray-500 hover:text-yellow-400 dark:hover:text-yellow-400"
+                          className={`h-5 w-5 ${cosmic.starInactive}`}
                           xmlns="http://www.w3.org/2000/svg"
                           fill="none"
                           viewBox="0 0 24 24"
@@ -212,17 +191,14 @@ const AdminProjects: React.FC = () => {
                       )}
                     </button>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                  <td className={`${cosmic.tableCell} text-right text-sm font-medium`}>
                     <div className="flex items-center justify-end space-x-3">
-                      <Link
-                        to={`/projects/edit/${project.id}`}
-                        className="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-200"
-                      >
+                      <Link to={`/projects/edit/${project.id}`} className={cosmic.linkEdit}>
                         Edit
                       </Link>
                       <button
                         onClick={() => handleDelete(project.id, project.title)}
-                        className="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-200"
+                        className={cosmic.linkDelete}
                       >
                         Delete
                       </button>
@@ -232,7 +208,7 @@ const AdminProjects: React.FC = () => {
               ))}
             </tbody>
           </table>
-          <div className="mt-4 text-sm text-gray-500 dark:text-secondary-400">
+          <div className="mt-4 text-sm text-secondary-400">
             Showing {filteredProjects.length} of {projects.length} project
             {projects.length !== 1 ? 's' : ''}
           </div>

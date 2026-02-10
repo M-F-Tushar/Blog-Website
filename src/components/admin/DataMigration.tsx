@@ -5,6 +5,7 @@ import {
   MigrationProgress,
 } from '../../utils/migrateToSupabase';
 import { isSupabaseConfigured } from '../../services/supabase';
+import { cosmic } from './ui/cosmicClassNames';
 
 const DataMigration: React.FC = () => {
   const [migrationProgress, setMigrationProgress] = useState<MigrationProgress>({
@@ -56,17 +57,15 @@ const DataMigration: React.FC = () => {
 
   if (!supabaseConfigured) {
     return (
-      <div className="max-w-4xl mx-auto bg-white dark:bg-surface rounded-lg shadow-lg p-8">
-        <h1 className="text-3xl font-bold font-serif text-center mb-8 text-gray-900 dark:text-secondary-50">
-          Data Migration
-        </h1>
+      <div className={cosmic.containerSm}>
+        <h1 className={`${cosmic.pageTitle} text-center mb-8`}>Data Migration</h1>
 
-        <div className="bg-yellow-100 dark:bg-yellow-900 border-l-4 border-yellow-500 text-yellow-700 dark:text-yellow-200 p-4 mb-6">
+        <div className={cosmic.alertWarning}>
           <p className="font-bold">Supabase Not Configured</p>
           <p className="mt-2">
             Supabase environment variables are not configured. Please set up Supabase configuration
-            in your <code className="bg-gray-200 dark:bg-elevated px-2 py-1 rounded">.env</code>{' '}
-            file before attempting to migrate data.
+            in your <code className="bg-elevated/80 px-2 py-1 rounded">.env</code> file before
+            attempting to migrate data.
           </p>
           <p className="mt-2">Required environment variables:</p>
           <ul className="list-disc list-inside mt-2 ml-4 space-y-1">
@@ -74,11 +73,8 @@ const DataMigration: React.FC = () => {
             <li>VITE_SUPABASE_ANON_KEY</li>
           </ul>
           <p className="mt-4">
-            See{' '}
-            <code className="bg-gray-200 dark:bg-elevated px-2 py-1 rounded">
-              SUPABASE_SETUP.md
-            </code>{' '}
-            for detailed setup instructions.
+            See <code className="bg-elevated/80 px-2 py-1 rounded">SUPABASE_SETUP.md</code> for
+            detailed setup instructions.
           </p>
         </div>
       </div>
@@ -86,23 +82,21 @@ const DataMigration: React.FC = () => {
   }
 
   return (
-    <div className="max-w-4xl mx-auto bg-white dark:bg-surface rounded-lg shadow-lg p-8">
-      <h1 className="text-3xl font-bold font-serif text-center mb-8 text-gray-900 dark:text-secondary-50">
-        Data Migration
-      </h1>
+    <div className={cosmic.containerSm}>
+      <h1 className={`${cosmic.pageTitle} text-center mb-8`}>Data Migration</h1>
 
       <div className="mb-8">
-        <p className="text-gray-700 dark:text-secondary-300 mb-4">
+        <p className={`${cosmic.bodyText} mb-4`}>
           This tool will migrate your initial posts and recommendations from{' '}
-          <code className="bg-gray-200 dark:bg-elevated px-2 py-1 rounded">constants.ts</code> to
-          Supabase. This should only be done once during initial setup.
+          <code className="bg-elevated/80 px-2 py-1 rounded">constants.ts</code> to Supabase. This
+          should only be done once during initial setup.
         </p>
       </div>
 
       {migrationStatus && (
-        <div className="mb-6 p-4 bg-blue-50 dark:bg-blue-900 rounded-lg">
-          <h3 className="font-semibold text-blue-900 dark:text-blue-100 mb-2">Current Status:</h3>
-          <div className="text-blue-800 dark:text-blue-200">
+        <div className={`mb-6 ${cosmic.alertInfo}`}>
+          <h3 className="font-semibold text-info-200 mb-2">Current Status:</h3>
+          <div className="text-info-300">
             <p>
               Posts in Supabase: <strong>{migrationStatus.postsCount}</strong>
             </p>
@@ -123,10 +117,10 @@ const DataMigration: React.FC = () => {
         <button
           onClick={handleMigrate}
           disabled={isMigrating}
-          className={`w-full px-6 py-3 font-semibold rounded-md transition-colors ${
+          className={`w-full ${
             isMigrating
-              ? 'bg-gray-400 cursor-not-allowed'
-              : 'bg-accent text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent'
+              ? 'px-6 py-2.5 bg-elevated border border-white/10 text-secondary-500 rounded-lg cursor-not-allowed opacity-50'
+              : cosmic.buttonPrimary
           }`}
         >
           {isMigrating ? 'Migrating...' : 'Migrate Data from constants.ts'}
@@ -136,21 +130,21 @@ const DataMigration: React.FC = () => {
       {/* Migration Progress */}
       <div className="space-y-4">
         <div
-          className={`p-4 rounded-lg ${
+          className={`p-4 rounded-xl ${
             migrationProgress.status === 'error'
-              ? 'bg-red-100 dark:bg-red-900 border-l-4 border-red-500'
+              ? cosmic.alertError
               : migrationProgress.status === 'success'
-                ? 'bg-green-100 dark:bg-green-900 border-l-4 border-green-500'
+                ? cosmic.alertSuccess
                 : migrationProgress.status === 'migrating'
-                  ? 'bg-blue-100 dark:bg-blue-900 border-l-4 border-blue-500'
-                  : 'bg-gray-100 dark:bg-elevated border-l-4 border-gray-500'
+                  ? cosmic.alertInfo
+                  : `${cosmic.card}`
           }`}
         >
           <div className="flex items-center">
             <div className="flex-shrink-0">
               {migrationProgress.status === 'migrating' && (
                 <svg
-                  className="animate-spin h-5 w-5 text-blue-600 dark:text-blue-400"
+                  className="animate-spin h-5 w-5 text-primary-400"
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
                   viewBox="0 0 24 24"
@@ -172,7 +166,7 @@ const DataMigration: React.FC = () => {
               )}
               {migrationProgress.status === 'success' && (
                 <svg
-                  className="h-5 w-5 text-green-600 dark:text-green-400"
+                  className="h-5 w-5 text-success-400"
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 20 20"
                   fill="currentColor"
@@ -186,7 +180,7 @@ const DataMigration: React.FC = () => {
               )}
               {migrationProgress.status === 'error' && (
                 <svg
-                  className="h-5 w-5 text-red-600 dark:text-red-400"
+                  className="h-5 w-5 text-error-400"
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 20 20"
                   fill="currentColor"
@@ -203,23 +197,21 @@ const DataMigration: React.FC = () => {
               <p
                 className={`text-sm font-medium ${
                   migrationProgress.status === 'error'
-                    ? 'text-red-800 dark:text-red-200'
+                    ? 'text-error-300'
                     : migrationProgress.status === 'success'
-                      ? 'text-green-800 dark:text-green-200'
+                      ? 'text-success-300'
                       : migrationProgress.status === 'migrating'
-                        ? 'text-blue-800 dark:text-blue-200'
-                        : 'text-gray-800 dark:text-secondary-200'
+                        ? 'text-info-300'
+                        : 'text-secondary-200'
                 }`}
               >
                 {migrationProgress.message}
               </p>
               {migrationProgress.error && (
-                <p className="mt-1 text-sm text-red-700 dark:text-red-300">
-                  Error: {migrationProgress.error}
-                </p>
+                <p className="mt-1 text-sm text-error-300">Error: {migrationProgress.error}</p>
               )}
               {migrationProgress.status === 'success' && (
-                <div className="mt-2 text-sm text-green-700 dark:text-green-300">
+                <div className="mt-2 text-sm text-success-300">
                   <p>Posts: {migrationProgress.postsCount || 0}</p>
                   <p>Recommendations: {migrationProgress.recommendationsCount || 0}</p>
                 </div>
@@ -229,9 +221,9 @@ const DataMigration: React.FC = () => {
         </div>
       </div>
 
-      <div className="mt-8 p-4 bg-gray-100 dark:bg-elevated rounded-lg">
-        <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">Notes:</h3>
-        <ul className="list-disc list-inside space-y-2 text-sm text-gray-700 dark:text-secondary-300">
+      <div className={`mt-8 ${cosmic.card}`}>
+        <h3 className="font-semibold text-secondary-50 mb-2">Notes:</h3>
+        <ul className={`list-disc list-inside space-y-2 text-sm ${cosmic.bodyText}`}>
           <li>Migration is safe to run multiple times - it will skip if data already exists</li>
           <li>Initial posts and recommendations will be marked as read-only</li>
           <li>After migration, all data will be managed through Supabase</li>

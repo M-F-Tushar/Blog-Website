@@ -19,46 +19,42 @@ import AdminApp from '@/components/react/admin/AdminApp';
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Playfair+Display:wght@400;700&display=swap"
     />
 
-    <!-- Dark mode (no flash) -->
+    <!-- Admin is always dark mode -->
     <script is:inline>
-      (function () {
-        const theme = localStorage.getItem('theme');
-        if (theme === 'dark' || (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-          document.documentElement.classList.add('dark');
-        }
-      })();
+      document.documentElement.classList.add('dark');
     </script>
 
     <style>
       body {
         margin: 0;
         font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        background: #030014;
+        color: #f1f5f9;
       }
       .admin-loading {
         display: flex;
+        flex-direction: column;
         align-items: center;
         justify-content: center;
         min-height: 100vh;
-        background: #f9fafb;
-      }
-      .dark .admin-loading {
         background: #030014;
-        color: #f3f4f6;
+        gap: 16px;
       }
       .admin-spinner {
         width: 48px;
         height: 48px;
-        border: 3px solid #e5e7eb;
+        border: 3px solid rgba(6, 182, 212, 0.15);
         border-top-color: #06b6d4;
         border-radius: 50%;
         animation: spin 0.8s linear infinite;
+        box-shadow: 0 0 20px rgba(6, 182, 212, 0.2);
       }
-      .dark .admin-spinner {
-        border-color: #374151;
-        border-top-color: #06b6d4;
+      .admin-loading-text {
+        font-size: 14px;
+        color: rgba(148, 163, 184, 0.6);
       }
       @keyframes spin {
         to { transform: rotate(360deg); }
@@ -69,6 +65,7 @@ import AdminApp from '@/components/react/admin/AdminApp';
     <div id="admin-root">
       <div class="admin-loading">
         <div class="admin-spinner"></div>
+        <div class="admin-loading-text">Loading admin panel...</div>
       </div>
     </div>
     <AdminApp client:only="react" />

@@ -1,0 +1,49 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import DynamicSection from '../../components/astro/DynamicSection.astro';
+import Reveal from '../../components/astro/Reveal.astro';
+import { getCustomPages, getCustomPageBySlug, getCustomPageSections as getPageSections } from '@/lib/supabase';
+
+export async function getStaticPaths() {
+  const pages = await getCustomPages();
+  return pages.map((page) => ({
+    params: { slug: page.slug },
+  }));
+}
+
+const { slug } = Astro.params;
+const page = await getCustomPageBySlug(slug!);
+
+if (!page) {
+  return Astro.redirect('/404');
+}
+
+const sections = await getPageSections(page.id);
+
+const metaTitle = page.meta_title || page.title;
+const metaDescription = page.meta_description || page.description || '';
+---
+
+<BaseLayout
+  title={metaTitle}
+  description={metaDescription}
+  ogImage={page.og_image || undefined}
+>
+  <div class="min-h-screen pt-8 pb-16">
+    {sections.length === 0 && (
+      <div class="container mx-auto px-4 py-20 text-center">
+        <h1 class="text-4xl font-bold font-serif text-secondary-50 mb-4">{page.title}</h1>
+        {page.description && (
+          <p class="text-lg text-secondary-300">{page.description}</p>
+        )}
+        <p class="text-secondary-500 mt-8">This page has no content sections yet.</p>
+      </div>
+    )}
+
+    {sections.map((section) => (
+      <Reveal direction="up">
+        <DynamicSection section={section} />
+      </Reveal>
+    ))}
+  </div>
+</BaseLayout>

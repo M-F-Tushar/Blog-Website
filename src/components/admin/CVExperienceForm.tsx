@@ -1,15 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Experience } from '../../hooks/useCVData';
+import { cosmic } from './ui/cosmicClassNames';
 
 interface Props {
   experience?: Experience;
   onSave: (data: Omit<Experience, 'id' | 'created_at' | 'updated_at'>) => Promise<void>;
   onCancel: () => void;
 }
-
-const inputClasses =
-  'w-full px-3 py-2 text-gray-700 dark:text-secondary-200 bg-white dark:bg-elevated border border-gray-300 dark:border-white/10 rounded-md focus:outline-none focus:ring-2 focus:ring-accent transition-colors duration-200';
-const labelClasses = 'block text-sm font-medium text-gray-700 dark:text-secondary-300 mb-1';
 
 const CVExperienceForm: React.FC<Props> = ({ experience, onSave, onCancel }) => {
   const [company, setCompany] = useState('');
@@ -70,34 +67,32 @@ const CVExperienceForm: React.FC<Props> = ({ experience, onSave, onCancel }) => 
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      <h3 className="text-lg font-semibold text-gray-900 dark:text-secondary-50">
-        {experience ? 'Edit Experience' : 'Add Experience'}
-      </h3>
+      <h3 className={cosmic.subTitle}>{experience ? 'Edit Experience' : 'Add Experience'}</h3>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <label className={labelClasses}>
+          <label className={cosmic.label}>
             Company <span className="text-red-500">*</span>
           </label>
           <input
             type="text"
             value={company}
             onChange={(e) => setCompany(e.target.value)}
-            className={inputClasses}
+            className={cosmic.input}
             placeholder="e.g. Google"
             required
           />
         </div>
 
         <div>
-          <label className={labelClasses}>
+          <label className={cosmic.label}>
             Position <span className="text-red-500">*</span>
           </label>
           <input
             type="text"
             value={position}
             onChange={(e) => setPosition(e.target.value)}
-            className={inputClasses}
+            className={cosmic.input}
             placeholder="e.g. Senior Software Engineer"
             required
           />
@@ -105,37 +100,37 @@ const CVExperienceForm: React.FC<Props> = ({ experience, onSave, onCancel }) => 
       </div>
 
       <div>
-        <label className={labelClasses}>Location</label>
+        <label className={cosmic.label}>Location</label>
         <input
           type="text"
           value={location}
           onChange={(e) => setLocation(e.target.value)}
-          className={inputClasses}
+          className={cosmic.input}
           placeholder="e.g. Mountain View, CA"
         />
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div>
-          <label className={labelClasses}>
+          <label className={cosmic.label}>
             Start Date <span className="text-red-500">*</span>
           </label>
           <input
             type="date"
             value={startDate}
             onChange={(e) => setStartDate(e.target.value)}
-            className={inputClasses}
+            className={cosmic.input}
             required
           />
         </div>
 
         <div>
-          <label className={labelClasses}>End Date</label>
+          <label className={cosmic.label}>End Date</label>
           <input
             type="date"
             value={endDate}
             onChange={(e) => setEndDate(e.target.value)}
-            className={inputClasses}
+            className={cosmic.input}
             disabled={current}
           />
         </div>
@@ -146,62 +141,54 @@ const CVExperienceForm: React.FC<Props> = ({ experience, onSave, onCancel }) => 
               type="checkbox"
               checked={current}
               onChange={(e) => setCurrent(e.target.checked)}
-              className="w-4 h-4 text-accent border-gray-300 dark:border-white/10 rounded focus:ring-accent"
+              className="w-4 h-4 border-white/10 rounded accent-primary-500"
             />
-            <span className="text-sm text-gray-700 dark:text-secondary-300">
-              Currently working here
-            </span>
+            <span className="text-sm text-secondary-300">Currently working here</span>
           </label>
         </div>
       </div>
 
       <div>
-        <label className={labelClasses}>Description</label>
+        <label className={cosmic.label}>Description</label>
         <textarea
           value={description}
           onChange={(e) => setDescription(e.target.value)}
-          className={`${inputClasses} min-h-[100px]`}
+          className={`${cosmic.textarea} min-h-[100px]`}
           placeholder="Describe your responsibilities, achievements, projects..."
           rows={4}
         />
       </div>
 
       <div>
-        <label className={labelClasses}>Skills</label>
+        <label className={cosmic.label}>Skills</label>
         <input
           type="text"
           value={skills}
           onChange={(e) => setSkills(e.target.value)}
-          className={inputClasses}
+          className={cosmic.input}
           placeholder="e.g. React, TypeScript, Node.js (comma-separated)"
         />
-        <p className="mt-1 text-xs text-gray-500 dark:text-secondary-400">
-          Enter skills separated by commas
-        </p>
+        <p className="mt-1 text-xs text-secondary-400">Enter skills separated by commas</p>
       </div>
 
       <div>
-        <label className={labelClasses}>Sort Order</label>
+        <label className={cosmic.label}>Sort Order</label>
         <input
           type="number"
           value={sortOrder}
           onChange={(e) => setSortOrder(parseInt(e.target.value, 10) || 0)}
-          className={inputClasses}
+          className={cosmic.input}
         />
       </div>
 
-      <div className="flex justify-end gap-3 pt-4 border-t border-gray-200 dark:border-white/[0.06]">
-        <button
-          type="button"
-          onClick={onCancel}
-          className="px-4 py-2 text-sm font-medium text-gray-700 dark:text-secondary-300 bg-white dark:bg-elevated border border-gray-300 dark:border-white/10 rounded-md hover:bg-gray-50 dark:hover:bg-elevated transition-colors duration-200"
-        >
+      <div className="flex justify-end gap-3 pt-4 border-t border-white/[0.06]">
+        <button type="button" onClick={onCancel} className={cosmic.buttonSecondary}>
           Cancel
         </button>
         <button
           type="submit"
           disabled={isSaving}
-          className="px-4 py-2 text-sm font-medium text-white bg-accent hover:bg-accent/90 rounded-md disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200 flex items-center gap-2"
+          className={`${cosmic.buttonPrimary} flex items-center gap-2`}
         >
           {isSaving && (
             <svg

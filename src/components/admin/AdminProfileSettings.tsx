@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useProfile } from '../../hooks/useProfile';
+import { cosmic } from './ui/cosmicClassNames';
 
 const AdminProfileSettings: React.FC = () => {
   const { photoUrl, updateProfilePhoto } = useProfile();
@@ -13,18 +14,12 @@ const AdminProfileSettings: React.FC = () => {
     setTimeout(() => setSuccessMessage(''), 3000); // Hide message after 3 seconds
   };
 
-  const inputClasses =
-    'w-full px-3 py-2 text-gray-700 dark:text-secondary-200 bg-white dark:bg-elevated border border-gray-300 dark:border-white/10 rounded-md focus:outline-none focus:ring-2 focus:ring-accent transition-colors duration-200';
-  const labelClasses = 'block text-sm font-medium text-gray-700 dark:text-secondary-300 mb-1';
-
   return (
-    <div className="max-w-2xl mx-auto bg-white dark:bg-surface rounded-lg shadow-lg p-8">
-      <h1 className="text-3xl font-bold font-serif text-center mb-6 text-gray-900 dark:text-secondary-50">
-        Profile Settings
-      </h1>
+    <div className={cosmic.containerSm}>
+      <h1 className={`${cosmic.pageTitle} text-center mb-6`}>Profile Settings</h1>
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
-          <label htmlFor="photoUrl" className={labelClasses}>
+          <label htmlFor="photoUrl" className={cosmic.label}>
             About Me Photo URL
           </label>
           <input
@@ -32,13 +27,13 @@ const AdminProfileSettings: React.FC = () => {
             id="photoUrl"
             value={newPhotoUrl}
             onChange={(e) => setNewPhotoUrl(e.target.value)}
-            className={inputClasses}
+            className={cosmic.input}
             required
           />
         </div>
 
         <div>
-          <p className={labelClasses}>Current Photo Preview:</p>
+          <p className={cosmic.label}>Current Photo Preview:</p>
           <img
             src={photoUrl}
             alt="Current profile"
@@ -47,15 +42,12 @@ const AdminProfileSettings: React.FC = () => {
         </div>
 
         <div className="text-right">
-          <button
-            type="submit"
-            className="px-6 py-2 bg-accent text-white font-semibold rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent dark:focus:ring-offset-dark-gray transition-colors"
-          >
+          <button type="submit" className={cosmic.buttonPrimary}>
             Save Changes
           </button>
         </div>
         {successMessage && (
-          <p className="text-green-600 dark:text-green-400 text-sm text-center mt-4 transition-opacity duration-300">
+          <p className="text-success-300 text-sm text-center mt-4 transition-opacity duration-300">
             {successMessage}
           </p>
         )}

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useRecommendations } from '../../hooks/useRecommendations';
 import { RecommendationType, Recommendation } from '../../types/types';
+import { cosmic } from './ui/cosmicClassNames';
 
 const RecommendationForm: React.FC = () => {
   const { recId } = useParams<{ recId?: string }>();
@@ -52,18 +53,14 @@ const RecommendationForm: React.FC = () => {
     }
   };
 
-  const inputClasses =
-    'w-full px-3 py-2 text-gray-700 dark:text-secondary-200 bg-white dark:bg-elevated border border-gray-300 dark:border-white/10 rounded-md focus:outline-none focus:ring-2 focus:ring-accent transition-colors duration-200';
-  const labelClasses = 'block text-sm font-medium text-gray-700 dark:text-secondary-300 mb-1';
-
   return (
-    <div className="max-w-3xl mx-auto bg-white dark:bg-surface rounded-lg shadow-lg p-8">
-      <h1 className="text-3xl font-bold font-serif text-center mb-6 text-gray-900 dark:text-secondary-50">
+    <div className={cosmic.containerSm}>
+      <h1 className={`${cosmic.pageTitle} text-center mb-6`}>
         {isEditMode ? 'Edit Recommendation' : 'Add New Recommendation'}
       </h1>
       <form onSubmit={handleSubmit} className="space-y-6">
         <div>
-          <label htmlFor="title" className={labelClasses}>
+          <label htmlFor="title" className={cosmic.label}>
             Title
           </label>
           <input
@@ -71,12 +68,12 @@ const RecommendationForm: React.FC = () => {
             id="title"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            className={inputClasses}
+            className={cosmic.input}
             required
           />
         </div>
         <div>
-          <label htmlFor="url" className={labelClasses}>
+          <label htmlFor="url" className={cosmic.label}>
             URL
           </label>
           <input
@@ -84,20 +81,20 @@ const RecommendationForm: React.FC = () => {
             id="url"
             value={url}
             onChange={(e) => setUrl(e.target.value)}
-            className={inputClasses}
+            className={cosmic.input}
             placeholder="https://example.com"
             required
           />
         </div>
         <div>
-          <label htmlFor="type" className={labelClasses}>
+          <label htmlFor="type" className={cosmic.label}>
             Type
           </label>
           <select
             id="type"
             value={type}
             onChange={(e) => setType(e.target.value as RecommendationType)}
-            className={inputClasses}
+            className={cosmic.select}
             required
           >
             {Object.values(RecommendationType).map((cat) => (
@@ -108,14 +105,14 @@ const RecommendationForm: React.FC = () => {
           </select>
         </div>
         <div>
-          <label htmlFor="description" className={labelClasses}>
+          <label htmlFor="description" className={cosmic.label}>
             Description
           </label>
           <textarea
             id="description"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            className={`${inputClasses} h-32`}
+            className={`${cosmic.textarea} h-32`}
             required
           />
         </div>
@@ -124,14 +121,14 @@ const RecommendationForm: React.FC = () => {
             type="button"
             onClick={() => navigate('/recommendations')}
             disabled={isSaving}
-            className="px-6 py-2 bg-gray-200 text-gray-800 font-semibold rounded-md hover:bg-gray-300 dark:bg-gray-600 dark:text-secondary-50 dark:hover:bg-gray-500 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className={`${cosmic.buttonSecondary} disabled:opacity-50 disabled:cursor-not-allowed`}
           >
             Cancel
           </button>
           <button
             type="submit"
             disabled={isSaving}
-            className="px-6 py-2 bg-accent text-white font-semibold rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent dark:focus:ring-offset-dark-gray transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
+            className={`${cosmic.buttonPrimary} flex items-center disabled:opacity-50 disabled:cursor-not-allowed`}
           >
             {isSaving && (
               <svg
