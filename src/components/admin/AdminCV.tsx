@@ -1,5 +1,10 @@
 import React, { useState } from 'react';
-import { useCVData, Education, Experience, Certification } from '../../hooks/useCVData';
+import {
+  useCVData,
+  type Education,
+  type Experience,
+  type Certification,
+} from '../../hooks/useCVData';
 import CVEducationForm from './CVEducationForm';
 import CVExperienceForm from './CVExperienceForm';
 import CVCertificationForm from './CVCertificationForm';

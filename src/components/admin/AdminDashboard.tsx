@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { usePosts } from '../../hooks/usePosts';
-import { Post } from '../../types/types';
+import type { Post } from '../../types/types';
 import DashboardAnalytics from './DashboardAnalytics';
 import { cosmic } from './ui/cosmicClassNames';
 

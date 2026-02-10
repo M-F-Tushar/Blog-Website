@@ -1,5 +1,5 @@
 import { supabase, postToDatabase, postFromDatabase } from './supabase';
-import { Post } from '../types/types';
+import type { Post } from '../types/types';
 import { PostSchema } from '../utils/validation';
 import DOMPurify from 'dompurify';
 

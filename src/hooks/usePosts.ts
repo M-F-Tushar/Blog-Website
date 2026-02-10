@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useCallback, useMemo, useEffect } from 'react';
-import { Post } from '../types/types';
+import type { Post } from '../types/types';
 import { POSTS as initialPostsData } from '../constants/constants';
 import { isSupabaseConfigured, supabase } from '../services/supabase';
 import {

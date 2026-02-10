@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useProjects, Project } from '../../hooks/useProjects';
+import { useProjects, type Project } from '../../hooks/useProjects';
 import { cosmic } from './ui/cosmicClassNames';
 
 type ProjectStatus = Project['status'];

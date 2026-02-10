@@ -17,7 +17,7 @@ import {
   uploadMedia,
   deleteMedia,
   listMedia,
-  MediaFile,
+  type MediaFile,
   initializeMediaBucket,
 } from '../../services/mediaStorageService';
 import { isSupabaseConfigured } from '../../services/supabase';

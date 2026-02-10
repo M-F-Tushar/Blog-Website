@@ -3,7 +3,7 @@
  * This ensures the site still works in demo mode without a backend
  */
 
-import { Post, Recommendation, PostStatus } from '../types/types';
+import type { Post, Recommendation, PostStatus } from '../types/types';
 import type { DatabaseSettings } from './supabase';
 import type { Project, Publication } from './supabase';
 import type {

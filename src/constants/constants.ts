@@ -1,4 +1,4 @@
-import { Post, Recommendation } from '../types/types';
+import type { Post, Recommendation } from '../types/types';
 
 /**
  * Default author avatar fallback URL

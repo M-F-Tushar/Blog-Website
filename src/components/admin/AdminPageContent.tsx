@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { usePageContent, PageSection } from '../../hooks/usePageContent';
+import { usePageContent, type PageSection } from '../../hooks/usePageContent';
 import PageSectionEditor from './PageSectionEditor';
 import { cosmic } from './ui/cosmicClassNames';
 import {

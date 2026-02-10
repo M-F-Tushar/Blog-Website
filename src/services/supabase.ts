@@ -1,5 +1,5 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
-import {
+import type {
   Post,
   Recommendation,
   PostStatus,

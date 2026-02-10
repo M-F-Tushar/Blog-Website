@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import {
   migrateDataToSupabase,
   getMigrationStatus,
-  MigrationProgress,
+  type MigrationProgress,
 } from '../../utils/migrateToSupabase';
 import { isSupabaseConfigured } from '../../services/supabase';
 import { cosmic } from './ui/cosmicClassNames';

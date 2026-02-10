@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Mail, Users, Trash2, RefreshCw, MessageSquare } from 'lucide-react';
-import { messageService, Message, Subscriber } from '../../services/messageService';
+import { messageService, type Message, type Subscriber } from '../../services/messageService';
 import { cosmic } from './ui/cosmicClassNames';
 
 const AdminInbox: React.FC = () => {

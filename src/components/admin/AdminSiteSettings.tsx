@@ -1,5 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { useSiteSettings, Skill, TimelineItem, Achievement } from '../../hooks/useSiteSettings';
+import {
+  useSiteSettings,
+  type Skill,
+  type TimelineItem,
+  type Achievement,
+} from '../../hooks/useSiteSettings';
 import { Plus, Trash2, Save } from 'lucide-react';
 import { cosmic } from './ui/cosmicClassNames';
 

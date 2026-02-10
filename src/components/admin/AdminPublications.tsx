@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { usePublications, Publication } from '../../hooks/usePublications';
+import { usePublications, type Publication } from '../../hooks/usePublications';
 import { cosmic } from './ui/cosmicClassNames';
 
 const TYPE_BADGE_CLASSES: Record<Publication['type'], string> = {

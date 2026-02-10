@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Education } from '../../hooks/useCVData';
+import type { Education } from '../../hooks/useCVData';
 import { cosmic } from './ui/cosmicClassNames';
 
 interface Props {

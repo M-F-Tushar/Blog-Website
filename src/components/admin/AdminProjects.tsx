@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { useProjects, Project } from '../../hooks/useProjects';
+import { useProjects, type Project } from '../../hooks/useProjects';
 import { cosmic } from './ui/cosmicClassNames';
 
 const STATUS_BADGE_CLASSES: Record<Project['status'], string> = {

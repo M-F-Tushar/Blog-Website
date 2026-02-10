@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { usePublications, Publication } from '../../hooks/usePublications';
+import { usePublications, type Publication } from '../../hooks/usePublications';
 import { cosmic } from './ui/cosmicClassNames';
 
 type PublicationType = Publication['type'];

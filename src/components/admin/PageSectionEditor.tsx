@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { PageSection } from '../../hooks/usePageContent';
+import type { PageSection } from '../../hooks/usePageContent';
 import { cosmic } from './ui/cosmicClassNames';
 import { Plus, Trash2, ImageIcon } from 'lucide-react';
 

@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useCallback, useMemo, useEffect } from 'react';
-import { Recommendation } from '../types/types';
+import type { Recommendation } from '../types/types';
 import { RECOMMENDATIONS as initialRecommendationsData } from '../constants/constants';
 import { isSupabaseConfigured } from '../services/supabase';
 import {
