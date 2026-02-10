@@ -1,0 +1,68 @@
+---
+import BlogPostLayout from '../../layouts/BlogPostLayout.astro';
+import { getPublishedPosts } from '@/lib/supabase';
+import { unified } from 'unified';
+import remarkParse from 'remark-parse';
+import remarkGfm from 'remark-gfm';
+import remarkMath from 'remark-math';
+import remarkRehype from 'remark-rehype';
+import rehypeKatex from 'rehype-katex';
+import rehypeSlug from 'rehype-slug';
+import rehypeStringify from 'rehype-stringify';
+
+export async function getStaticPaths() {
+  const posts = await getPublishedPosts();
+  return posts.map((post, index) => ({
+    params: { slug: post.slug },
+    props: {
+      post,
+      prevPost: index < posts.length - 1 ? posts[index + 1] : null,
+      nextPost: index > 0 ? posts[index - 1] : null,
+      allPosts: posts,
+    },
+  }));
+}
+
+const { post, prevPost, nextPost, allPosts } = Astro.props;
+
+// Process markdown to HTML with remark/rehype pipeline
+const processor = unified()
+  .use(remarkParse)
+  .use(remarkGfm)
+  .use(remarkMath)
+  .use(remarkRehype, { allowDangerousHtml: true })
+  .use(rehypeKatex)
+  .use(rehypeSlug)
+  .use(rehypeStringify, { allowDangerousHtml: true });
+
+const result = await processor.process(post.content);
+const contentHtml = String(result);
+
+// Extract headings for TOC
+const headingRegex = /<h([2-3])\s+id="([^"]+)"[^>]*>(.*?)<\/h[2-3]>/g;
+const headings: { depth: number; slug: string; text: string }[] = [];
+let match;
+while ((match = headingRegex.exec(contentHtml)) !== null) {
+  headings.push({
+    depth: parseInt(match[1]),
+    slug: match[2],
+    text: match[3].replace(/<[^>]*>/g, ''), // strip HTML tags from heading text
+  });
+}
+
+// Find related posts (same category or overlapping tags)
+const relatedPosts = allPosts
+  .filter((p) => p.id !== post.id)
+  .filter((p) => p.category === post.category || p.tags.some((t) => post.tags.includes(t)))
+  .slice(0, 2);
+---
+
+<BlogPostLayout
+  post={post}
+  headings={headings}
+  relatedPosts={relatedPosts}
+  prevPost={prevPost}
+  nextPost={nextPost}
+>
+  <Fragment set:html={contentHtml} />
+</BlogPostLayout>

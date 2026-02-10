@@ -1,0 +1,56 @@
+---
+interface Props {
+  variant?: 'line' | 'star' | 'constellation';
+  class?: string;
+}
+
+const { variant = 'line', class: className } = Astro.props;
+---
+
+{variant === 'line' && (
+  <div aria-hidden="true" class:list={['py-8', className]}>
+    <div
+      class="h-px bg-gradient-to-r from-transparent via-primary-500/40 to-transparent"
+      style="box-shadow: 0 0 15px rgba(6,182,212,0.2);"
+    />
+  </div>
+)}
+
+{variant === 'star' && (
+  <div aria-hidden="true" class:list={['flex items-center gap-4 py-8', className]}>
+    <div class="flex-1 h-px bg-gradient-to-r from-transparent to-primary-500/30" />
+    <svg
+      class="w-5 h-5 text-primary-400/60 animate-pulse-glow flex-shrink-0"
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path d="M12 0L13.5 9L22 12L13.5 15L12 24L10.5 15L2 12L10.5 9L12 0Z" />
+    </svg>
+    <div class="flex-1 h-px bg-gradient-to-r from-primary-500/30 to-transparent" />
+  </div>
+)}
+
+{variant === 'constellation' && (
+  <div aria-hidden="true" class:list={['py-8 flex justify-center', className]}>
+    <svg
+      class="w-full max-w-[600px]"
+      viewBox="0 0 600 20"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      {/* Lines connecting adjacent dots */}
+      <line x1="60" y1="10" x2="180" y2="10" stroke="rgba(6,182,212,0.2)" stroke-width="0.5" />
+      <line x1="180" y1="10" x2="300" y2="10" stroke="rgba(6,182,212,0.2)" stroke-width="0.5" />
+      <line x1="300" y1="10" x2="420" y2="10" stroke="rgba(6,182,212,0.2)" stroke-width="0.5" />
+      <line x1="420" y1="10" x2="540" y2="10" stroke="rgba(6,182,212,0.2)" stroke-width="0.5" />
+
+      {/* Dots */}
+      <circle cx="60" cy="10" r="1.5" fill="rgba(6,182,212,0.4)" />
+      <circle cx="180" cy="10" r="1.5" fill="rgba(6,182,212,0.4)" />
+      <circle cx="300" cy="10" r="1.5" fill="rgba(6,182,212,0.4)" />
+      <circle cx="420" cy="10" r="1.5" fill="rgba(6,182,212,0.4)" />
+      <circle cx="540" cy="10" r="1.5" fill="rgba(6,182,212,0.4)" />
+    </svg>
+  </div>
+)}

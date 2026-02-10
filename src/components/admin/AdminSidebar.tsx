@@ -2,105 +2,103 @@ import React from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import { useSiteSettings } from '../../hooks/useSiteSettings';
-import { messageService } from '../../services/messageService';
 
 const AdminSidebar: React.FC = () => {
   const { signOut } = useAuth();
   const navigate = useNavigate();
   const { authorName } = useSiteSettings();
-  const [unreadCount, setUnreadCount] = React.useState(0);
-
-  React.useEffect(() => {
-    messageService.getUnreadCount().then(setUnreadCount).catch(console.error);
-
-    // Poll for new messages every minute
-    const interval = setInterval(() => {
-      messageService.getUnreadCount().then(setUnreadCount).catch(console.error);
-    }, 60000);
-
-    return () => clearInterval(interval);
-  }, []);
 
   const handleLogout = async () => {
     await signOut();
-    navigate('/admin/login');
+    navigate('/login');
   };
 
   const navLinkClasses = ({ isActive }: { isActive: boolean }) =>
     `block w-full text-left px-4 py-2 text-sm transition-colors ${
       isActive
         ? 'bg-accent/10 text-accent dark:bg-accent-light/20 dark:text-accent-light'
-        : 'text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700'
+        : 'text-gray-700 dark:text-secondary-200 hover:bg-gray-100 dark:hover:bg-elevated'
     }`;
 
   return (
-    <aside className="w-64 bg-white dark:bg-gray-800 shadow-md flex-shrink-0 flex flex-col">
-      <div className="p-6 border-b border-gray-200 dark:border-gray-700">
+    <aside className="w-64 bg-white dark:bg-surface shadow-md flex-shrink-0 flex flex-col">
+      <div className="p-6 border-b border-gray-200 dark:border-white/[0.06]">
         <Link
-          to="/admin/dashboard"
-          className="text-xl font-bold font-serif text-gray-900 dark:text-white"
+          to="/dashboard"
+          className="text-xl font-bold font-serif text-gray-900 dark:text-secondary-50"
         >
           {authorName}
         </Link>
         <span className="block text-sm text-gray-500">Admin Panel</span>
       </div>
       <nav className="mt-6 flex-grow">
-        <NavLink to="/admin/dashboard" className={navLinkClasses} end>
+        {/* Content */}
+        <div className="px-4 pt-4 pb-1">
+          <span className="text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500">
+            Content
+          </span>
+        </div>
+        <NavLink to="/dashboard" className={navLinkClasses} end>
           Dashboard
         </NavLink>
-        <NavLink to="/admin/inbox" className={navLinkClasses}>
-          <span className="flex justify-between items-center">
-            Inbox
-            {unreadCount > 0 && (
-              <span className="bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">
-                {unreadCount}
-              </span>
-            )}
-          </span>
-        </NavLink>
-        <NavLink to="/admin/posts/create" className={navLinkClasses}>
+        <NavLink to="/posts/create" className={navLinkClasses}>
           New Post
         </NavLink>
-        <NavLink to="/admin/recommendations" className={navLinkClasses}>
+        <NavLink to="/recommendations" className={navLinkClasses}>
           Recommendations
         </NavLink>
-        <NavLink to="/admin/settings/site" className={navLinkClasses}>
+
+        {/* Research */}
+        <div className="px-4 pt-6 pb-1">
+          <span className="text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500">
+            Research
+          </span>
+        </div>
+        <NavLink to="/projects" className={navLinkClasses}>
+          Projects
+        </NavLink>
+        <NavLink to="/publications" className={navLinkClasses}>
+          Publications
+        </NavLink>
+
+        {/* Pages */}
+        <div className="px-4 pt-6 pb-1">
+          <span className="text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500">
+            Pages
+          </span>
+        </div>
+        <NavLink to="/pages" className={navLinkClasses}>
+          Page Content
+        </NavLink>
+        <NavLink to="/cv" className={navLinkClasses}>
+          CV Manager
+        </NavLink>
+
+        {/* Settings */}
+        <div className="px-4 pt-6 pb-1">
+          <span className="text-xs font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500">
+            Settings
+          </span>
+        </div>
+        <NavLink to="/settings/site" className={navLinkClasses}>
           Site Settings
         </NavLink>
-        <NavLink to="/admin/settings/ui-text" className={navLinkClasses}>
-          UI Text
-        </NavLink>
-        <NavLink to="/admin/settings/layout" className={navLinkClasses}>
-          Homepage Layout
-        </NavLink>
-        <NavLink to="/admin/settings/appearance" className={navLinkClasses}>
-          Appearance
-        </NavLink>
-        <NavLink to="/admin/settings/navigation" className={navLinkClasses}>
-          Navigation
-        </NavLink>
-        <NavLink to="/admin/settings/seo" className={navLinkClasses}>
-          SEO
-        </NavLink>
-        <NavLink to="/admin/media" className={navLinkClasses}>
-          Media Library
-        </NavLink>
-        <NavLink to="/admin/settings/profile" className={navLinkClasses}>
+        <NavLink to="/settings/profile" className={navLinkClasses}>
           Profile Settings
         </NavLink>
       </nav>
-      <div className="p-4 mt-6 border-t border-gray-200 dark:border-gray-700">
-        <Link
-          to="/"
+      <div className="p-4 mt-6 border-t border-gray-200 dark:border-white/[0.06]">
+        <a
+          href="/"
           target="_blank"
           rel="noopener noreferrer"
-          className="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+          className="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-secondary-200 hover:bg-gray-100 dark:hover:bg-elevated"
         >
           View Site
-        </Link>
+        </a>
         <button
           onClick={handleLogout}
-          className="block w-full text-left px-4 py-2 text-sm text-red-500 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700"
+          className="block w-full text-left px-4 py-2 text-sm text-red-500 dark:text-red-400 hover:bg-gray-100 dark:hover:bg-elevated"
         >
           Logout
         </button>

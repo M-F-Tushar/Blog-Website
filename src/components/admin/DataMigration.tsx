@@ -1,5 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { migrateDataToSupabase, getMigrationStatus, MigrationProgress } from '../../utils/migrateToSupabase';
+import {
+  migrateDataToSupabase,
+  getMigrationStatus,
+  MigrationProgress,
+} from '../../utils/migrateToSupabase';
 import { isSupabaseConfigured } from '../../services/supabase';
 
 const DataMigration: React.FC = () => {
@@ -34,7 +38,7 @@ const DataMigration: React.FC = () => {
 
   const handleMigrate = async () => {
     setIsMigrating(true);
-    
+
     try {
       await migrateDataToSupabase((progress) => {
         setMigrationProgress(progress);
@@ -52,28 +56,29 @@ const DataMigration: React.FC = () => {
 
   if (!supabaseConfigured) {
     return (
-      <div className="max-w-4xl mx-auto bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8">
-        <h1 className="text-3xl font-bold font-serif text-center mb-8 text-gray-900 dark:text-white">
+      <div className="max-w-4xl mx-auto bg-white dark:bg-surface rounded-lg shadow-lg p-8">
+        <h1 className="text-3xl font-bold font-serif text-center mb-8 text-gray-900 dark:text-secondary-50">
           Data Migration
         </h1>
-        
+
         <div className="bg-yellow-100 dark:bg-yellow-900 border-l-4 border-yellow-500 text-yellow-700 dark:text-yellow-200 p-4 mb-6">
           <p className="font-bold">Supabase Not Configured</p>
           <p className="mt-2">
             Supabase environment variables are not configured. Please set up Supabase configuration
-            in your <code className="bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded">.env</code> file
-            before attempting to migrate data.
+            in your <code className="bg-gray-200 dark:bg-elevated px-2 py-1 rounded">.env</code>{' '}
+            file before attempting to migrate data.
           </p>
-          <p className="mt-2">
-            Required environment variables:
-          </p>
+          <p className="mt-2">Required environment variables:</p>
           <ul className="list-disc list-inside mt-2 ml-4 space-y-1">
             <li>VITE_SUPABASE_URL</li>
             <li>VITE_SUPABASE_ANON_KEY</li>
           </ul>
           <p className="mt-4">
-            See <code className="bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded">SUPABASE_SETUP.md</code> for
-            detailed setup instructions.
+            See{' '}
+            <code className="bg-gray-200 dark:bg-elevated px-2 py-1 rounded">
+              SUPABASE_SETUP.md
+            </code>{' '}
+            for detailed setup instructions.
           </p>
         </div>
       </div>
@@ -81,14 +86,15 @@ const DataMigration: React.FC = () => {
   }
 
   return (
-    <div className="max-w-4xl mx-auto bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8">
-      <h1 className="text-3xl font-bold font-serif text-center mb-8 text-gray-900 dark:text-white">
+    <div className="max-w-4xl mx-auto bg-white dark:bg-surface rounded-lg shadow-lg p-8">
+      <h1 className="text-3xl font-bold font-serif text-center mb-8 text-gray-900 dark:text-secondary-50">
         Data Migration
       </h1>
 
       <div className="mb-8">
-        <p className="text-gray-700 dark:text-gray-300 mb-4">
-          This tool will migrate your initial posts and recommendations from <code className="bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded">constants.ts</code> to
+        <p className="text-gray-700 dark:text-secondary-300 mb-4">
+          This tool will migrate your initial posts and recommendations from{' '}
+          <code className="bg-gray-200 dark:bg-elevated px-2 py-1 rounded">constants.ts</code> to
           Supabase. This should only be done once during initial setup.
         </p>
       </div>
@@ -97,10 +103,17 @@ const DataMigration: React.FC = () => {
         <div className="mb-6 p-4 bg-blue-50 dark:bg-blue-900 rounded-lg">
           <h3 className="font-semibold text-blue-900 dark:text-blue-100 mb-2">Current Status:</h3>
           <div className="text-blue-800 dark:text-blue-200">
-            <p>Posts in Supabase: <strong>{migrationStatus.postsCount}</strong></p>
-            <p>Recommendations in Supabase: <strong>{migrationStatus.recommendationsCount}</strong></p>
             <p>
-              Status: <strong>{migrationStatus.isComplete ? 'Data Already Migrated' : 'Ready to Migrate'}</strong>
+              Posts in Supabase: <strong>{migrationStatus.postsCount}</strong>
+            </p>
+            <p>
+              Recommendations in Supabase: <strong>{migrationStatus.recommendationsCount}</strong>
+            </p>
+            <p>
+              Status:{' '}
+              <strong>
+                {migrationStatus.isComplete ? 'Data Already Migrated' : 'Ready to Migrate'}
+              </strong>
             </p>
           </div>
         </div>
@@ -127,10 +140,10 @@ const DataMigration: React.FC = () => {
             migrationProgress.status === 'error'
               ? 'bg-red-100 dark:bg-red-900 border-l-4 border-red-500'
               : migrationProgress.status === 'success'
-              ? 'bg-green-100 dark:bg-green-900 border-l-4 border-green-500'
-              : migrationProgress.status === 'migrating'
-              ? 'bg-blue-100 dark:bg-blue-900 border-l-4 border-blue-500'
-              : 'bg-gray-100 dark:bg-gray-700 border-l-4 border-gray-500'
+                ? 'bg-green-100 dark:bg-green-900 border-l-4 border-green-500'
+                : migrationProgress.status === 'migrating'
+                  ? 'bg-blue-100 dark:bg-blue-900 border-l-4 border-blue-500'
+                  : 'bg-gray-100 dark:bg-elevated border-l-4 border-gray-500'
           }`}
         >
           <div className="flex items-center">
@@ -192,10 +205,10 @@ const DataMigration: React.FC = () => {
                   migrationProgress.status === 'error'
                     ? 'text-red-800 dark:text-red-200'
                     : migrationProgress.status === 'success'
-                    ? 'text-green-800 dark:text-green-200'
-                    : migrationProgress.status === 'migrating'
-                    ? 'text-blue-800 dark:text-blue-200'
-                    : 'text-gray-800 dark:text-gray-200'
+                      ? 'text-green-800 dark:text-green-200'
+                      : migrationProgress.status === 'migrating'
+                        ? 'text-blue-800 dark:text-blue-200'
+                        : 'text-gray-800 dark:text-secondary-200'
                 }`}
               >
                 {migrationProgress.message}
@@ -216,9 +229,9 @@ const DataMigration: React.FC = () => {
         </div>
       </div>
 
-      <div className="mt-8 p-4 bg-gray-100 dark:bg-gray-700 rounded-lg">
+      <div className="mt-8 p-4 bg-gray-100 dark:bg-elevated rounded-lg">
         <h3 className="font-semibold text-gray-900 dark:text-gray-100 mb-2">Notes:</h3>
-        <ul className="list-disc list-inside space-y-2 text-sm text-gray-700 dark:text-gray-300">
+        <ul className="list-disc list-inside space-y-2 text-sm text-gray-700 dark:text-secondary-300">
           <li>Migration is safe to run multiple times - it will skip if data already exists</li>
           <li>Initial posts and recommendations will be marked as read-only</li>
           <li>After migration, all data will be managed through Supabase</li>

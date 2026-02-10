@@ -1,0 +1,81 @@
+---
+interface Props {
+  direction?: 'up' | 'down' | 'left' | 'right';
+  delay?: number;
+  class?: string;
+}
+
+const {
+  direction = 'up',
+  delay = 0,
+  class: className = '',
+} = Astro.props;
+
+const directionClassMap: Record<string, string> = {
+  up: 'reveal',
+  down: 'reveal-down',
+  left: 'reveal-left',
+  right: 'reveal-right',
+};
+
+const revealClass = directionClassMap[direction] || 'reveal';
+---
+
+<div
+  class:list={[revealClass, className]}
+  data-reveal
+  data-reveal-delay={delay > 0 ? delay.toString() : undefined}
+>
+  <slot />
+</div>
+
+<script>
+  function initReveal() {
+    const revealElements = document.querySelectorAll<HTMLElement>('[data-reveal]');
+
+    if (revealElements.length === 0) return;
+
+    const prefersReducedMotion = window.matchMedia(
+      '(prefers-reduced-motion: reduce)'
+    ).matches;
+
+    if (prefersReducedMotion) {
+      revealElements.forEach((el) => {
+        el.classList.add('revealed');
+      });
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const el = entry.target as HTMLElement;
+            const delay = el.dataset.revealDelay;
+
+            if (delay) {
+              el.style.transitionDelay = `${delay}ms`;
+            }
+
+            el.classList.add('revealed');
+            observer.unobserve(el);
+          }
+        });
+      },
+      {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px',
+      }
+    );
+
+    revealElements.forEach((el) => {
+      observer.observe(el);
+    });
+  }
+
+  // Run on initial load
+  initReveal();
+
+  // Re-run after Astro page navigations (View Transitions)
+  document.addEventListener('astro:page-load', initReveal);
+</script>

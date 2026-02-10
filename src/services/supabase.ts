@@ -68,6 +68,42 @@ export interface Database {
           },
         ];
       };
+      projects: {
+        Row: DatabaseProject;
+        Insert: Omit<DatabaseProject, 'id' | 'created_at' | 'updated_at'>;
+        Update: Partial<Omit<DatabaseProject, 'id' | 'created_at' | 'updated_at'>>;
+        Relationships: [];
+      };
+      publications: {
+        Row: DatabasePublication;
+        Insert: Omit<DatabasePublication, 'id' | 'created_at' | 'updated_at'>;
+        Update: Partial<Omit<DatabasePublication, 'id' | 'created_at' | 'updated_at'>>;
+        Relationships: [];
+      };
+      cv_education: {
+        Row: DatabaseCVEducation;
+        Insert: Omit<DatabaseCVEducation, 'id' | 'created_at' | 'updated_at'>;
+        Update: Partial<Omit<DatabaseCVEducation, 'id' | 'created_at' | 'updated_at'>>;
+        Relationships: [];
+      };
+      cv_experience: {
+        Row: DatabaseCVExperience;
+        Insert: Omit<DatabaseCVExperience, 'id' | 'created_at' | 'updated_at'>;
+        Update: Partial<Omit<DatabaseCVExperience, 'id' | 'created_at' | 'updated_at'>>;
+        Relationships: [];
+      };
+      cv_certifications: {
+        Row: DatabaseCVCertification;
+        Insert: Omit<DatabaseCVCertification, 'id' | 'created_at' | 'updated_at'>;
+        Update: Partial<Omit<DatabaseCVCertification, 'id' | 'created_at' | 'updated_at'>>;
+        Relationships: [];
+      };
+      page_content: {
+        Row: DatabasePageContent;
+        Insert: Omit<DatabasePageContent, 'id' | 'created_at' | 'updated_at'>;
+        Update: Partial<Omit<DatabasePageContent, 'id' | 'created_at' | 'updated_at'>>;
+        Relationships: [];
+      };
     };
     Views: {
       [_ in never]: never;
@@ -227,6 +263,121 @@ export interface DatabaseSettings {
   updated_at?: string;
 }
 
+export interface DatabaseProject {
+  id: string;
+  title: string;
+  description: string;
+  tech_stack: string[];
+  image_url: string | null;
+  live_url: string | null;
+  github_url: string | null;
+  sort_order: number;
+  is_featured: boolean;
+  status: string;
+  is_initial: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface DatabasePublication {
+  id: string;
+  title: string;
+  authors: string[];
+  venue: string;
+  year: number;
+  abstract: string | null;
+  doi_url: string | null;
+  pdf_url: string | null;
+  type: string;
+  sort_order: number;
+  is_initial: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface DatabaseCVEducation {
+  id: string;
+  institution: string;
+  degree: string;
+  field: string;
+  start_date: string;
+  end_date: string | null;
+  description: string | null;
+  sort_order: number;
+  is_initial: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface DatabaseCVExperience {
+  id: string;
+  company: string;
+  position: string;
+  start_date: string;
+  end_date: string | null;
+  description: string;
+  responsibilities: string[];
+  sort_order: number;
+  is_initial: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface DatabaseCVCertification {
+  id: string;
+  name: string;
+  issuer: string;
+  issue_date: string;
+  expiry_date: string | null;
+  credential_url: string | null;
+  sort_order: number;
+  is_initial: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface DatabasePageContent {
+  id: string;
+  page_name: string;
+  section_key: string;
+  title: string | null;
+  content: string | null;
+  metadata: Json | null;
+  sort_order: number;
+  is_initial: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+// App-side types for Projects and Publications (camelCase)
+export interface Project {
+  id: string;
+  title: string;
+  description: string;
+  techStack: string[];
+  imageUrl?: string;
+  liveUrl?: string;
+  githubUrl?: string;
+  sortOrder: number;
+  isFeatured: boolean;
+  status: string;
+  isInitial?: boolean;
+}
+
+export interface Publication {
+  id: string;
+  title: string;
+  authors: string[];
+  venue: string;
+  year: number;
+  abstract?: string;
+  doiUrl?: string;
+  pdfUrl?: string;
+  type: string;
+  sortOrder: number;
+  isInitial?: boolean;
+}
+
 // Helper functions to convert between camelCase (React) and snake_case (PostgreSQL)
 export const postToDatabase = (
   post: Omit<Post, 'id'>
@@ -297,5 +448,71 @@ export const recommendationFromDatabase = (dbRec: DatabaseRecommendation): Recom
     tags: dbRec.tags || undefined,
     isFeatured: dbRec.is_featured,
     isInitial: dbRec.is_initial,
+  };
+};
+
+export const projectToDatabase = (
+  project: Omit<Project, 'id'>
+): Omit<DatabaseProject, 'id' | 'created_at' | 'updated_at'> => {
+  return {
+    title: project.title,
+    description: project.description,
+    tech_stack: project.techStack,
+    image_url: project.imageUrl || null,
+    live_url: project.liveUrl || null,
+    github_url: project.githubUrl || null,
+    sort_order: project.sortOrder,
+    is_featured: project.isFeatured,
+    status: project.status,
+    is_initial: project.isInitial || false,
+  };
+};
+
+export const projectFromDatabase = (dbProject: DatabaseProject): Project => {
+  return {
+    id: dbProject.id,
+    title: dbProject.title,
+    description: dbProject.description,
+    techStack: dbProject.tech_stack,
+    imageUrl: dbProject.image_url || undefined,
+    liveUrl: dbProject.live_url || undefined,
+    githubUrl: dbProject.github_url || undefined,
+    sortOrder: dbProject.sort_order,
+    isFeatured: dbProject.is_featured,
+    status: dbProject.status,
+    isInitial: dbProject.is_initial,
+  };
+};
+
+export const publicationToDatabase = (
+  pub: Omit<Publication, 'id'>
+): Omit<DatabasePublication, 'id' | 'created_at' | 'updated_at'> => {
+  return {
+    title: pub.title,
+    authors: pub.authors,
+    venue: pub.venue,
+    year: pub.year,
+    abstract: pub.abstract || null,
+    doi_url: pub.doiUrl || null,
+    pdf_url: pub.pdfUrl || null,
+    type: pub.type,
+    sort_order: pub.sortOrder,
+    is_initial: pub.isInitial || false,
+  };
+};
+
+export const publicationFromDatabase = (dbPub: DatabasePublication): Publication => {
+  return {
+    id: dbPub.id,
+    title: dbPub.title,
+    authors: dbPub.authors,
+    venue: dbPub.venue,
+    year: dbPub.year,
+    abstract: dbPub.abstract || undefined,
+    doiUrl: dbPub.doi_url || undefined,
+    pdfUrl: dbPub.pdf_url || undefined,
+    type: dbPub.type,
+    sortOrder: dbPub.sort_order,
+    isInitial: dbPub.is_initial,
   };
 };

@@ -77,7 +77,6 @@ const AdminSiteSettings: React.FC = () => {
     setLocalSkills([...localSkills, { name: '', level: 3, iconName: 'Code' }]);
   };
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const updateSkill = (index: number, field: keyof Skill, value: any) => {
     const updated = [...localSkills];
     updated[index] = { ...updated[index], [field]: value };
@@ -102,7 +101,6 @@ const AdminSiteSettings: React.FC = () => {
     ]);
   };
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const updateTimelineItem = (index: number, field: keyof TimelineItem, value: any) => {
     const updated = [...localTimeline];
     updated[index] = { ...updated[index], [field]: value };
@@ -121,7 +119,6 @@ const AdminSiteSettings: React.FC = () => {
     ]);
   };
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const updateAchievement = (index: number, field: keyof Achievement, value: any) => {
     const updated = [...localAchievements];
     updated[index] = { ...updated[index], [field]: value };
@@ -165,15 +162,15 @@ const AdminSiteSettings: React.FC = () => {
   };
 
   const inputClasses =
-    'w-full px-3 py-2 text-gray-700 dark:text-gray-200 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-accent transition-colors duration-200';
-  const labelClasses = 'block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1';
+    'w-full px-3 py-2 text-gray-700 dark:text-secondary-200 bg-white dark:bg-elevated border border-gray-300 dark:border-white/10 rounded-md focus:outline-none focus:ring-2 focus:ring-accent transition-colors duration-200';
+  const labelClasses = 'block text-sm font-medium text-gray-700 dark:text-secondary-300 mb-1';
   const sectionTitleClasses =
     'text-xl font-semibold border-b pb-2 pt-6 mb-4 text-gray-800 dark:text-gray-100';
 
   return (
-    <div className="max-w-5xl mx-auto bg-white dark:bg-gray-800 rounded-lg shadow-lg p-8 space-y-10">
+    <div className="max-w-5xl mx-auto bg-white dark:bg-surface rounded-lg shadow-lg p-8 space-y-10">
       <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold font-serif text-gray-900 dark:text-white">
+        <h1 className="text-3xl font-bold font-serif text-gray-900 dark:text-secondary-50">
           Site Settings
         </h1>
         <button
@@ -297,58 +294,6 @@ const AdminSiteSettings: React.FC = () => {
                 className={inputClasses}
               />
             </div>
-            <div>
-              <label htmlFor="twitter" className={labelClasses}>
-                Twitter/X URL
-              </label>
-              <input
-                type="url"
-                name="twitter"
-                value={formState.socialLinks.twitter || ''}
-                onChange={handleSocialChange}
-                className={inputClasses}
-                placeholder="https://x.com/username"
-              />
-            </div>
-            <div>
-              <label htmlFor="instagram" className={labelClasses}>
-                Instagram URL
-              </label>
-              <input
-                type="url"
-                name="instagram"
-                value={formState.socialLinks.instagram || ''}
-                onChange={handleSocialChange}
-                className={inputClasses}
-                placeholder="https://instagram.com/username"
-              />
-            </div>
-            <div>
-              <label htmlFor="youtube" className={labelClasses}>
-                YouTube URL
-              </label>
-              <input
-                type="url"
-                name="youtube"
-                value={formState.socialLinks.youtube || ''}
-                onChange={handleSocialChange}
-                className={inputClasses}
-                placeholder="https://youtube.com/@channel"
-              />
-            </div>
-            <div>
-              <label htmlFor="discord" className={labelClasses}>
-                Discord URL
-              </label>
-              <input
-                type="url"
-                name="discord"
-                value={formState.socialLinks.discord || ''}
-                onChange={handleSocialChange}
-                className={inputClasses}
-                placeholder="https://discord.gg/invite"
-              />
-            </div>
           </div>
         </section>
 
@@ -370,7 +315,7 @@ const AdminSiteSettings: React.FC = () => {
             {localSkills.map((skill, index) => (
               <div
                 key={index}
-                className="flex gap-2 items-end bg-gray-50 dark:bg-gray-750 p-3 rounded-md border border-gray-200 dark:border-gray-700"
+                className="flex gap-2 items-end bg-gray-50 dark:bg-surface p-3 rounded-md border border-gray-200 dark:border-white/[0.06]"
               >
                 <div className="flex-1">
                   <label className="text-xs text-gray-500">Skill Name</label>
@@ -428,7 +373,7 @@ const AdminSiteSettings: React.FC = () => {
             {localTimeline.map((item, index) => (
               <div
                 key={index}
-                className="bg-gray-50 dark:bg-gray-750 p-4 rounded-md border border-gray-200 dark:border-gray-700 relative"
+                className="bg-gray-50 dark:bg-surface p-4 rounded-md border border-gray-200 dark:border-white/[0.06] relative"
               >
                 <button
                   type="button"
@@ -511,7 +456,7 @@ const AdminSiteSettings: React.FC = () => {
             {localAchievements.map((item, index) => (
               <div
                 key={index}
-                className="bg-gray-50 dark:bg-gray-750 p-3 rounded-md border border-gray-200 dark:border-gray-700 relative"
+                className="bg-gray-50 dark:bg-surface p-3 rounded-md border border-gray-200 dark:border-white/[0.06] relative"
               >
                 <button
                   type="button"
@@ -585,7 +530,7 @@ const AdminSiteSettings: React.FC = () => {
               {categories.map((cat) => (
                 <span
                   key={cat}
-                  className="flex items-center gap-2 bg-gray-100 dark:bg-gray-700 px-3 py-1 rounded-full text-sm"
+                  className="flex items-center gap-2 bg-gray-100 dark:bg-elevated px-3 py-1 rounded-full text-sm"
                 >
                   {cat}
                   <button

@@ -1,0 +1,76 @@
+---
+// Admin panel - single page that hosts the entire admin React SPA
+// Uses client:only="react" so everything runs purely on the client (no SSR)
+// The admin SPA uses HashRouter internally, so no server-side routing needed
+import AdminApp from '@/components/react/admin/AdminApp';
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Admin | Mahir Faysal Tushar Blog</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+    />
+
+    <!-- Dark mode (no flash) -->
+    <script is:inline>
+      (function () {
+        const theme = localStorage.getItem('theme');
+        if (theme === 'dark' || (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+          document.documentElement.classList.add('dark');
+        }
+      })();
+    </script>
+
+    <style>
+      body {
+        margin: 0;
+        font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      }
+      .admin-loading {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        background: #f9fafb;
+      }
+      .dark .admin-loading {
+        background: #030014;
+        color: #f3f4f6;
+      }
+      .admin-spinner {
+        width: 48px;
+        height: 48px;
+        border: 3px solid #e5e7eb;
+        border-top-color: #06b6d4;
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+      }
+      .dark .admin-spinner {
+        border-color: #374151;
+        border-top-color: #06b6d4;
+      }
+      @keyframes spin {
+        to { transform: rotate(360deg); }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="admin-root">
+      <div class="admin-loading">
+        <div class="admin-spinner"></div>
+      </div>
+    </div>
+    <AdminApp client:only="react" />
+  </body>
+</html>

@@ -1,0 +1,190 @@
+---
+import ThemeToggle from '../react/ThemeToggle';
+
+interface NavLink {
+  path: string;
+  label: string;
+}
+
+const navLinks: NavLink[] = [
+  { path: '/', label: 'Home' },
+  { path: '/about', label: 'About' },
+  { path: '/blog', label: 'Blog' },
+  { path: '/publications', label: 'Publications' },
+  { path: '/projects', label: 'Projects' },
+  { path: '/playground', label: 'Playground' },
+  { path: '/cv', label: 'CV' },
+  { path: '/contact', label: 'Contact' },
+];
+
+const currentPath = Astro.url.pathname;
+---
+
+<header
+  id="site-header"
+  class="fixed top-0 left-0 right-0 z-50 transition-all duration-300 bg-transparent py-5"
+>
+  <nav class="container mx-auto px-4 sm:px-6 lg:px-8" aria-label="Main navigation">
+    <div class="flex items-center justify-between">
+      <!-- Logo -->
+      <a
+        href="/"
+        class="text-2xl font-bold font-serif tracking-tight text-gradient-cyan hover:drop-shadow-[0_0_8px_rgba(6,182,212,0.5)] transition-all duration-300"
+        aria-label="Mahir Faysal Tushar - Home"
+      >
+        MFT Blog
+      </a>
+
+      <!-- Desktop Navigation -->
+      <div class="hidden lg:flex items-center space-x-1" id="navigation">
+        {navLinks.map((link) => {
+          const isActive = currentPath === link.path || (link.path !== '/' && currentPath.startsWith(link.path));
+          return (
+            <a
+              href={link.path}
+              class:list={[
+                'px-3 py-2 text-sm font-medium transition-all duration-200 relative',
+                'before:absolute before:bottom-0 before:left-1/2 before:-translate-x-1/2 before:w-0 hover:before:w-full before:h-[2px] before:bg-primary-400/50 before:transition-all before:duration-300',
+                isActive
+                  ? 'text-primary-400 after:absolute after:bottom-0 after:left-1/2 after:-translate-x-1/2 after:w-1.5 after:h-1.5 after:rounded-full after:bg-primary-400 after:shadow-[0_0_6px_rgba(6,182,212,0.6)]'
+                  : 'text-secondary-400 hover:text-primary-300',
+              ]}
+              aria-current={isActive ? 'page' : undefined}
+            >
+              {link.label}
+            </a>
+          );
+        })}
+      </div>
+
+      <!-- Actions -->
+      <div class="flex items-center space-x-3">
+        <!-- Search Button -->
+        <a
+          href="/search"
+          class="p-2 rounded-full text-secondary-400 hover:text-primary-300 hover:bg-white/5 hover:shadow-glow-cyan transition-all duration-200"
+          aria-label="Search"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
+        </a>
+
+        <!-- Theme Toggle (React island) -->
+        <ThemeToggle client:load />
+
+        <!-- Mobile Menu Button -->
+        <button
+          id="mobile-menu-btn"
+          class="lg:hidden p-2 rounded-full text-secondary-400 hover:text-primary-300 hover:bg-white/5 hover:shadow-glow-cyan transition-all duration-200"
+          aria-label="Open menu"
+          aria-expanded="false"
+        >
+          <svg id="menu-icon-open" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" x2="20" y1="12" y2="12"></line><line x1="4" x2="20" y1="6" y2="6"></line><line x1="4" x2="20" y1="18" y2="18"></line></svg>
+          <svg id="menu-icon-close" class="hidden" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Bottom glow line -->
+  <div
+    id="header-border"
+    class="absolute bottom-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-primary-500/20 to-transparent opacity-0 transition-opacity"
+  ></div>
+
+  <!-- Mobile Menu Overlay -->
+  <div
+    id="mobile-menu"
+    class="lg:hidden fixed inset-0 z-40 bg-abyss/98 backdrop-blur-2xl star-pattern transition-transform duration-300 ease-in-out translate-x-full"
+    style="top: 64px;"
+  >
+    <div class="p-4 space-y-4 h-full overflow-y-auto">
+      <nav aria-label="Mobile navigation">
+        <div class="space-y-1">
+          {navLinks.map((link, index) => {
+            const isActive = currentPath === link.path || (link.path !== '/' && currentPath.startsWith(link.path));
+            return (
+              <a
+                href={link.path}
+                class:list={[
+                  'mobile-nav-link block px-4 py-3 rounded-lg text-base font-medium transition-all duration-300 opacity-0',
+                  isActive
+                    ? 'bg-primary-500/10 text-primary-400 border-l-2 border-primary-400'
+                    : 'text-secondary-300 hover:text-primary-300 hover:bg-white/5',
+                ]}
+                style={`transition-delay: ${index * 50}ms`}
+                aria-current={isActive ? 'page' : undefined}
+              >
+                {link.label}
+              </a>
+            );
+          })}
+        </div>
+      </nav>
+    </div>
+  </div>
+</header>
+
+<script>
+  // Header scroll effect
+  const header = document.getElementById('site-header');
+  const headerBorder = document.getElementById('header-border');
+
+  if (header) {
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 10) {
+        header.classList.add('glass-dark', 'shadow-lg', 'shadow-black/20', 'py-3');
+        header.style.boxShadow = '0 4px 30px rgba(6,182,212,0.05), 0 10px 30px rgba(0,0,0,0.2)';
+        header.classList.remove('bg-transparent', 'py-5');
+        if (headerBorder) {
+          headerBorder.classList.remove('opacity-0');
+          headerBorder.classList.add('opacity-100');
+        }
+      } else {
+        header.classList.remove('glass-dark', 'shadow-lg', 'shadow-black/20', 'py-3');
+        header.style.boxShadow = '';
+        header.classList.add('bg-transparent', 'py-5');
+        if (headerBorder) {
+          headerBorder.classList.add('opacity-0');
+          headerBorder.classList.remove('opacity-100');
+        }
+      }
+    });
+  }
+
+  // Mobile menu toggle
+  const menuBtn = document.getElementById('mobile-menu-btn');
+  const mobileMenu = document.getElementById('mobile-menu');
+  const iconOpen = document.getElementById('menu-icon-open');
+  const iconClose = document.getElementById('menu-icon-close');
+  const mobileNavLinks = document.querySelectorAll('.mobile-nav-link');
+
+  if (menuBtn && mobileMenu && iconOpen && iconClose) {
+    menuBtn.addEventListener('click', () => {
+      const isOpen = !mobileMenu.classList.contains('translate-x-full');
+      if (isOpen) {
+        // Close menu
+        mobileNavLinks.forEach((link) => {
+          link.classList.add('opacity-0');
+        });
+        mobileMenu.classList.add('translate-x-full');
+        iconOpen.classList.remove('hidden');
+        iconClose.classList.add('hidden');
+        menuBtn.setAttribute('aria-expanded', 'false');
+        menuBtn.setAttribute('aria-label', 'Open menu');
+      } else {
+        // Open menu
+        mobileMenu.classList.remove('translate-x-full');
+        iconOpen.classList.add('hidden');
+        iconClose.classList.remove('hidden');
+        menuBtn.setAttribute('aria-expanded', 'true');
+        menuBtn.setAttribute('aria-label', 'Close menu');
+        // Stagger animate links in
+        requestAnimationFrame(() => {
+          mobileNavLinks.forEach((link) => {
+            link.classList.remove('opacity-0');
+          });
+        });
+      }
+    });
+  }
+</script>

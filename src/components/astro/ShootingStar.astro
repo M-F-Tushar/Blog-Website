@@ -1,0 +1,51 @@
+---
+interface Props {
+  count?: number;
+  class?: string;
+}
+
+const { count = 3, class: className = '' } = Astro.props;
+
+const delays = [3, 8, 15, 23, 31, 40, 50, 60];
+const positions = [
+  { top: '8%', right: '5%' },
+  { top: '15%', right: '25%' },
+  { top: '5%', right: '50%' },
+  { top: '22%', right: '10%' },
+  { top: '12%', right: '70%' },
+  { top: '3%', right: '40%' },
+  { top: '18%', right: '60%' },
+  { top: '10%', right: '85%' },
+];
+
+const stars = Array.from({ length: Math.min(count, positions.length) }, (_, i) => ({
+  delay: delays[i % delays.length],
+  top: positions[i].top,
+  right: positions[i].right,
+}));
+---
+
+<div
+  class:list={['shooting-star-container', className]}
+  aria-hidden="true"
+  style="position: absolute; inset: 0; overflow: hidden; pointer-events: none;"
+>
+  {stars.map((star) => (
+    <div
+      class="shooting-star animate-shooting-star"
+      style={`top: ${star.top}; right: ${star.right}; animation-delay: ${star.delay}s;`}
+    />
+  ))}
+</div>
+
+<style>
+  .shooting-star {
+    position: absolute;
+    width: 80px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.8) 50%, transparent);
+    transform: rotate(-45deg);
+    opacity: 0;
+    animation-iteration-count: infinite;
+  }
+</style>

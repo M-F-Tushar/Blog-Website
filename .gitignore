@@ -13,6 +13,12 @@ dist-ssr
 *.local
 .env
 
+# Astro
+.astro/
+
+# Backup files
+*.bak
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

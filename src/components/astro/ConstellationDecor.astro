@@ -1,0 +1,122 @@
+---
+interface Props {
+  variant?: 'left' | 'right' | 'center';
+  class?: string;
+}
+
+const { variant = 'left', class: className = '' } = Astro.props;
+
+type Point = { x: number; y: number };
+
+const pointLayouts: Record<string, Point[]> = {
+  left: [
+    { x: 30, y: 40 },
+    { x: 55, y: 20 },
+    { x: 80, y: 65 },
+    { x: 45, y: 90 },
+    { x: 110, y: 45 },
+    { x: 70, y: 130 },
+    { x: 130, y: 100 },
+    { x: 95, y: 160 },
+    { x: 160, y: 70 },
+    { x: 150, y: 140 },
+    { x: 200, y: 120 },
+  ],
+  right: [
+    { x: 370, y: 35 },
+    { x: 345, y: 25 },
+    { x: 320, y: 70 },
+    { x: 355, y: 95 },
+    { x: 290, y: 40 },
+    { x: 330, y: 135 },
+    { x: 270, y: 105 },
+    { x: 305, y: 165 },
+    { x: 240, y: 75 },
+    { x: 250, y: 145 },
+    { x: 200, y: 115 },
+  ],
+  center: [
+    { x: 60, y: 90 },
+    { x: 110, y: 50 },
+    { x: 150, y: 110 },
+    { x: 200, y: 40 },
+    { x: 200, y: 130 },
+    { x: 250, y: 85 },
+    { x: 290, y: 150 },
+    { x: 300, y: 55 },
+    { x: 340, y: 100 },
+    { x: 170, y: 170 },
+    { x: 230, y: 160 },
+    { x: 130, y: 155 },
+  ],
+};
+
+const points = pointLayouts[variant] || pointLayouts.left;
+
+// Build lines connecting nearby dots (within a distance threshold)
+const distanceThreshold = 90;
+type Line = { x1: number; y1: number; x2: number; y2: number };
+const lines: Line[] = [];
+
+for (let i = 0; i < points.length; i++) {
+  for (let j = i + 1; j < points.length; j++) {
+    const dx = points[i].x - points[j].x;
+    const dy = points[i].y - points[j].y;
+    const dist = Math.sqrt(dx * dx + dy * dy);
+    if (dist <= distanceThreshold) {
+      lines.push({
+        x1: points[i].x,
+        y1: points[i].y,
+        x2: points[j].x,
+        y2: points[j].y,
+      });
+    }
+  }
+}
+---
+
+<div class:list={['pointer-events-none', className]} style="pointer-events: none;">
+  <svg
+    viewBox="0 0 400 200"
+    xmlns="http://www.w3.org/2000/svg"
+    aria-hidden="true"
+    fill="none"
+    class="w-full h-full"
+  >
+    {lines.map((line) => (
+      <line
+        x1={line.x1}
+        y1={line.y1}
+        x2={line.x2}
+        y2={line.y2}
+        stroke="rgba(6,182,212,0.15)"
+        stroke-width="0.5"
+        stroke-dasharray="100"
+        class="constellation-line"
+      />
+    ))}
+    {points.map((point) => (
+      <circle
+        cx={point.x}
+        cy={point.y}
+        r="2"
+        fill="rgba(6,182,212,0.4)"
+      />
+    ))}
+  </svg>
+</div>
+
+<style>
+  .constellation-line {
+    animation: constellation-draw 4s ease-in-out forwards;
+  }
+
+  @keyframes constellation-draw {
+    from {
+      stroke-dashoffset: 100;
+    }
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
+</style>

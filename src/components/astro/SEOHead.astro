@@ -1,0 +1,58 @@
+---
+export interface Props {
+  title?: string;
+  description?: string;
+  image?: string;
+  type?: string;
+  canonicalUrl?: string;
+  noindex?: boolean;
+  structuredData?: Record<string, any>;
+}
+
+const {
+  title,
+  description = 'AI/ML Researcher & CS Student - Exploring the frontiers of artificial intelligence, machine learning, and technology.',
+  image = '/images/og-image.jpg',
+  type = 'website',
+  canonicalUrl,
+  noindex = false,
+  structuredData,
+} = Astro.props;
+
+const siteUrl = Astro.site?.toString().replace(/\/$/, '') || 'https://mahirfaysaltusherblog.is-a.dev';
+const pageTitle = title ? `${title} | Mahir Faysal Tushar` : 'Mahir Faysal Tushar - AI/ML Researcher & CS Student';
+const fullImageUrl = image.startsWith('http') ? image : `${siteUrl}${image}`;
+const canonical = canonicalUrl || new URL(Astro.url.pathname, siteUrl).toString();
+---
+
+<!-- Primary Meta Tags -->
+<title>{pageTitle}</title>
+<meta name="title" content={pageTitle} />
+<meta name="description" content={description} />
+<meta name="author" content="Mahir Faysal Tushar" />
+{noindex ? <meta name="robots" content="noindex, nofollow" /> : <meta name="robots" content="index, follow" />}
+
+<!-- Canonical URL -->
+<link rel="canonical" href={canonical} />
+
+<!-- Open Graph / Facebook -->
+<meta property="og:type" content={type} />
+<meta property="og:url" content={canonical} />
+<meta property="og:title" content={pageTitle} />
+<meta property="og:description" content={description} />
+<meta property="og:image" content={fullImageUrl} />
+<meta property="og:site_name" content="Mahir Faysal Tushar" />
+
+<!-- Twitter -->
+<meta property="twitter:card" content="summary_large_image" />
+<meta property="twitter:url" content={canonical} />
+<meta property="twitter:title" content={pageTitle} />
+<meta property="twitter:description" content={description} />
+<meta property="twitter:image" content={fullImageUrl} />
+
+<!-- RSS Feed -->
+<link rel="alternate" type="application/rss+xml" title="Mahir Faysal Tushar - Blog RSS" href={`${siteUrl}/rss.xml`} />
+
+{structuredData && (
+  <script type="application/ld+json" set:html={JSON.stringify(structuredData)} />
+)}

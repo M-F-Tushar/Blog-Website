@@ -1,0 +1,60 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import BlogCard from '../../../components/astro/BlogCard.astro';
+import { getPublishedPosts } from '@/lib/supabase';
+
+export async function getStaticPaths() {
+  const posts = await getPublishedPosts();
+
+  // Collect all unique tags
+  const tagSet = new Set<string>();
+  posts.forEach((p) => p.tags?.forEach((tag) => tagSet.add(tag)));
+
+  return Array.from(tagSet).map((tag) => ({
+    params: { tag },
+    props: {
+      tag,
+      posts: posts.filter((p) => p.tags?.includes(tag)),
+    },
+  }));
+}
+
+const { tag, posts } = Astro.props;
+---
+
+<BaseLayout title={`#${tag}`} description={`Articles tagged with "${tag}".`}>
+  <div class="pb-12">
+    <section class="relative py-12 md:py-16 bg-secondary-50 dark:bg-secondary-900/50 -mt-20 pt-32 px-4 text-center">
+      <div class="max-w-3xl mx-auto relative z-10">
+        <a
+          href="/blog/tags"
+          class="inline-flex items-center gap-1 text-sm text-secondary-500 dark:text-secondary-400 hover:text-primary-600 dark:hover:text-primary-400 mb-4 transition-colors"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"></path></svg>
+          All Tags
+        </a>
+        <h1 class="text-4xl md:text-5xl font-bold font-serif text-secondary-900 dark:text-white mb-6">
+          <span class="text-gradient">#{tag}</span>
+        </h1>
+        <p class="text-lg text-secondary-600 dark:text-secondary-300">
+          {posts.length} {posts.length === 1 ? 'article' : 'articles'} with this tag
+        </p>
+      </div>
+    </section>
+
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8 max-w-6xl mt-12">
+      {posts.length > 0 ? (
+        <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+          {posts.map((post) => (
+            <BlogCard post={post} />
+          ))}
+        </div>
+      ) : (
+        <div class="text-center py-20">
+          <h2 class="text-2xl font-bold text-secondary-900 dark:text-white mb-4">No articles found</h2>
+          <p class="text-secondary-600 dark:text-secondary-400">No articles with this tag yet.</p>
+        </div>
+      )}
+    </div>
+  </div>
+</BaseLayout>

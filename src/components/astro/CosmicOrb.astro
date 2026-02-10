@@ -1,0 +1,40 @@
+---
+interface Props {
+  size?: 'sm' | 'md' | 'lg';
+  color?: 'cyan' | 'violet' | 'pink';
+  class?: string;
+}
+
+const { size = 'md', color = 'cyan', class: className } = Astro.props;
+
+const sizeClasses: Record<string, string> = {
+  sm: 'w-16 h-16',
+  md: 'w-32 h-32',
+  lg: 'w-64 h-64',
+};
+
+const blurClass: Record<string, string> = {
+  sm: 'blur-2xl',
+  md: 'blur-3xl',
+  lg: 'blur-3xl',
+};
+
+const colorValues: Record<string, string> = {
+  cyan: 'rgba(6,182,212,0.3)',
+  violet: 'rgba(139,92,246,0.3)',
+  pink: 'rgba(236,72,153,0.3)',
+};
+
+const gradientColor = colorValues[color];
+---
+
+<div
+  aria-hidden="true"
+  class:list={[
+    'rounded-full animate-float pointer-events-none',
+    sizeClasses[size],
+    blurClass[size],
+    className,
+  ]}
+  style={`background: radial-gradient(circle, ${gradientColor} 0%, transparent 70%);`}
+/>

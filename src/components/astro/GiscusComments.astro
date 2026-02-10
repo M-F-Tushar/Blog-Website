@@ -1,0 +1,72 @@
+---
+interface Props {
+  repo?: string;
+  repoId?: string;
+  category?: string;
+  categoryId?: string;
+  mapping?: 'pathname' | 'url' | 'title' | 'og:title';
+  theme?: string;
+}
+
+const {
+  repo = 'M-F-Tushar/Blog-Website',
+  repoId = '',
+  category = 'General',
+  categoryId = '',
+  mapping = 'pathname',
+  theme = 'preferred_color_scheme',
+} = Astro.props;
+---
+
+<div class="giscus-container mt-12 pt-8 border-t border-secondary-200 dark:border-secondary-700">
+  <h2 class="text-2xl font-bold font-serif text-secondary-900 dark:text-white mb-6">
+    Comments
+  </h2>
+  <div class="giscus"></div>
+</div>
+
+<script
+  is:inline
+  src="https://giscus.app/client.js"
+  data-repo={repo}
+  data-repo-id={repoId}
+  data-category={category}
+  data-category-id={categoryId}
+  data-mapping={mapping}
+  data-strict="0"
+  data-reactions-enabled="1"
+  data-emit-metadata="0"
+  data-input-position="top"
+  data-theme={theme}
+  data-lang="en"
+  data-loading="lazy"
+  crossorigin="anonymous"
+  async
+>
+</script>
+
+<script>
+  // Update Giscus theme when page theme changes
+  const updateGiscusTheme = () => {
+    const isDark = document.documentElement.classList.contains('dark');
+    const theme = isDark ? 'dark' : 'light';
+    const iframe = document.querySelector<HTMLIFrameElement>('iframe.giscus-frame');
+    if (iframe) {
+      iframe.contentWindow?.postMessage(
+        { giscus: { setConfig: { theme } } },
+        'https://giscus.app'
+      );
+    }
+  };
+
+  // Watch for theme changes
+  const observer = new MutationObserver((mutations) => {
+    mutations.forEach((mutation) => {
+      if (mutation.attributeName === 'class') {
+        updateGiscusTheme();
+      }
+    });
+  });
+
+  observer.observe(document.documentElement, { attributes: true });
+</script>

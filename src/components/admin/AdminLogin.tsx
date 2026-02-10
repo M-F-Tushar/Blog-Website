@@ -12,7 +12,7 @@ const AdminLogin: React.FC = () => {
 
   useEffect(() => {
     if (isAuthenticated) {
-      navigate('/admin/dashboard');
+      navigate('/dashboard');
     }
   }, [isAuthenticated, navigate]);
 
@@ -24,21 +24,22 @@ const AdminLogin: React.FC = () => {
     const result = await signIn(email, password);
 
     if (result.success) {
-      navigate('/admin/dashboard');
+      navigate('/dashboard');
     } else {
       setError(result.error || 'Invalid credentials');
     }
-    
+
     setLoading(false);
   };
 
-  const inputClasses = "w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-accent focus:border-transparent dark:bg-gray-700 dark:text-white";
-  const labelClasses = "block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2";
+  const inputClasses =
+    'w-full px-4 py-2 border border-gray-300 dark:border-white/10 rounded-md focus:ring-2 focus:ring-accent focus:border-transparent dark:bg-elevated dark:text-secondary-50';
+  const labelClasses = 'block text-sm font-medium text-gray-700 dark:text-secondary-300 mb-2';
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
-      <div className="max-w-md w-full bg-white dark:bg-gray-800 shadow-lg rounded-lg p-8">
-        <h1 className="text-3xl font-bold text-center text-gray-900 dark:text-white mb-8">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-void">
+      <div className="max-w-md w-full bg-white dark:bg-surface shadow-lg rounded-lg p-8">
+        <h1 className="text-3xl font-bold text-center text-gray-900 dark:text-secondary-50 mb-8">
           Admin Login
         </h1>
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -70,9 +71,7 @@ const AdminLogin: React.FC = () => {
               disabled={loading}
             />
           </div>
-          {error && (
-            <p className="text-red-500 text-sm text-center">{error}</p>
-          )}
+          {error && <p className="text-red-500 text-sm text-center">{error}</p>}
           <button
             type="submit"
             disabled={loading}

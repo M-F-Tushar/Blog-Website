@@ -1,0 +1,259 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import NebulaGradient from '@/components/astro/NebulaGradient.astro';
+import { generatePersonSchema } from '@/lib/structured-data';
+import { getPublications, getSiteSettings } from '@/lib/supabase';
+
+const siteUrl = Astro.site?.toString() || '';
+const settings = await getSiteSettings();
+
+// Publication types with icons
+const pubTypes = [
+  { id: 'all', label: 'All' },
+  { id: 'conference', label: 'Conference' },
+  { id: 'journal', label: 'Journal' },
+  { id: 'preprint', label: 'Preprint' },
+  { id: 'thesis', label: 'Thesis' },
+  { id: 'workshop', label: 'Workshop' },
+  { id: 'book_chapter', label: 'Book Chapter' },
+];
+
+const publications = await getPublications();
+
+const years = [...new Set(publications.map(p => p.year))].sort((a, b) => b - a);
+const personSchema = generatePersonSchema(
+  { name: settings.author_name, email: settings.social_email, url: siteUrl },
+  'AI/ML Researcher'
+);
+---
+
+<BaseLayout
+  title="Publications | Mahir Faysal Tushar"
+  description="Academic publications, preprints, and research papers in AI/ML, NLP, and MLOps."
+  structuredData={personSchema}
+>
+  <section class="max-w-5xl mx-auto px-4 py-12 sm:px-6 lg:px-8 relative">
+    <NebulaGradient variant="subtle" />
+    <!-- Header -->
+    <div class="text-center mb-12">
+      <h1 class="text-4xl md:text-5xl font-bold font-serif text-secondary-50 mb-4">
+        Publications
+      </h1>
+      <p class="text-lg text-secondary-300 max-w-2xl mx-auto">
+        Research papers, preprints, and academic contributions in AI/ML, NLP, and MLOps.
+      </p>
+    </div>
+
+    <!-- Filter tabs -->
+    <div class="flex flex-wrap justify-center gap-2 mb-10" id="pub-filters">
+      {pubTypes.map((type) => (
+        <button
+          data-filter={type.id}
+          class:list={[
+            'px-4 py-2 rounded-full text-sm font-medium transition-all duration-200',
+            type.id === 'all'
+              ? 'bg-primary-600 text-white shadow-md shadow-primary-500/20'
+              : 'bg-surface text-secondary-300 border border-white/10 hover:border-primary-500/30 hover:text-primary-300',
+          ]}
+        >
+          {type.label}
+        </button>
+      ))}
+    </div>
+
+    <!-- Publications list -->
+    <div class="space-y-6" id="pub-list">
+      {years.map((year) => (
+        <div>
+          <h2 class="text-2xl font-bold font-serif text-secondary-100 mb-4 border-b border-white/[0.06] pb-2">
+            {year}
+          </h2>
+          <div class="space-y-4">
+            {publications
+              .filter((p) => p.year === year)
+              .map((pub) => (
+                <article
+                  class="pub-item glass-cosmic rounded-xl p-6 border border-white/[0.06] hover:border-primary-500/20 hover:shadow-lg hover:shadow-primary-500/5 transition-all"
+                  data-type={pub.type}
+                >
+                  {pub.featured && (
+                    <span class="inline-block text-xs font-semibold bg-gold-500/10 text-gold-400 border border-gold-500/20 px-2 py-0.5 rounded-full mb-2">
+                      Featured
+                    </span>
+                  )}
+
+                  <h3 class="text-lg font-semibold text-secondary-50 mb-1">
+                    {pub.title}
+                  </h3>
+
+                  <p class="text-sm text-secondary-400 mb-2">
+                    {pub.authors.join(', ')}
+                  </p>
+
+                  <p class="text-sm font-medium text-gold-400 mb-3">
+                    <span class="inline-block bg-primary-500/10 text-primary-300 px-2 py-0.5 rounded text-xs uppercase tracking-wide mr-2">
+                      {pub.type}
+                    </span>
+                    {pub.venue}, {pub.year}
+                  </p>
+
+                  {pub.abstract && (
+                    <p class="text-sm text-secondary-300 mb-4 line-clamp-3">
+                      {pub.abstract}
+                    </p>
+                  )}
+
+                  <!-- Action buttons -->
+                  <div class="flex flex-wrap gap-2">
+                    {pub.arxiv_url && (
+                      <a
+                        href={pub.arxiv_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium bg-primary-500/10 text-primary-300 border border-primary-500/20 rounded-lg hover:bg-primary-500/20 transition-colors"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>
+                        arXiv
+                      </a>
+                    )}
+                    {pub.pdf_url && (
+                      <a
+                        href={pub.pdf_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium bg-accent-500/10 text-accent-300 border border-accent-500/20 rounded-lg hover:bg-accent-500/20 transition-colors"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>
+                        PDF
+                      </a>
+                    )}
+                    {pub.code_url && (
+                      <a
+                        href={pub.code_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium bg-gold-500/10 text-gold-300 border border-gold-500/20 rounded-lg hover:bg-gold-500/20 transition-colors"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+                        Code
+                      </a>
+                    )}
+                    {pub.slides_url && (
+                      <a
+                        href={pub.slides_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium bg-green-500/10 text-green-300 border border-green-500/20 rounded-lg hover:bg-green-500/20 transition-colors"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+                        Slides
+                      </a>
+                    )}
+                    <button
+                      class="bibtex-btn inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium bg-white/5 text-secondary-300 border border-white/10 rounded-lg hover:bg-white/10 transition-colors"
+                      data-title={pub.title}
+                      data-authors={pub.authors.join(' and ')}
+                      data-year={pub.year}
+                      data-venue={pub.venue}
+                      data-type={pub.type}
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                      BibTeX
+                    </button>
+                  </div>
+                </article>
+              ))}
+          </div>
+        </div>
+      ))}
+    </div>
+
+    <!-- Empty state -->
+    <div id="pub-empty" class="hidden text-center py-16">
+      <p class="text-secondary-400 text-lg">
+        No publications found for this filter.
+      </p>
+    </div>
+
+    <!-- BibTeX Modal -->
+    <div id="bibtex-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+      <div class="bg-surface rounded-xl p-6 max-w-lg w-full mx-4 border border-white/[0.06] shadow-2xl">
+        <div class="flex justify-between items-center mb-4">
+          <h3 class="text-lg font-semibold text-secondary-50">BibTeX Citation</h3>
+          <button id="bibtex-close" class="p-1 text-secondary-400 hover:text-secondary-200">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+          </button>
+        </div>
+        <pre id="bibtex-content" class="bg-abyss p-4 rounded-lg text-sm font-mono text-secondary-200 overflow-x-auto whitespace-pre-wrap"></pre>
+        <button id="bibtex-copy" class="mt-4 w-full px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-500 transition-colors font-medium text-sm">
+          Copy to Clipboard
+        </button>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<script>
+  // Filter publications
+  document.querySelectorAll('#pub-filters button').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const filter = (btn as HTMLElement).dataset.filter;
+
+      // Update active state
+      document.querySelectorAll('#pub-filters button').forEach((b) => {
+        b.className = 'px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 bg-surface text-secondary-300 border border-white/10 hover:border-primary-500/30 hover:text-primary-300';
+      });
+      btn.className = 'px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 bg-primary-600 text-white shadow-md shadow-primary-500/20';
+
+      // Filter items
+      const items = document.querySelectorAll('.pub-item');
+      let visibleCount = 0;
+      items.forEach((item) => {
+        const type = (item as HTMLElement).dataset.type;
+        const show = filter === 'all' || type === filter;
+        (item as HTMLElement).style.display = show ? '' : 'none';
+        if (show) visibleCount++;
+      });
+
+      const emptyEl = document.getElementById('pub-empty');
+      if (emptyEl) emptyEl.classList.toggle('hidden', visibleCount > 0);
+    });
+  });
+
+  // BibTeX modal
+  const modal = document.getElementById('bibtex-modal');
+  const content = document.getElementById('bibtex-content');
+  const closeBtn = document.getElementById('bibtex-close');
+  const copyBtn = document.getElementById('bibtex-copy');
+
+  document.querySelectorAll('.bibtex-btn').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const el = btn as HTMLElement;
+      const key = el.dataset.authors!.split(' ')[0].toLowerCase() + el.dataset.year;
+      const entryType = el.dataset.type === 'journal' ? 'article' : 'inproceedings';
+      const bibtex = `@${entryType}{${key},
+  title     = {${el.dataset.title}},
+  author    = {${el.dataset.authors}},
+  year      = {${el.dataset.year}},
+  booktitle = {${el.dataset.venue}}
+}`;
+      if (content) content.textContent = bibtex;
+      modal?.classList.remove('hidden');
+    });
+  });
+
+  closeBtn?.addEventListener('click', () => modal?.classList.add('hidden'));
+  modal?.addEventListener('click', (e) => {
+    if (e.target === modal) modal.classList.add('hidden');
+  });
+
+  copyBtn?.addEventListener('click', () => {
+    const text = content?.textContent;
+    if (text) {
+      navigator.clipboard.writeText(text).then(() => {
+        if (copyBtn) copyBtn.textContent = 'Copied!';
+        setTimeout(() => { if (copyBtn) copyBtn.textContent = 'Copy to Clipboard'; }, 2000);
+      });
+    }
+  });
+</script>

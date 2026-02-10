@@ -1,0 +1,246 @@
+---
+import BaseLayout from './BaseLayout.astro';
+import GiscusComments from '@/components/astro/GiscusComments.astro';
+import NebulaGradient from '@/components/astro/NebulaGradient.astro';
+import CosmicDivider from '@/components/astro/CosmicDivider.astro';
+import type { Post } from '@/lib/types';
+import { slugify, getSiteSettings } from '@/lib/supabase';
+import { calculateReadingTime, formatReadingTime } from '@/lib/reading-time';
+import { generateBlogPostingSchema } from '@/lib/structured-data';
+
+interface Props {
+  post: Post;
+  headings?: { depth: number; slug: string; text: string }[];
+  relatedPosts?: Post[];
+  prevPost?: Post | null;
+  nextPost?: Post | null;
+}
+
+const { post, headings = [], relatedPosts = [], prevPost, nextPost } = Astro.props;
+const settings = await getSiteSettings();
+const readingTime = calculateReadingTime(post.content);
+
+const structuredData = generateBlogPostingSchema(
+  post,
+  'https://mahirfaysaltusherblog.is-a.dev',
+  settings.site_name,
+  { name: settings.author_name, email: settings.social_email }
+);
+
+const formattedDate = new Date(post.date).toLocaleDateString(undefined, {
+  month: 'long',
+  day: 'numeric',
+  year: 'numeric',
+});
+
+const tocHeadings = headings.filter((h) => h.depth >= 2 && h.depth <= 3);
+---
+
+<BaseLayout
+  title={post.title}
+  description={post.excerpt}
+  image={post.coverImage}
+  type="article"
+  structuredData={structuredData}
+>
+  <link
+    slot="head"
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/katex@0.16.25/dist/katex.min.css"
+    integrity="sha384-BHmjR5PJgPMBjUWvJh6xEEj3GIKam2V3Y0RHfrq3LNpCR7LKsCkFmMCqV6U5BOA"
+    crossorigin="anonymous"
+  />
+  <!-- Reading progress bar -->
+  <div id="reading-progress" class="fixed top-0 left-0 right-0 z-[60] h-1 bg-transparent">
+    <div id="progress-bar" class="h-full bg-gradient-to-r from-primary-400 via-accent-400 to-gold-400 transition-all duration-150" style="width: 0%; box-shadow: 0 0 10px rgba(6,182,212,0.4);"></div>
+  </div>
+
+  <article class="pb-12">
+    <!-- Hero Header -->
+    <NebulaGradient variant="section" />
+    <header class="relative -mt-20 pt-32 pb-12 px-4 bg-abyss/80 backdrop-blur-sm">
+      <div class="container mx-auto max-w-4xl text-center">
+        <!-- Category badge -->
+        <a
+          href={`/blog/categories/${slugify(post.category)}`}
+          class="inline-flex items-center px-3 py-1 rounded-full bg-gold-500/10 text-gold-400 border border-gold-500/20 text-sm font-medium mb-6 hover:bg-gold-500/20 transition-colors"
+        >
+          {post.category}
+        </a>
+
+        <h1 class="text-3xl md:text-5xl font-bold font-serif text-secondary-50 mb-6 leading-tight">
+          {post.title}
+        </h1>
+
+        <p class="text-lg text-secondary-300 mb-8 max-w-2xl mx-auto">
+          {post.excerpt}
+        </p>
+
+        <!-- Meta -->
+        <div class="flex items-center justify-center flex-wrap gap-4 text-sm text-secondary-400">
+          <span class="flex items-center gap-1.5">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v4"></path><path d="M16 2v4"></path><rect width="18" height="18" x="3" y="4" rx="2"></rect><path d="M3 10h18"></path></svg>
+            <time datetime={post.date}>{formattedDate}</time>
+          </span>
+          <span class="flex items-center gap-1.5">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+            {formatReadingTime(readingTime)}
+          </span>
+          <span class="flex items-center gap-1.5">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+            {settings.author_name}
+          </span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Cover Image -->
+    {post.coverImage && (
+      <div class="container mx-auto max-w-5xl px-4 -mt-6">
+        <div class="border border-white/[0.06] rounded-2xl overflow-hidden">
+          <img
+            src={post.coverImage}
+            alt={`Cover image for ${post.title}`}
+            class="w-full rounded-2xl shadow-2xl shadow-black/40 object-cover max-h-[500px]"
+            loading="eager"
+            width="1200"
+            height="600"
+          />
+        </div>
+      </div>
+    )}
+
+    <!-- Content with sidebar -->
+    <div class="container mx-auto max-w-7xl px-4 mt-12">
+      <div class="grid lg:grid-cols-[1fr_250px] gap-12">
+        <!-- Main content -->
+        <div class="min-w-0">
+          <div class="prose prose-lg max-w-none prose-headings:scroll-mt-24 prose-headings:text-secondary-50 prose-a:text-primary-400 prose-img:rounded-xl prose-pre:bg-[#0a0e1a] prose-pre:border prose-pre:border-white/[0.06]">
+            <slot />
+          </div>
+
+          <!-- Tags -->
+          {post.tags && post.tags.length > 0 && (
+            <div class="mt-12 pt-8 border-t border-white/[0.06]">
+              <div class="flex flex-wrap gap-2">
+                {post.tags.map((tag) => (
+                  <a
+                    href={`/blog/tags/${tag}`}
+                    class="px-4 py-2 bg-surface text-secondary-300 border border-white/10 rounded-full text-sm hover:border-primary-500/30 hover:text-primary-300 transition-colors"
+                  >
+                    #{tag}
+                  </a>
+                ))}
+              </div>
+            </div>
+          )}
+
+          <!-- Post navigation -->
+          <nav class="mt-12 pt-8 border-t border-white/[0.06] grid md:grid-cols-2 gap-6" aria-label="Post navigation">
+            {prevPost && (
+              <a href={`/blog/${prevPost.slug}`} class="group p-4 bg-surface rounded-xl border border-white/[0.06] hover:border-primary-500/30 transition-colors">
+                <span class="text-xs text-secondary-500 uppercase tracking-wider">&larr; Previous</span>
+                <p class="font-semibold text-secondary-50 mt-1 group-hover:text-primary-400 line-clamp-2">{prevPost.title}</p>
+              </a>
+            )}
+            {nextPost && (
+              <a href={`/blog/${nextPost.slug}`} class="group p-4 bg-surface rounded-xl border border-white/[0.06] hover:border-primary-500/30 transition-colors text-right md:col-start-2">
+                <span class="text-xs text-secondary-500 uppercase tracking-wider">Next &rarr;</span>
+                <p class="font-semibold text-secondary-50 mt-1 group-hover:text-primary-400 line-clamp-2">{nextPost.title}</p>
+              </a>
+            )}
+          </nav>
+
+          <!-- Giscus Comments -->
+          <GiscusComments />
+
+          <!-- Related posts -->
+          <CosmicDivider variant="line" />
+          {relatedPosts.length > 0 && (
+            <section class="mt-16">
+              <h2 class="text-2xl font-bold font-serif text-secondary-50 mb-8">Related Articles</h2>
+              <div class="grid md:grid-cols-2 gap-6">
+                {relatedPosts.slice(0, 2).map((related) => (
+                  <a href={`/blog/${related.slug}`} class="group p-6 bg-surface rounded-xl border border-white/[0.06] hover:border-primary-500/30 transition-all hover:-translate-y-1">
+                    <span class="text-xs text-accent-400 font-medium">{related.category}</span>
+                    <h3 class="font-bold text-secondary-50 mt-2 mb-2 group-hover:text-primary-400 line-clamp-2">{related.title}</h3>
+                    <p class="text-sm text-secondary-400 line-clamp-2">{related.excerpt}</p>
+                  </a>
+                ))}
+              </div>
+            </section>
+          )}
+        </div>
+
+        <!-- Sidebar / Table of Contents -->
+        {tocHeadings.length > 0 && (
+          <aside class="hidden lg:block">
+            <div class="sticky top-24 glass-cosmic rounded-xl p-4">
+              <h3 class="text-sm font-bold text-secondary-50 uppercase tracking-wider mb-4">On This Page</h3>
+              <nav aria-label="Table of contents">
+                <ul class="space-y-2 text-sm border-l-2 border-white/10">
+                  {tocHeadings.map((heading) => (
+                    <li>
+                      <a
+                        href={`#${heading.slug}`}
+                        class:list={[
+                          'block py-1 text-secondary-400 hover:text-primary-400 transition-colors border-l-2 -ml-[2px]',
+                          heading.depth === 2 ? 'pl-4 border-transparent' : 'pl-8 border-transparent text-xs',
+                        ]}
+                        data-toc-link
+                        data-heading-id={heading.slug}
+                      >
+                        {heading.text}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </nav>
+            </div>
+          </aside>
+        )}
+      </div>
+    </div>
+  </article>
+</BaseLayout>
+
+<script>
+  // Reading progress bar
+  const progressBar = document.getElementById('progress-bar');
+  if (progressBar) {
+    window.addEventListener('scroll', () => {
+      const scrollTop = window.scrollY;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+      progressBar.style.width = `${Math.min(100, progress)}%`;
+    });
+  }
+
+  // Active TOC heading tracking
+  const tocLinks = document.querySelectorAll('[data-toc-link]');
+  if (tocLinks.length > 0) {
+    const headingIds = Array.from(tocLinks).map((link) => link.getAttribute('data-heading-id')!);
+    const headingElements = headingIds.map((id) => document.getElementById(id)).filter(Boolean) as HTMLElement[];
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            tocLinks.forEach((link) => {
+              link.classList.remove('border-primary-500', 'text-primary-400', 'font-medium', '[text-shadow:_0_0_10px_rgba(6,182,212,0.3)]');
+              link.classList.add('border-transparent');
+            });
+            const activeLink = document.querySelector(`[data-heading-id="${entry.target.id}"]`);
+            if (activeLink) {
+              activeLink.classList.add('border-primary-500', 'text-primary-400', 'font-medium', '[text-shadow:_0_0_10px_rgba(6,182,212,0.3)]');
+              activeLink.classList.remove('border-transparent');
+            }
+          }
+        });
+      },
+      { rootMargin: '-80px 0px -80% 0px', threshold: 0 }
+    );
+
+    headingElements.forEach((el) => observer.observe(el));
+  }
+</script>

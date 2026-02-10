@@ -1,0 +1,207 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getSiteSettings, getPublishedPosts } from '@/lib/supabase';
+import { generatePersonSchema } from '@/lib/structured-data';
+import Reveal from '@/components/astro/Reveal.astro';
+import AnimatedCounter from '@/components/react/AnimatedCounter';
+import NebulaGradient from '@/components/astro/NebulaGradient.astro';
+import ConstellationDecor from '@/components/astro/ConstellationDecor.astro';
+import CosmicDivider from '@/components/astro/CosmicDivider.astro';
+
+const settings = await getSiteSettings();
+const posts = await getPublishedPosts();
+
+const stats = {
+  postsWritten: posts.length,
+  totalWords: posts.reduce((sum, post) => sum + (post.content ? post.content.split(/\s+/).length : 0), 0),
+  yearsActive: (() => {
+    const postDates = posts.map((p) => new Date(p.date).getFullYear()).filter(Boolean);
+    return postDates.length > 0 ? new Date().getFullYear() - Math.min(...postDates) + 1 : 1;
+  })(),
+  categories: [...new Set(posts.map((p) => p.category))].length,
+};
+
+const structuredData = generatePersonSchema(
+  { name: settings.author_name, email: settings.social_email, url: 'https://mahirfaysaltusherblog.is-a.dev' },
+  'AI/ML Researcher & CS Student',
+  settings.author_bio,
+  [settings.social_github, settings.social_linkedin].filter(Boolean)
+);
+---
+
+<BaseLayout
+  title={`About ${settings.author_name}`}
+  description={`Learn more about ${settings.author_name} - AI/ML researcher & CS student.`}
+  structuredData={structuredData}
+>
+  <div class="space-y-24 pb-12">
+    <!-- Hero Section -->
+    <section class="relative py-12 md:py-20 px-4 -mt-20 pt-32 overflow-hidden bg-abyss/80">
+      <div class="absolute inset-0 -z-10">
+        <NebulaGradient variant="hero" />
+        <div class="absolute inset-0 bg-gradient-to-br from-primary-900/20 via-transparent to-accent-900/20 opacity-60"></div>
+        <div class="absolute top-0 right-0 w-[600px] h-[600px] bg-primary-500/5 rounded-full blur-3xl opacity-50 animate-blob"></div>
+        <div class="absolute bottom-0 left-0 w-[600px] h-[600px] bg-accent-500/5 rounded-full blur-3xl opacity-50 animate-blob" style="animation-delay: 2s;"></div>
+      </div>
+      <ConstellationDecor variant="right" class="absolute top-10 right-0 opacity-20 w-80 hidden lg:block" />
+
+      <div class="container mx-auto max-w-6xl">
+        <div class="flex flex-col md:flex-row items-center gap-12 md:gap-16">
+          <div class="flex-1 text-center md:text-left animate-fade-in">
+            <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-surface/50 backdrop-blur-sm border border-white/10 mb-6">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gold-400"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"></path></svg>
+              <span class="text-sm font-medium text-secondary-300">About Me</span>
+            </div>
+
+            <h1 class="text-4xl md:text-6xl font-bold font-serif text-secondary-50 mb-6 leading-tight">
+              Hi, I'm <span class="text-gradient-cyan">{settings.author_name}</span>
+            </h1>
+
+            <p class="text-xl md:text-2xl text-secondary-300 mb-8 leading-relaxed">
+              {settings.author_tagline || 'A passionate developer, lifelong learner, and technology enthusiast.'}
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8 max-w-6xl space-y-24">
+      <!-- Statistics -->
+      <Reveal>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+          {[
+            { label: 'Articles Written', value: stats.postsWritten, icon: 'M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253', suffix: '' },
+            { label: 'Total Words', value: stats.totalWords, icon: 'M13 7h8m0 0v8m0-8l-8 8-4-4-6 6', suffix: '' },
+            { label: 'Years Active', value: stats.yearsActive, icon: 'M8 2v4m8-4v4M3 10h18M5 4h14a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V6a2 2 0 012-2z', suffix: '+' },
+            { label: 'Topics Covered', value: stats.categories, icon: 'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z', suffix: '' },
+          ].map((stat, index) => (
+            <div
+              class="bg-surface rounded-2xl p-6 border border-white/[0.06] text-center hover:-translate-y-1 transition-transform duration-300 hover:shadow-cosmic-card"
+              style={`animation-delay: ${index * 100}ms;`}
+            >
+              <div class="inline-flex items-center justify-center w-12 h-12 bg-primary-500/10 text-primary-400 rounded-xl mb-4 p-3">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d={stat.icon}></path></svg>
+              </div>
+              <AnimatedCounter
+                client:visible
+                end={stat.value}
+                suffix={stat.suffix}
+                className="text-3xl font-bold text-secondary-50 mb-1"
+              />
+              <div class="text-sm text-secondary-400 font-medium">{stat.label}</div>
+            </div>
+          ))}
+        </div>
+      </Reveal>
+
+      <CosmicDivider variant="star" />
+
+      <!-- Bio -->
+      <Reveal>
+        <div class="grid md:grid-cols-12 gap-12 items-start">
+          <div class="md:col-span-4 lg:col-span-3">
+            <h2 class="text-3xl font-bold font-serif text-secondary-50 mb-6 sticky top-24">My Story</h2>
+          </div>
+          <div class="md:col-span-8 lg:col-span-9">
+            <div class="prose prose-lg max-w-none text-secondary-300" set:html={settings.author_bio || 'Bio coming soon...'} />
+          </div>
+        </div>
+      </Reveal>
+
+      <CosmicDivider variant="star" />
+
+      <!-- Skills -->
+      {settings.skills && settings.skills.length > 0 && (
+        <Reveal>
+          <div class="grid md:grid-cols-12 gap-12 items-start">
+            <div class="md:col-span-4 lg:col-span-3">
+              <h2 class="text-3xl font-bold font-serif text-secondary-50 mb-6 sticky top-24">Tech Stack</h2>
+            </div>
+            <div class="md:col-span-8 lg:col-span-9">
+              <div class="grid grid-cols-2 sm:grid-cols-3 gap-6">
+                {settings.skills.map((skill: any, index: number) => (
+                  <div
+                    class="bg-surface p-6 rounded-2xl border border-white/[0.06] hover:border-primary-500/30 transition-colors"
+                    style={`animation-delay: ${index * 50}ms;`}
+                  >
+                    <div class="font-semibold text-secondary-50 mb-3">{skill.name}</div>
+                    <div class="bg-white/5 rounded-full h-2 overflow-hidden">
+                      <div
+                        class="bg-gradient-to-r from-primary-500 to-accent-500 h-full rounded-full transition-all duration-1000"
+                        style={`width: ${(skill.level / 5) * 100}%;`}
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </Reveal>
+      )}
+
+      <CosmicDivider variant="star" />
+
+      <!-- Timeline -->
+      {settings.timeline && settings.timeline.length > 0 && (
+        <Reveal>
+          <div class="grid md:grid-cols-12 gap-12 items-start">
+            <div class="md:col-span-4 lg:col-span-3">
+              <h2 class="text-3xl font-bold font-serif text-secondary-50 mb-6 sticky top-24">Journey</h2>
+            </div>
+            <div class="md:col-span-8 lg:col-span-9">
+              <div class="relative border-l-2 border-primary-500/30 shadow-[0_0_8px_rgba(6,182,212,0.2)] ml-3 md:ml-0 space-y-12 pl-8 md:pl-12">
+                {settings.timeline.map((item: any) => (
+                  <div class="relative">
+                    <div class="absolute -left-[41px] md:-left-[57px] top-0 p-2 bg-surface border-2 border-primary-500/30 rounded-full">
+                      <div class={`p-1.5 rounded-full ${item.type === 'work' ? 'bg-primary-500/20 text-primary-400' : 'bg-gold-500/20 text-gold-400'}`}>
+                        {item.type === 'work' ? (
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 20V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path><rect width="20" height="14" x="2" y="6" rx="2"></rect></svg>
+                        ) : (
+                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.42 10.922a1 1 0 0 0-.019-1.838L12.83 5.18a2 2 0 0 0-1.66 0L2.6 9.08a1 1 0 0 0 0 1.832l8.57 3.908a2 2 0 0 0 1.66 0z"></path><path d="M22 10v6"></path><path d="M6 12.5V16a6 3 0 0 0 12 0v-3.5"></path></svg>
+                        )}
+                      </div>
+                    </div>
+                    <div class="bg-surface rounded-2xl p-6 border border-white/[0.06] hover:border-primary-500/20 hover:shadow-lg hover:shadow-primary-500/5 transition-all">
+                      <span class="inline-block bg-white/5 text-secondary-300 text-xs font-semibold px-3 py-1 rounded-full mb-3">{item.year}</span>
+                      <h3 class="text-xl font-bold text-secondary-50 mb-1">{item.title}</h3>
+                      <p class="text-primary-400 font-medium mb-3">{item.organization}</p>
+                      <p class="text-secondary-300 leading-relaxed">{item.description}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </Reveal>
+      )}
+
+      <CosmicDivider variant="star" />
+
+      <!-- Achievements -->
+      {settings.achievements && settings.achievements.length > 0 && (
+        <Reveal>
+          <div class="grid md:grid-cols-12 gap-12 items-start">
+            <div class="md:col-span-4 lg:col-span-3">
+              <h2 class="text-3xl font-bold font-serif text-secondary-50 mb-6 sticky top-24">Awards</h2>
+            </div>
+            <div class="md:col-span-8 lg:col-span-9">
+              <div class="grid sm:grid-cols-2 gap-6">
+                {settings.achievements.map((achievement: any) => (
+                  <div class="bg-surface rounded-2xl p-6 border border-white/[0.06] flex items-start gap-4">
+                    <div class="bg-gold-500/10 text-gold-400 rounded-xl p-3">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"></circle><path d="M15.477 12.89 17 22l-5-3-5 3 1.523-9.11"></path></svg>
+                    </div>
+                    <div>
+                      <h3 class="font-bold text-secondary-50 mb-1">{achievement.title}</h3>
+                      <p class="text-sm text-secondary-400">{achievement.issuer} &bull; {achievement.year}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </Reveal>
+      )}
+    </div>
+  </div>
+</BaseLayout>

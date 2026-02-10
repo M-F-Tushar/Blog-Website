@@ -1,0 +1,127 @@
+---
+import SEOHead from '../components/astro/SEOHead.astro';
+import Header from '../components/astro/Header.astro';
+import Footer from '../components/astro/Footer.astro';
+import StarryBackground from '../components/astro/StarryBackground.astro';
+import CursorGlow from '../components/react/CursorGlow';
+import { ViewTransitions } from 'astro:transitions';
+import '../styles/global.css';
+
+export interface Props {
+  title?: string;
+  description?: string;
+  image?: string;
+  type?: string;
+  canonicalUrl?: string;
+  noindex?: boolean;
+  structuredData?: Record<string, any>;
+  class?: string;
+}
+
+const {
+  title,
+  description,
+  image,
+  type,
+  canonicalUrl,
+  noindex,
+  structuredData,
+  class: className,
+} = Astro.props;
+---
+
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#030014" media="(prefers-color-scheme: dark)" />
+    <meta name="generator" content={Astro.generator} />
+
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/pwa-192x192.png" />
+
+    <ViewTransitions />
+
+    <!-- Preconnect to font CDN -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <!-- Load fonts (non-blocking) -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@700;800&family=JetBrains+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+      media="print"
+      onload="this.media='all'"
+    />
+    <noscript>
+      <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@700;800&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet"
+      />
+    </noscript>
+
+    <SEOHead
+      title={title}
+      description={description}
+      image={image}
+      type={type}
+      canonicalUrl={canonicalUrl}
+      noindex={noindex}
+      structuredData={structuredData}
+    />
+
+    <slot name="head" />
+
+    <!-- Dark mode: default to dark, prevent FOUC -->
+    <script is:inline>
+      (function () {
+        const theme = localStorage.getItem('theme');
+        if (theme === 'light') {
+          document.documentElement.classList.remove('dark');
+        }
+      })();
+    </script>
+
+    <!-- Hash-to-clean URL redirects for old links -->
+    <script is:inline>
+      (function () {
+        if (window.location.hash && window.location.hash.startsWith('#/')) {
+          var cleanPath = window.location.hash.slice(1);
+          window.location.replace(cleanPath);
+        }
+      })();
+    </script>
+  </head>
+  <body class="flex flex-col min-h-screen noise-overlay">
+    <StarryBackground density="sparse" />
+    <CursorGlow client:idle />
+
+    <a
+      href="#main-content"
+      class="sr-only focus:not-sr-only focus:absolute focus:z-[100] focus:top-4 focus:left-4 focus:px-4 focus:py-2 focus:bg-primary-500 focus:text-white focus:rounded-lg focus:shadow-glow-cyan"
+    >
+      Skip to main content
+    </a>
+
+    <Header />
+
+    <main id="main-content" class:list={['flex-grow pt-20', className]}>
+      <slot />
+    </main>
+
+    <Footer />
+
+    <!-- Global keyboard shortcuts -->
+    <script is:inline>
+      document.addEventListener('keydown', function (e) {
+        // T to toggle theme
+        if (e.key === 't' && !e.ctrlKey && !e.metaKey && !e.altKey && document.activeElement?.tagName !== 'INPUT' && document.activeElement?.tagName !== 'TEXTAREA') {
+          var themeBtn = document.querySelector('[data-theme-toggle]');
+          if (themeBtn) themeBtn.click();
+        }
+      });
+    </script>
+  </body>
+</html>

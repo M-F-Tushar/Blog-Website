@@ -1,0 +1,66 @@
+---
+interface Props {
+  currentPage: number;
+  totalPages: number;
+  basePath: string;
+}
+
+const { currentPage, totalPages, basePath } = Astro.props;
+
+const pages: (number | '...')[] = [];
+for (let i = 1; i <= totalPages; i++) {
+  if (i === 1 || i === totalPages || (i >= currentPage - 1 && i <= currentPage + 1)) {
+    pages.push(i);
+  } else if (pages[pages.length - 1] !== '...') {
+    pages.push('...');
+  }
+}
+
+function pageUrl(page: number): string {
+  return page === 1 ? basePath : `${basePath}/${page}`;
+}
+---
+
+{totalPages > 1 && (
+  <nav aria-label="Pagination" class="flex items-center justify-center gap-2 mt-12">
+    {currentPage > 1 && (
+      <a
+        href={pageUrl(currentPage - 1)}
+        class="px-4 py-2 text-sm font-medium text-secondary-600 dark:text-secondary-300 bg-white dark:bg-secondary-800 border border-secondary-200 dark:border-secondary-700 rounded-lg hover:bg-secondary-50 dark:hover:bg-secondary-700 transition-colors"
+        aria-label="Previous page"
+      >
+        &larr; Prev
+      </a>
+    )}
+
+    {pages.map((page) =>
+      page === '...' ? (
+        <span class="px-3 py-2 text-secondary-400">...</span>
+      ) : (
+        <a
+          href={pageUrl(page)}
+          class:list={[
+            'px-4 py-2 text-sm font-medium rounded-lg transition-colors',
+            page === currentPage
+              ? 'bg-primary-600 text-white shadow-md'
+              : 'text-secondary-600 dark:text-secondary-300 bg-white dark:bg-secondary-800 border border-secondary-200 dark:border-secondary-700 hover:bg-secondary-50 dark:hover:bg-secondary-700',
+          ]}
+          aria-label={`Page ${page}`}
+          aria-current={page === currentPage ? 'page' : undefined}
+        >
+          {page}
+        </a>
+      )
+    )}
+
+    {currentPage < totalPages && (
+      <a
+        href={pageUrl(currentPage + 1)}
+        class="px-4 py-2 text-sm font-medium text-secondary-600 dark:text-secondary-300 bg-white dark:bg-secondary-800 border border-secondary-200 dark:border-secondary-700 rounded-lg hover:bg-secondary-50 dark:hover:bg-secondary-700 transition-colors"
+        aria-label="Next page"
+      >
+        Next &rarr;
+      </a>
+    )}
+  </nav>
+)}

@@ -1,0 +1,119 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import BlogCard from '../../components/astro/BlogCard.astro';
+import Pagination from '../../components/astro/Pagination.astro';
+import Reveal from '@/components/astro/Reveal.astro';
+import NebulaGradient from '@/components/astro/NebulaGradient.astro';
+import { getPublishedPosts, slugify } from '@/lib/supabase';
+
+const POSTS_PER_PAGE = 9;
+
+const allPosts = await getPublishedPosts();
+const totalPages = Math.ceil(allPosts.length / POSTS_PER_PAGE);
+const posts = allPosts.slice(0, POSTS_PER_PAGE);
+
+// Get all categories and tags for filtering
+const categories = [...new Set(allPosts.map((p) => p.category))].sort();
+const tagCounts: Record<string, number> = {};
+allPosts.forEach((p) => p.tags?.forEach((tag) => { tagCounts[tag] = (tagCounts[tag] || 0) + 1; }));
+const allTags = Object.entries(tagCounts).sort((a, b) => b[1] - a[1]).slice(0, 20);
+---
+
+<BaseLayout
+  title="Blog"
+  description="Articles about AI, machine learning, deep learning, MLOps, and technology."
+>
+  <div class="pb-12">
+    <!-- Header -->
+    <section class="relative py-12 md:py-16 bg-abyss/80 -mt-20 pt-32 px-4 text-center">
+      <NebulaGradient variant="subtle" />
+      <div class="max-w-3xl mx-auto relative z-10">
+        <Reveal>
+          <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-surface border border-white/10 mb-6">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-primary-500"><path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+            <span class="text-sm font-medium text-secondary-300">Blog</span>
+          </div>
+        </Reveal>
+        <Reveal>
+          <h1 class="text-4xl md:text-5xl font-bold font-serif text-secondary-50 mb-6">
+            Latest <span class="text-gradient-cyan">Articles</span>
+          </h1>
+        </Reveal>
+        <Reveal>
+          <p class="text-lg md:text-xl text-secondary-300 max-w-2xl mx-auto leading-relaxed">
+            Thoughts on AI, machine learning, research, and the technology that powers them.
+          </p>
+        </Reveal>
+      </div>
+
+      <div class="absolute inset-0 overflow-hidden pointer-events-none">
+        <div class="absolute top-10 left-10 w-64 h-64 bg-primary-500/5 rounded-full blur-3xl"></div>
+        <div class="absolute bottom-10 right-10 w-64 h-64 bg-accent-500/5 rounded-full blur-3xl"></div>
+      </div>
+    </section>
+
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl mt-12">
+      <div class="grid lg:grid-cols-4 gap-12">
+        <!-- Main Content -->
+        <div class="lg:col-span-3">
+          {posts.length > 0 ? (
+            <>
+              <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+                {posts.map((post) => (
+                  <BlogCard post={post} />
+                ))}
+              </div>
+              <Pagination currentPage={1} totalPages={totalPages} basePath="/blog" />
+            </>
+          ) : (
+            <div class="text-center py-20">
+              <div class="text-6xl mb-6">📝</div>
+              <h2 class="text-2xl font-bold text-secondary-50 mb-4">No posts yet</h2>
+              <p class="text-secondary-400">Check back soon for new articles!</p>
+            </div>
+          )}
+        </div>
+
+        <!-- Sidebar -->
+        <aside class="lg:col-span-1 space-y-8">
+          <!-- Categories -->
+          {categories.length > 0 && (
+            <div class="relative before:content-[''] before:absolute before:top-0 before:left-0 before:right-0 before:h-px before:bg-gradient-to-r before:from-transparent before:via-primary-500/30 before:to-transparent glass-cosmic rounded-2xl p-6 border border-white/[0.06]">
+              <h3 class="font-bold text-secondary-50 mb-4">Categories</h3>
+              <div class="space-y-2">
+                {categories.map((cat) => (
+                  <a
+                    href={`/blog/categories/${slugify(cat)}`}
+                    class="block px-3 py-2 text-sm text-secondary-300 hover:text-primary-400 hover:bg-white/5 rounded-lg transition-colors"
+                  >
+                    {cat}
+                    <span class="text-secondary-500 ml-1">
+                      ({allPosts.filter((p) => p.category === cat).length})
+                    </span>
+                  </a>
+                ))}
+              </div>
+            </div>
+          )}
+
+          <!-- Tags -->
+          {allTags.length > 0 && (
+            <div class="relative before:content-[''] before:absolute before:top-0 before:left-0 before:right-0 before:h-px before:bg-gradient-to-r before:from-transparent before:via-primary-500/30 before:to-transparent glass-cosmic rounded-2xl p-6 border border-white/[0.06]">
+              <h3 class="font-bold text-secondary-50 mb-4">Popular Tags</h3>
+              <div class="flex flex-wrap gap-2">
+                {allTags.map(([tag, count]) => (
+                  <a
+                    href={`/blog/tags/${tag}`}
+                    class="text-xs bg-white/5 text-secondary-300 border border-white/10 px-3 py-1.5 rounded-full hover:border-primary-500/30 hover:text-primary-300 transition-colors"
+                  >
+                    #{tag} <span class="text-secondary-500">({count})</span>
+                  </a>
+                ))}
+              </div>
+            </div>
+          )}
+        </aside>
+      </div>
+    </div>
+  </div>
+</BaseLayout>
