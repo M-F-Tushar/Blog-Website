@@ -481,7 +481,7 @@ const CreatePost: React.FC = () => {
         await addPost(postData);
         localStorage.removeItem('post-draft');
       }
-      navigate('/admin/dashboard');
+      navigate('/dashboard');
     } catch (error) {
       console.error('Error saving post:', error);
       alert('Failed to save post. Please try again.');

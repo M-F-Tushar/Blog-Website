@@ -29,12 +29,19 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   useEffect(() => {
     // Check active session on mount
-    authService.getSession().then((session) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      setIsAuthenticated(!!session);
-      setLoading(false);
-    });
+    authService
+      .getSession()
+      .then((session) => {
+        setSession(session);
+        setUser(session?.user ?? null);
+        setIsAuthenticated(!!session);
+      })
+      .catch(() => {
+        // Auth unavailable — continue as unauthenticated
+      })
+      .finally(() => {
+        setLoading(false);
+      });
 
     // Listen for auth changes
     const {
