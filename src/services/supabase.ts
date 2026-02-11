@@ -9,10 +9,10 @@ import type {
 import { DEFAULT_AVATAR } from '../constants/constants';
 
 // Supabase configuration from environment variables
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const supabaseUrl = (import.meta as any).env.VITE_SUPABASE_URL;
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const supabaseAnonKey = (import.meta as any).env.VITE_SUPABASE_ANON_KEY;
+// Astro exposes client-side env vars with PUBLIC_ prefix, fall back to VITE_ for compatibility
+const supabaseUrl = import.meta.env.PUBLIC_SUPABASE_URL || import.meta.env.VITE_SUPABASE_URL;
+const supabaseAnonKey =
+  import.meta.env.PUBLIC_SUPABASE_ANON_KEY || import.meta.env.VITE_SUPABASE_ANON_KEY;
 
 // Check if Supabase is configured
 export const isSupabaseConfigured = () => {
