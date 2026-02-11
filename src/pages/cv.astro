@@ -2,10 +2,12 @@
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import CosmicDivider from '@/components/astro/CosmicDivider.astro';
 import { generatePersonSchema } from '@/lib/structured-data';
-import { getSiteSettings, getCVEducation, getCVExperience, getCVCertifications } from '@/lib/supabase';
+import { getSiteSettings, getCVEducation, getCVExperience, getCVCertifications, isPageVisible } from '@/lib/supabase';
+import PageNotAvailable from '@/components/astro/PageNotAvailable.astro';
 
 const siteUrl = Astro.site?.toString() || '';
 const settings = await getSiteSettings();
+const pageVisible = isPageVisible(settings, '/cv');
 const personSchema = generatePersonSchema(
   { name: settings.author_name, email: settings.social_email, url: siteUrl },
   'AI/ML Researcher & CS Student'
@@ -19,6 +21,7 @@ const certifications = await getCVCertifications();
 const skills = settings.skills || [];
 ---
 
+{pageVisible ? (
 <BaseLayout
   title="CV | Mahir Faysal Tushar"
   description="Curriculum Vitae - Education, experience, skills, and certifications of Mahir Faysal Tushar."
@@ -197,6 +200,9 @@ const skills = settings.skills || [];
     </div>
   </section>
 </BaseLayout>
+) : (
+<PageNotAvailable pageTitle="CV" />
+)}
 
 <style>
   @media print {

@@ -22,9 +22,10 @@ const defaultNavLinks: NavLink[] = [
   { path: '/contact', label: 'Contact' },
 ];
 
-const navLinks: NavLink[] = (navigation && Array.isArray(navigation) && navigation.length > 0)
-  ? navigation
-      .filter((item: any) => item.path && item.label)
+const menuItems = navigation?.menuItems;
+const navLinks: NavLink[] = (menuItems && Array.isArray(menuItems) && menuItems.length > 0)
+  ? menuItems
+      .filter((item: any) => item.visible !== false && item.path && item.label)
       .sort((a: any, b: any) => (a.order || 0) - (b.order || 0))
       .map((item: any) => ({ path: item.path, label: item.label }))
   : defaultNavLinks;

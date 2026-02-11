@@ -2,9 +2,11 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import ContactForm from '../components/react/ContactForm';
 import NebulaGradient from '@/components/astro/NebulaGradient.astro';
-import { getSiteSettings, getPageSection } from '@/lib/supabase';
+import { getSiteSettings, getPageSection, isPageVisible } from '@/lib/supabase';
+import PageNotAvailable from '@/components/astro/PageNotAvailable.astro';
 
 const settings = await getSiteSettings();
+const pageVisible = isPageVisible(settings, '/contact');
 
 const formspreeEndpoint = import.meta.env.PUBLIC_FORMSPREE_ENDPOINT || import.meta.env.VITE_FORMSPREE_ENDPOINT;
 
@@ -22,6 +24,7 @@ const faqs = cmsFaqs.length > 0
     ];
 ---
 
+{pageVisible ? (
 <BaseLayout
   title="Contact"
   description={`Get in touch with ${settings.author_name}. Available for research collaborations, consulting, and inquiries.`}
@@ -151,3 +154,6 @@ const faqs = cmsFaqs.length > 0
     </div>
   </div>
 </BaseLayout>
+) : (
+<PageNotAvailable pageTitle="Contact" />
+)}

@@ -1,0 +1,42 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import NebulaGradient from '@/components/astro/NebulaGradient.astro';
+import ShootingStar from '@/components/astro/ShootingStar.astro';
+import MagneticButton from '@/components/react/MagneticButton';
+
+interface Props {
+  pageTitle?: string;
+}
+
+const { pageTitle = 'This page' } = Astro.props;
+---
+
+<BaseLayout title="Page Not Available" noindex>
+  <div class="min-h-[80vh] flex items-center justify-center px-4 relative overflow-hidden">
+    <NebulaGradient variant="hero" />
+    <ShootingStar count={2} />
+
+    <div class="text-center max-w-lg relative z-10">
+      <div class="mb-6">
+        <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="mx-auto text-secondary-500">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line>
+        </svg>
+      </div>
+      <h1 class="text-3xl md:text-4xl font-bold font-serif text-secondary-50 mb-4">
+        Page Not Available
+      </h1>
+      <p class="text-lg text-secondary-400 mb-10">
+        {pageTitle} is not currently available. It may be enabled in the future.
+      </p>
+      <div class="flex flex-col sm:flex-row justify-center gap-4">
+        <MagneticButton client:visible href="/" className="px-8 py-3 bg-primary-600 text-white font-semibold rounded-full shadow-lg shadow-primary-500/30 hover:bg-primary-500 transition-all duration-300">
+          Go Home
+        </MagneticButton>
+        <MagneticButton client:visible href="/blog" className="px-8 py-3 bg-surface text-secondary-200 font-semibold rounded-full border border-white/10 hover:border-primary-500/30 transition-all duration-300">
+          Browse Blog
+        </MagneticButton>
+      </div>
+    </div>
+  </div>
+</BaseLayout>

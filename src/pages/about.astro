@@ -1,14 +1,16 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { getSiteSettings, getPublishedPosts } from '@/lib/supabase';
+import { getSiteSettings, getPublishedPosts, isPageVisible } from '@/lib/supabase';
 import { generatePersonSchema } from '@/lib/structured-data';
 import Reveal from '@/components/astro/Reveal.astro';
 import AnimatedCounter from '@/components/react/AnimatedCounter';
 import NebulaGradient from '@/components/astro/NebulaGradient.astro';
 import ConstellationDecor from '@/components/astro/ConstellationDecor.astro';
 import CosmicDivider from '@/components/astro/CosmicDivider.astro';
+import PageNotAvailable from '@/components/astro/PageNotAvailable.astro';
 
 const settings = await getSiteSettings();
+const pageVisible = isPageVisible(settings, '/about');
 const posts = await getPublishedPosts();
 
 const stats = {
@@ -29,6 +31,7 @@ const structuredData = generatePersonSchema(
 );
 ---
 
+{pageVisible ? (
 <BaseLayout
   title={`About ${settings.author_name}`}
   description={`Learn more about ${settings.author_name} - AI/ML researcher & CS student.`}
@@ -205,3 +208,6 @@ const structuredData = generatePersonSchema(
     </div>
   </div>
 </BaseLayout>
+) : (
+<PageNotAvailable pageTitle="About" />
+)}

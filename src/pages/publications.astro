@@ -2,10 +2,12 @@
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import NebulaGradient from '@/components/astro/NebulaGradient.astro';
 import { generatePersonSchema } from '@/lib/structured-data';
-import { getPublications, getSiteSettings } from '@/lib/supabase';
+import { getPublications, getSiteSettings, isPageVisible } from '@/lib/supabase';
+import PageNotAvailable from '@/components/astro/PageNotAvailable.astro';
 
 const siteUrl = Astro.site?.toString() || '';
 const settings = await getSiteSettings();
+const pageVisible = isPageVisible(settings, '/publications');
 
 // Publication types with icons
 const pubTypes = [
@@ -27,6 +29,7 @@ const personSchema = generatePersonSchema(
 );
 ---
 
+{pageVisible ? (
 <BaseLayout
   title="Publications | Mahir Faysal Tushar"
   description="Academic publications, preprints, and research papers in AI/ML, NLP, and MLOps."
@@ -192,6 +195,9 @@ const personSchema = generatePersonSchema(
     </div>
   </section>
 </BaseLayout>
+) : (
+<PageNotAvailable pageTitle="Publications" />
+)}
 
 <script>
   // Filter publications

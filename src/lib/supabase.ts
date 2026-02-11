@@ -133,6 +133,21 @@ export async function getSiteSettings(): Promise<SiteSettings> {
   return data as SiteSettings;
 }
 
+/**
+ * Check if a page is visible based on navigation settings.
+ * Returns true by default if no navigation settings exist or the page is not listed.
+ */
+export function isPageVisible(settings: SiteSettings, pagePath: string): boolean {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const nav = (settings as any).navigation;
+  if (!nav?.menuItems || !Array.isArray(nav.menuItems)) {
+    return true;
+  }
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const item = nav.menuItems.find((i: any) => i.path === pagePath);
+  return !item || item.visible !== false;
+}
+
 export async function getRecommendations(): Promise<Recommendation[]> {
   if (!supabase) return FALLBACK_RECOMMENDATIONS;
 
@@ -970,6 +985,46 @@ const FALLBACK_SETTINGS = {
       year: '2024',
     },
   ],
+  navigation: {
+    menuItems: [
+      { id: 'home', label: 'Home', path: '/', isExternal: false, visible: true, order: 1 },
+      { id: 'about', label: 'About', path: '/about', isExternal: false, visible: true, order: 2 },
+      { id: 'blog', label: 'Blog', path: '/blog', isExternal: false, visible: true, order: 3 },
+      {
+        id: 'publications',
+        label: 'Publications',
+        path: '/publications',
+        isExternal: false,
+        visible: true,
+        order: 4,
+      },
+      {
+        id: 'projects',
+        label: 'Projects',
+        path: '/projects',
+        isExternal: false,
+        visible: true,
+        order: 5,
+      },
+      {
+        id: 'playground',
+        label: 'Playground',
+        path: '/playground',
+        isExternal: false,
+        visible: true,
+        order: 6,
+      },
+      { id: 'cv', label: 'CV', path: '/cv', isExternal: false, visible: true, order: 7 },
+      {
+        id: 'contact',
+        label: 'Contact',
+        path: '/contact',
+        isExternal: false,
+        visible: true,
+        order: 8,
+      },
+    ],
+  },
 };
 
 const FALLBACK_PROJECTS: Project[] = [

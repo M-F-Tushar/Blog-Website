@@ -17,12 +17,15 @@ const defaultFooterLinks = [
   { path: '/blog', label: 'Blog' },
   { path: '/publications', label: 'Publications' },
   { path: '/projects', label: 'Projects' },
+  { path: '/playground', label: 'Playground' },
+  { path: '/cv', label: 'CV' },
   { path: '/contact', label: 'Contact' },
 ];
 
-const footerLinks = (navigation && Array.isArray(navigation) && navigation.length > 0)
-  ? navigation
-      .filter((item: any) => item.path && item.label)
+const menuItems = navigation?.menuItems;
+const footerLinks = (menuItems && Array.isArray(menuItems) && menuItems.length > 0)
+  ? menuItems
+      .filter((item: any) => item.visible !== false && item.path && item.label)
       .sort((a: any, b: any) => (a.order || 0) - (b.order || 0))
       .map((item: any) => ({ path: item.path, label: item.label }))
   : defaultFooterLinks;

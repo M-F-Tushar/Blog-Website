@@ -2,8 +2,11 @@
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import NebulaGradient from '@/components/astro/NebulaGradient.astro';
 import CosmicDivider from '@/components/astro/CosmicDivider.astro';
-import { getProjects } from '@/lib/supabase';
+import { getProjects, getSiteSettings, isPageVisible } from '@/lib/supabase';
+import PageNotAvailable from '@/components/astro/PageNotAvailable.astro';
 
+const settings = await getSiteSettings();
+const pageVisible = isPageVisible(settings, '/projects');
 const allProjects = await getProjects();
 
 const statusColors: Record<string, string> = {
@@ -17,6 +20,7 @@ const featuredProjects = allProjects.filter((p) => p.featured);
 const otherProjects = allProjects.filter((p) => !p.featured);
 ---
 
+{pageVisible ? (
 <BaseLayout
   title="Projects | Mahir Faysal Tushar"
   description="Open-source projects and research tools in AI/ML, MLOps, web development, and data science."
@@ -163,3 +167,6 @@ const otherProjects = allProjects.filter((p) => !p.featured);
     )}
   </section>
 </BaseLayout>
+) : (
+<PageNotAvailable pageTitle="Projects" />
+)}

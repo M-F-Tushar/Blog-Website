@@ -4,7 +4,11 @@ import BlogCard from '../../components/astro/BlogCard.astro';
 import Pagination from '../../components/astro/Pagination.astro';
 import Reveal from '@/components/astro/Reveal.astro';
 import NebulaGradient from '@/components/astro/NebulaGradient.astro';
-import { getPublishedPosts, slugify } from '@/lib/supabase';
+import { getPublishedPosts, slugify, getSiteSettings, isPageVisible } from '@/lib/supabase';
+import PageNotAvailable from '@/components/astro/PageNotAvailable.astro';
+
+const settings = await getSiteSettings();
+const pageVisible = isPageVisible(settings, '/blog');
 
 const POSTS_PER_PAGE = 9;
 
@@ -19,6 +23,7 @@ allPosts.forEach((p) => p.tags?.forEach((tag) => { tagCounts[tag] = (tagCounts[t
 const allTags = Object.entries(tagCounts).sort((a, b) => b[1] - a[1]).slice(0, 20);
 ---
 
+{pageVisible ? (
 <BaseLayout
   title="Blog"
   description="Articles about AI, machine learning, deep learning, MLOps, and technology."
@@ -117,3 +122,6 @@ const allTags = Object.entries(tagCounts).sort((a, b) => b[1] - a[1]).slice(0, 2
     </div>
   </div>
 </BaseLayout>
+) : (
+<PageNotAvailable pageTitle="Blog" />
+)}
