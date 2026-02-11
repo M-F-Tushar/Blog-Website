@@ -5,7 +5,9 @@ export const authService = {
   // Sign in with email and password
   async signIn(email: string, password: string) {
     if (!supabase)
-      return { data: { user: null, session: null }, error: new Error('Supabase not configured') };
+      throw new Error(
+        'Supabase is not configured. Set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY environment variables.'
+      );
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
