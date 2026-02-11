@@ -306,7 +306,10 @@ export const SiteSettingsProvider: React.FC<{ children: React.ReactNode }> = ({ 
             uiText: settingsData.ui_text || settings.uiText,
             homepageLayout: settingsData.homepage_layout || settings.homepageLayout,
             appearance: settingsData.appearance || settings.appearance,
-            navigation: settingsData.navigation || settings.navigation,
+            navigation:
+              settingsData.navigation?.menuItems?.length > 0
+                ? settingsData.navigation
+                : settings.navigation,
             seo: settingsData.seo || settings.seo,
           };
           console.log('✅ Settings fetched successfully:', fetchedSettings);

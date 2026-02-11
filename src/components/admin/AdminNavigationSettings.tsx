@@ -12,16 +12,50 @@ interface MenuItem {
   order: number;
 }
 
+const DEFAULT_MENU_ITEMS: MenuItem[] = [
+  { id: 'home', label: 'Home', path: '/', isExternal: false, visible: true, order: 1 },
+  { id: 'about', label: 'About', path: '/about', isExternal: false, visible: true, order: 2 },
+  { id: 'blog', label: 'Blog', path: '/blog', isExternal: false, visible: true, order: 3 },
+  {
+    id: 'publications',
+    label: 'Publications',
+    path: '/publications',
+    isExternal: false,
+    visible: true,
+    order: 4,
+  },
+  {
+    id: 'projects',
+    label: 'Projects',
+    path: '/projects',
+    isExternal: false,
+    visible: true,
+    order: 5,
+  },
+  {
+    id: 'playground',
+    label: 'Playground',
+    path: '/playground',
+    isExternal: false,
+    visible: true,
+    order: 6,
+  },
+  { id: 'cv', label: 'CV', path: '/cv', isExternal: false, visible: true, order: 7 },
+  { id: 'contact', label: 'Contact', path: '/contact', isExternal: false, visible: true, order: 8 },
+];
+
 const AdminNavigationSettings: React.FC = () => {
   const { navigation, updateSettings } = useSiteSettings();
 
-  const [menuItems, setMenuItems] = useState<MenuItem[]>(navigation?.menuItems || []);
+  const [menuItems, setMenuItems] = useState<MenuItem[]>(
+    navigation?.menuItems?.length > 0 ? navigation.menuItems : DEFAULT_MENU_ITEMS
+  );
   const [saving, setSaving] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
 
   useEffect(() => {
-    if (navigation?.menuItems) {
+    if (navigation?.menuItems?.length > 0) {
       setMenuItems([...navigation.menuItems].sort((a, b) => a.order - b.order));
     }
   }, [navigation]);
