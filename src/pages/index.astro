@@ -135,17 +135,17 @@ const yearsActive = postDates.length > 0 ? new Date().getFullYear() - Math.min(.
             <MagneticButton
               client:visible
               href="/blog"
-              className="px-8 py-4 bg-primary-600 text-white font-semibold rounded-full shadow-lg shadow-primary-500/30 hover:bg-primary-500 hover:shadow-primary-500/40 transition-all duration-300 inline-flex items-center gap-2"
+              className="px-6 py-2.5 bg-primary-600 text-white font-semibold rounded-full shadow-lg shadow-primary-500/30 hover:bg-primary-500 hover:shadow-primary-500/40 transition-all duration-300 inline-flex items-center gap-2"
             >
               {uiText.startReading || 'Start Reading'}
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
             </MagneticButton>
             <MagneticButton
               client:visible
-              href="/cv"
-              className="px-8 py-4 bg-surface text-secondary-200 font-semibold rounded-full border border-white/10 hover:border-primary-500/30 transition-all duration-300"
+              href="/about"
+              className="px-6 py-2.5 bg-surface text-secondary-200 font-semibold rounded-full border border-white/10 hover:border-primary-500/30 transition-all duration-300"
             >
-              {uiText.moreAboutMe || 'View CV'}
+              {uiText.moreAboutMe || 'About me'}
             </MagneticButton>
           </div>
         </div>
