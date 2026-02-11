@@ -78,7 +78,7 @@ const personSchema = generatePersonSchema(
                   class="pub-item glass-cosmic rounded-xl p-6 border border-white/[0.06] hover:border-primary-500/20 hover:shadow-lg hover:shadow-primary-500/5 transition-all"
                   data-type={pub.type}
                 >
-                  {pub.featured && (
+                  {pub.isFeatured && (
                     <span class="inline-block text-xs font-semibold bg-gold-500/10 text-gold-400 border border-gold-500/20 px-2 py-0.5 rounded-full mb-2">
                       Featured
                     </span>
@@ -107,9 +107,9 @@ const personSchema = generatePersonSchema(
 
                   <!-- Action buttons -->
                   <div class="flex flex-wrap gap-2">
-                    {pub.arxiv_url && (
+                    {pub.arxivUrl && (
                       <a
-                        href={pub.arxiv_url}
+                        href={pub.arxivUrl}
                         target="_blank"
                         rel="noopener noreferrer"
                         class="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium bg-primary-500/10 text-primary-300 border border-primary-500/20 rounded-lg hover:bg-primary-500/20 transition-colors"
@@ -118,9 +118,9 @@ const personSchema = generatePersonSchema(
                         arXiv
                       </a>
                     )}
-                    {pub.pdf_url && (
+                    {pub.pdfUrl && (
                       <a
-                        href={pub.pdf_url}
+                        href={pub.pdfUrl}
                         target="_blank"
                         rel="noopener noreferrer"
                         class="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium bg-accent-500/10 text-accent-300 border border-accent-500/20 rounded-lg hover:bg-accent-500/20 transition-colors"
@@ -129,9 +129,9 @@ const personSchema = generatePersonSchema(
                         PDF
                       </a>
                     )}
-                    {pub.code_url && (
+                    {pub.codeUrl && (
                       <a
-                        href={pub.code_url}
+                        href={pub.codeUrl}
                         target="_blank"
                         rel="noopener noreferrer"
                         class="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium bg-gold-500/10 text-gold-300 border border-gold-500/20 rounded-lg hover:bg-gold-500/20 transition-colors"
@@ -140,9 +140,9 @@ const personSchema = generatePersonSchema(
                         Code
                       </a>
                     )}
-                    {pub.slides_url && (
+                    {pub.slidesUrl && (
                       <a
-                        href={pub.slides_url}
+                        href={pub.slidesUrl}
                         target="_blank"
                         rel="noopener noreferrer"
                         class="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium bg-green-500/10 text-green-300 border border-green-500/20 rounded-lg hover:bg-green-500/20 transition-colors"

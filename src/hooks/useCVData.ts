@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useCallback, useMemo, useEffect } from 'react';
-import { isSupabaseConfigured } from '../services/supabase';
+import { isSupabaseConfigured } from '../supabase/client';
 import {
   createCVEducation as createEducationSupabase,
   updateCVEducation as updateEducationSupabase,
@@ -16,7 +16,7 @@ import {
   FALLBACK_CV_EDUCATION as FALLBACK_EDUCATION,
   FALLBACK_CV_EXPERIENCE as FALLBACK_EXPERIENCE,
   FALLBACK_CV_CERTIFICATIONS as FALLBACK_CERTIFICATIONS,
-} from '../services/fallbackData';
+} from '../data/fallback';
 
 export interface Education {
   id: string;

@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useMemo, useCallback, useEffect } from 'react';
-import { supabase, isSupabaseConfigured } from '../services/supabase';
-import { FALLBACK_SETTINGS } from '../services/fallbackData';
+import { supabase, isSupabaseConfigured } from '../supabase/client';
+import { FALLBACK_SETTINGS } from '../data/fallback';
 
 interface SocialLinks {
   github: string;

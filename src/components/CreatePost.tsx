@@ -44,8 +44,8 @@ import {
 import { usePosts } from '../hooks/usePosts';
 import { PostStatus } from '../types/types';
 import { useSiteSettings } from '../hooks/useSiteSettings';
-import { isSupabaseConfigured } from '../services/supabase';
-import { uploadImage, generateUniqueFilename } from '../services/supabaseStorageService';
+import { isSupabaseConfigured } from '../supabase/client';
+import { uploadFile, generateUniqueFilename } from '../services/storageService';
 import MarkdownRenderer from './markdown/MarkdownRenderer';
 import { DEFAULT_AVATAR } from '../constants/constants';
 import { cosmic } from './admin/ui/cosmicClassNames';
@@ -319,7 +319,7 @@ const CreatePost: React.FC = () => {
           setIsUploading(true);
           const filename = generateUniqueFilename(file.name);
           const path = `posts/${filename}`;
-          const publicURL = await uploadImage(file, path, (p) => setUploadProgress(p.progress));
+          const publicURL = await uploadFile(file, path, (p) => setUploadProgress(p.progress));
           handleInsertText(`\n![${file.name}](${publicURL})\n`);
         } catch {
           alert('Failed to upload image');
@@ -401,7 +401,7 @@ const CreatePost: React.FC = () => {
       setIsUploading(true);
       const filename = generateUniqueFilename(file.name);
       const path = `posts/${filename}`;
-      const publicURL = await uploadImage(file, path, (progress) => {
+      const publicURL = await uploadFile(file, path, (progress) => {
         setUploadProgress(progress.progress);
       });
       setCoverImage(publicURL);

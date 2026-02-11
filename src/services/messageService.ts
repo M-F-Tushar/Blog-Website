@@ -1,4 +1,4 @@
-import { supabase } from './supabase';
+import { supabase } from '../supabase/client';
 
 export interface Message {
   id: string;
@@ -23,17 +23,13 @@ export interface MessageFormData {
   message: string;
 }
 
-// Helper to bypass strict typing for new tables
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const safeSupabase = supabase as any;
-
 export const messageService = {
   // --- Public Methods (Unauthenticated) ---
 
   async sendMessage(data: MessageFormData): Promise<void> {
-    if (!safeSupabase) throw new Error('Supabase client not initialized');
+    if (!supabase) throw new Error('Supabase client not initialized');
 
-    const { error } = await safeSupabase.from('contact_messages').insert([
+    const { error } = await supabase.from('contact_messages').insert([
       {
         name: data.name,
         email: data.email,
@@ -46,9 +42,9 @@ export const messageService = {
   },
 
   async subscribeToNewsletter(email: string): Promise<void> {
-    if (!safeSupabase) throw new Error('Supabase client not initialized');
+    if (!supabase) throw new Error('Supabase client not initialized');
 
-    const { error } = await safeSupabase.from('newsletter_subscribers').insert([{ email }]);
+    const { error } = await supabase.from('newsletter_subscribers').insert([{ email }]);
 
     if (error) {
       // Ignore unique constraint violation (already subscribed)
@@ -60,9 +56,9 @@ export const messageService = {
   // --- Admin Methods (Authenticated) ---
 
   async getMessages(): Promise<Message[]> {
-    if (!safeSupabase) return [];
+    if (!supabase) return [];
 
-    const { data, error } = await safeSupabase
+    const { data, error } = await supabase
       .from('contact_messages')
       .select('*')
       .order('created_at', { ascending: false });
@@ -72,28 +68,28 @@ export const messageService = {
   },
 
   async markAsRead(id: string): Promise<void> {
-    if (!safeSupabase) return;
+    if (!supabase) return;
 
-    const { error } = await safeSupabase
+    const { error } = await supabase
       .from('contact_messages')
-      .update({ read: true })
+      .update({ is_read: true })
       .eq('id', id);
 
     if (error) throw error;
   },
 
   async deleteMessage(id: string): Promise<void> {
-    if (!safeSupabase) return;
+    if (!supabase) return;
 
-    const { error } = await safeSupabase.from('contact_messages').delete().eq('id', id);
+    const { error } = await supabase.from('contact_messages').delete().eq('id', id);
 
     if (error) throw error;
   },
 
   async getSubscribers(): Promise<Subscriber[]> {
-    if (!safeSupabase) return [];
+    if (!supabase) return [];
 
-    const { data, error } = await safeSupabase
+    const { data, error } = await supabase
       .from('newsletter_subscribers')
       .select('*')
       .order('subscribed_at', { ascending: false });
@@ -103,20 +99,20 @@ export const messageService = {
   },
 
   async deleteSubscriber(id: string): Promise<void> {
-    if (!safeSupabase) return;
+    if (!supabase) return;
 
-    const { error } = await safeSupabase.from('newsletter_subscribers').delete().eq('id', id);
+    const { error } = await supabase.from('newsletter_subscribers').delete().eq('id', id);
 
     if (error) throw error;
   },
 
   async getUnreadCount(): Promise<number> {
-    if (!safeSupabase) return 0;
+    if (!supabase) return 0;
 
-    const { count, error } = await safeSupabase
+    const { count, error } = await supabase
       .from('contact_messages')
       .select('*', { count: 'exact', head: true })
-      .eq('read', false);
+      .eq('is_read', false);
 
     if (error) throw error;
     return count || 0;

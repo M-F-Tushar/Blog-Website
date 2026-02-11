@@ -1,11 +1,11 @@
 import React, { createContext, useContext, useState, useCallback, useMemo, useEffect } from 'react';
-import { isSupabaseConfigured } from '../services/supabase';
+import { isSupabaseConfigured } from '../supabase/client';
 import {
   upsertPageSection as upsertSectionSupabase,
   deletePageSection as deleteSectionSupabase,
   subscribeToPageContentUpdates,
 } from '../services/supabasePageContentService';
-import { FALLBACK_PAGE_CONTENT } from '../services/fallbackData';
+import { FALLBACK_PAGE_CONTENT } from '../data/fallback';
 
 export interface PageSection {
   id: string;

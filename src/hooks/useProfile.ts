@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useMemo, useEffect } from 'react';
-import { supabase } from '../services/supabase';
+import { supabase } from '../supabase/client';
 
 interface ProfileContextType {
   photoUrl: string;

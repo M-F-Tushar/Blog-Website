@@ -1,5 +1,5 @@
-import { supabase } from './supabase';
-import type { Json } from './supabase';
+import { supabase } from '../supabase/client';
+import type { Json } from '../types/database';
 
 // ---------- Database types ----------
 

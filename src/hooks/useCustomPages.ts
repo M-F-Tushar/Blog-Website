@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useCallback, useMemo, useEffect } from 'react';
-import { isSupabaseConfigured } from '../services/supabase';
+import { isSupabaseConfigured } from '../supabase/client';
 import {
   type CustomPage,
   type CustomPageSection,

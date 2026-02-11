@@ -1,14 +1,14 @@
 import React, { createContext, useContext, useState, useCallback, useMemo, useEffect } from 'react';
 import type { Post } from '../types/types';
 import { POSTS as initialPostsData } from '../constants/constants';
-import { isSupabaseConfigured, supabase } from '../services/supabase';
+import { isSupabaseConfigured, supabase } from '../supabase/client';
 import {
   createPost as createPostSupabase,
   updatePost as updatePostSupabase,
   deletePost as deletePostSupabase,
   subscribeToPostsUpdates,
 } from '../services/supabasePostsService';
-import { FALLBACK_POSTS } from '../services/fallbackData';
+import { FALLBACK_POSTS } from '../data/fallback';
 
 // A "user post" is now identical to Post, but without methods.
 type UserPost = Post;

@@ -1,5 +1,6 @@
-import { supabase, projectToDatabase, projectFromDatabase } from './supabase';
-import type { Project } from './supabase';
+import { supabase } from '../supabase/client';
+import { projectToDatabase, projectFromDatabase } from '../types/converters';
+import type { Project } from '../types/types';
 
 const PROJECTS_TABLE = 'projects';
 

@@ -1,4 +1,5 @@
-import { supabase, recommendationToDatabase, recommendationFromDatabase } from './supabase';
+import { supabase } from '../supabase/client';
+import { recommendationToDatabase, recommendationFromDatabase } from '../types/converters';
 import type { Recommendation } from '../types/types';
 import { RecommendationSchema } from '../utils/validation';
 import DOMPurify from 'dompurify';

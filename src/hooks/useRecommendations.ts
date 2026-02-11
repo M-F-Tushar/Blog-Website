@@ -1,14 +1,14 @@
 import React, { createContext, useContext, useState, useCallback, useMemo, useEffect } from 'react';
 import type { Recommendation } from '../types/types';
 import { RECOMMENDATIONS as initialRecommendationsData } from '../constants/constants';
-import { isSupabaseConfigured } from '../services/supabase';
+import { isSupabaseConfigured } from '../supabase/client';
 import {
   createRecommendation as createRecommendationSupabase,
   updateRecommendation as updateRecommendationSupabase,
   deleteRecommendation as deleteRecommendationSupabase,
   subscribeToRecommendationsUpdates,
 } from '../services/supabaseRecommendationsService';
-import { FALLBACK_RECOMMENDATIONS } from '../services/fallbackData';
+import { FALLBACK_RECOMMENDATIONS } from '../data/fallback';
 
 interface RecommendationsContextType {
   recommendations: Recommendation[];

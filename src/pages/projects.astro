@@ -15,8 +15,8 @@ const statusColors: Record<string, string> = {
   completed: 'bg-green-500/10 text-green-300 border border-green-500/20',
 };
 
-const featuredProjects = allProjects.filter((p) => p.featured);
-const otherProjects = allProjects.filter((p) => !p.featured);
+const featuredProjects = allProjects.filter((p) => p.isFeatured);
+const otherProjects = allProjects.filter((p) => !p.isFeatured);
 ---
 
 {pageVisible ? (
@@ -54,10 +54,10 @@ const otherProjects = allProjects.filter((p) => !p.featured);
         <div class="grid md:grid-cols-2 gap-6">
           {featuredProjects.map((project) => (
             <article class="glass-cosmic rounded-xl overflow-hidden border border-white/[0.06] hover:border-primary-500/20 hover:shadow-cosmic-card transition-all group">
-              {project.image_url && (
+              {project.imageUrl && (
                 <div class="h-48 overflow-hidden">
                   <img
-                    src={project.image_url}
+                    src={project.imageUrl}
                     alt={project.title}
                     class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     loading="lazy"
@@ -83,7 +83,7 @@ const otherProjects = allProjects.filter((p) => !p.featured);
                 </p>
 
                 <div class="flex flex-wrap gap-1.5 mb-4">
-                  {project.tags.map((tag) => (
+                  {project.techStack.map((tag) => (
                     <span class="text-xs bg-white/5 text-secondary-300 border border-white/10 px-2 py-0.5 rounded-full">
                       {tag}
                     </span>
@@ -91,9 +91,9 @@ const otherProjects = allProjects.filter((p) => !p.featured);
                 </div>
 
                 <div class="flex gap-3">
-                  {project.github_url && (
+                  {project.githubUrl && (
                     <a
-                      href={project.github_url}
+                      href={project.githubUrl}
                       target="_blank"
                       rel="noopener noreferrer"
                       class="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium bg-white/5 text-secondary-200 border border-white/10 rounded-lg hover:border-primary-500/30 transition-colors"
@@ -102,9 +102,9 @@ const otherProjects = allProjects.filter((p) => !p.featured);
                       Source
                     </a>
                   )}
-                  {project.demo_url && (
+                  {project.liveUrl && (
                     <a
-                      href={project.demo_url}
+                      href={project.liveUrl}
                       target="_blank"
                       rel="noopener noreferrer"
                       class="inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium bg-primary-600 text-white rounded-lg hover:bg-primary-500 transition-colors"
@@ -139,8 +139,8 @@ const otherProjects = allProjects.filter((p) => !p.featured);
               </div>
 
               <h3 class="text-lg font-bold text-secondary-50 mb-2 group-hover:text-primary-400 transition-colors">
-                {project.github_url ? (
-                  <a href={project.github_url} target="_blank" rel="noopener noreferrer">
+                {project.githubUrl ? (
+                  <a href={project.githubUrl} target="_blank" rel="noopener noreferrer">
                     {project.title}
                   </a>
                 ) : (
@@ -153,7 +153,7 @@ const otherProjects = allProjects.filter((p) => !p.featured);
               </p>
 
               <div class="flex flex-wrap gap-1.5">
-                {project.tags.slice(0, 4).map((tag) => (
+                {project.techStack.slice(0, 4).map((tag) => (
                   <span class="text-xs bg-white/5 text-secondary-300 border border-white/10 px-2 py-0.5 rounded-full">
                     {tag}
                   </span>

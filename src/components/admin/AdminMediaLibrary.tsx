@@ -19,8 +19,8 @@ import {
   listMedia,
   type MediaFile,
   initializeMediaBucket,
-} from '../../services/mediaStorageService';
-import { isSupabaseConfigured } from '../../services/supabase';
+} from '../../services/storageService';
+import { isSupabaseConfigured } from '../../supabase/client';
 import { cosmic } from './ui/cosmicClassNames';
 
 interface MediaItem {

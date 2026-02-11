@@ -1,5 +1,6 @@
-import { supabase, publicationToDatabase, publicationFromDatabase } from './supabase';
-import type { Publication } from './supabase';
+import { supabase } from '../supabase/client';
+import { publicationToDatabase, publicationFromDatabase } from '../types/converters';
+import type { Publication } from '../types/types';
 
 const PUBLICATIONS_TABLE = 'publications';
 

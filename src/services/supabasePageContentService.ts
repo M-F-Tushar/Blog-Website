@@ -1,5 +1,5 @@
-import { supabase } from './supabase';
-import type { DatabasePageContent } from './supabase';
+import { supabase } from '../supabase/client';
+import type { DatabasePageContent } from '../types/database';
 
 const PAGE_CONTENT_TABLE = 'page_content';
 

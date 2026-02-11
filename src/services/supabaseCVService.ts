@@ -1,9 +1,9 @@
-import { supabase } from './supabase';
+import { supabase } from '../supabase/client';
 import type {
   DatabaseCVEducation,
   DatabaseCVExperience,
   DatabaseCVCertification,
-} from './supabase';
+} from '../types/database';
 
 const CV_EDUCATION_TABLE = 'cv_education';
 const CV_EXPERIENCE_TABLE = 'cv_experience';

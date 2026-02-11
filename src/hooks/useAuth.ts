@@ -15,6 +15,7 @@ interface AuthContextType {
   session: Session | null;
   loading: boolean;
   isAuthenticated: boolean;
+  isAdmin: boolean;
   signIn: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
   signOut: () => Promise<{ success: boolean; error?: string }>;
 }
@@ -93,16 +94,20 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   }, []);
 
+  const adminEmail = import.meta.env.PUBLIC_ADMIN_EMAIL;
+  const isAdmin = isAuthenticated && (!adminEmail || user?.email === adminEmail);
+
   const value = useMemo(
     () => ({
       user,
       session,
       loading,
       isAuthenticated,
+      isAdmin,
       signIn,
       signOut,
     }),
-    [user, session, loading, isAuthenticated, signIn, signOut]
+    [user, session, loading, isAuthenticated, isAdmin, signIn, signOut]
   );
 
   return React.createElement(AuthContext.Provider, { value }, children);

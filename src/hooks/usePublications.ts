@@ -1,12 +1,12 @@
 import React, { createContext, useContext, useState, useCallback, useMemo, useEffect } from 'react';
-import { isSupabaseConfigured } from '../services/supabase';
+import { isSupabaseConfigured } from '../supabase/client';
 import {
   createPublication as createPublicationSupabase,
   updatePublication as updatePublicationSupabase,
   deletePublication as deletePublicationSupabase,
   subscribeToPublicationsUpdates,
 } from '../services/supabasePublicationsService';
-import { FALLBACK_PUBLICATIONS } from '../services/fallbackData';
+import { FALLBACK_PUBLICATIONS } from '../data/fallback';
 
 export interface Publication {
   id: string;
