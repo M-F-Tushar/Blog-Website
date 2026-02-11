@@ -3,7 +3,6 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
 import NebulaGradient from '@/components/astro/NebulaGradient.astro';
 import { generatePersonSchema } from '@/lib/structured-data';
 import { getPublications, getSiteSettings, isPageVisible } from '@/lib/supabase';
-import PageNotAvailable from '@/components/astro/PageNotAvailable.astro';
 
 const siteUrl = Astro.site?.toString() || '';
 const settings = await getSiteSettings();
@@ -196,7 +195,7 @@ const personSchema = generatePersonSchema(
   </section>
 </BaseLayout>
 ) : (
-<PageNotAvailable pageTitle="Publications" />
+<html><head><meta http-equiv="refresh" content="0;url=/" /></head><body></body></html>
 )}
 
 <script>

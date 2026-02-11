@@ -7,7 +7,6 @@ import AnimatedCounter from '@/components/react/AnimatedCounter';
 import NebulaGradient from '@/components/astro/NebulaGradient.astro';
 import ConstellationDecor from '@/components/astro/ConstellationDecor.astro';
 import CosmicDivider from '@/components/astro/CosmicDivider.astro';
-import PageNotAvailable from '@/components/astro/PageNotAvailable.astro';
 
 const settings = await getSiteSettings();
 const pageVisible = isPageVisible(settings, '/about');
@@ -209,5 +208,5 @@ const structuredData = generatePersonSchema(
   </div>
 </BaseLayout>
 ) : (
-<PageNotAvailable pageTitle="About" />
+<html><head><meta http-equiv="refresh" content="0;url=/" /></head><body></body></html>
 )}

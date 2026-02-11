@@ -3,7 +3,6 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import ContactForm from '../components/react/ContactForm';
 import NebulaGradient from '@/components/astro/NebulaGradient.astro';
 import { getSiteSettings, getPageSection, isPageVisible } from '@/lib/supabase';
-import PageNotAvailable from '@/components/astro/PageNotAvailable.astro';
 
 const settings = await getSiteSettings();
 const pageVisible = isPageVisible(settings, '/contact');
@@ -155,5 +154,5 @@ const faqs = cmsFaqs.length > 0
   </div>
 </BaseLayout>
 ) : (
-<PageNotAvailable pageTitle="Contact" />
+<html><head><meta http-equiv="refresh" content="0;url=/" /></head><body></body></html>
 )}

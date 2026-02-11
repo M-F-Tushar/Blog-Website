@@ -3,7 +3,6 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
 import NebulaGradient from '@/components/astro/NebulaGradient.astro';
 import CosmicDivider from '@/components/astro/CosmicDivider.astro';
 import { getProjects, getSiteSettings, isPageVisible } from '@/lib/supabase';
-import PageNotAvailable from '@/components/astro/PageNotAvailable.astro';
 
 const settings = await getSiteSettings();
 const pageVisible = isPageVisible(settings, '/projects');
@@ -168,5 +167,5 @@ const otherProjects = allProjects.filter((p) => !p.featured);
   </section>
 </BaseLayout>
 ) : (
-<PageNotAvailable pageTitle="Projects" />
+<html><head><meta http-equiv="refresh" content="0;url=/" /></head><body></body></html>
 )}

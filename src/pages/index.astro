@@ -2,7 +2,7 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import BlogCard from '../components/astro/BlogCard.astro';
 import Reveal from '../components/astro/Reveal.astro';
-import { getPublishedPosts, getSiteSettings, getPageSection } from '@/lib/supabase';
+import { getPublishedPosts, getSiteSettings, getPageSection, isPageVisible } from '@/lib/supabase';
 import { generateWebSiteSchema } from '@/lib/structured-data';
 import TypewriterEffect from '@/components/react/TypewriterEffect';
 import AnimatedCounter from '@/components/react/AnimatedCounter';
@@ -63,6 +63,10 @@ const structuredData = generateWebSiteSchema(
   settings.site_description,
   { name: settings.author_name }
 );
+
+// Page visibility checks for home page links
+const blogVisible = isPageVisible(settings, '/blog');
+const aboutVisible = isPageVisible(settings, '/about');
 
 // Stats computations
 const totalWords = posts.reduce((sum, p) => sum + (p.content ? p.content.split(/\s+/).length : 0), 0);
@@ -132,6 +136,7 @@ const yearsActive = postDates.length > 0 ? new Date().getFullYear() - Math.min(.
 
           <!-- CTA buttons -->
           <div class="flex flex-col sm:flex-row justify-center gap-4">
+            {blogVisible && (
             <MagneticButton
               client:visible
               href="/blog"
@@ -140,6 +145,8 @@ const yearsActive = postDates.length > 0 ? new Date().getFullYear() - Math.min(.
               {uiText.startReading || 'Start Reading'}
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
             </MagneticButton>
+            )}
+            {aboutVisible && (
             <MagneticButton
               client:visible
               href="/about"
@@ -147,6 +154,7 @@ const yearsActive = postDates.length > 0 ? new Date().getFullYear() - Math.min(.
             >
               {uiText.moreAboutMe || 'About me'}
             </MagneticButton>
+            )}
           </div>
         </div>
 
@@ -215,7 +223,7 @@ const yearsActive = postDates.length > 0 ? new Date().getFullYear() - Math.min(.
     )}
 
     <!-- ======================== FEATURED POST ======================== -->
-    {showFeatured && featuredPost && (
+    {showFeatured && blogVisible && featuredPost && (
       <Reveal direction="up">
         <section class="container mx-auto px-4 sm:px-6 lg:px-8" style={`order: ${orderMap.featured ?? 2}`}>
           <div class="flex items-center gap-3 mb-8">
@@ -235,7 +243,7 @@ const yearsActive = postDates.length > 0 ? new Date().getFullYear() - Math.min(.
     )}
 
     <!-- ======================== POPULAR TAGS ======================== -->
-    {showTrending && popularTags.length > 0 && (
+    {showTrending && blogVisible && popularTags.length > 0 && (
       <Reveal direction="up">
         <section class="container mx-auto px-4 sm:px-6 lg:px-8" style={`order: ${orderMap.trending ?? 3}`}>
           <div class="flex items-center gap-2 mb-6">
@@ -260,7 +268,7 @@ const yearsActive = postDates.length > 0 ? new Date().getFullYear() - Math.min(.
     )}
 
     <!-- ======================== RECENT POSTS ======================== -->
-    {showArticles && recentPosts.length > 0 && (
+    {showArticles && blogVisible && recentPosts.length > 0 && (
       <Reveal direction="up">
         <section class="container mx-auto px-4 sm:px-6 lg:px-8" style={`order: ${orderMap.articles ?? 4}`}>
           <div class="flex items-center justify-between mb-8">

@@ -3,7 +3,6 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
 import CosmicDivider from '@/components/astro/CosmicDivider.astro';
 import { generatePersonSchema } from '@/lib/structured-data';
 import { getSiteSettings, getCVEducation, getCVExperience, getCVCertifications, isPageVisible } from '@/lib/supabase';
-import PageNotAvailable from '@/components/astro/PageNotAvailable.astro';
 
 const siteUrl = Astro.site?.toString() || '';
 const settings = await getSiteSettings();
@@ -201,7 +200,7 @@ const skills = settings.skills || [];
   </section>
 </BaseLayout>
 ) : (
-<PageNotAvailable pageTitle="CV" />
+<html><head><meta http-equiv="refresh" content="0;url=/" /></head><body></body></html>
 )}
 
 <style>

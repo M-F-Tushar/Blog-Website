@@ -6,7 +6,6 @@ import ModelDemo from '@/components/react/ModelDemo';
 import DatasetViewer from '@/components/react/DatasetViewer';
 import NotebookViewer from '@/components/react/NotebookViewer';
 import { getSiteSettings, isPageVisible } from '@/lib/supabase';
-import PageNotAvailable from '@/components/astro/PageNotAvailable.astro';
 
 const settings = await getSiteSettings();
 const pageVisible = isPageVisible(settings, '/playground');
@@ -154,5 +153,5 @@ const sampleNotebook = {
   </section>
 </BaseLayout>
 ) : (
-<PageNotAvailable pageTitle="Playground" />
+<html><head><meta http-equiv="refresh" content="0;url=/" /></head><body></body></html>
 )}

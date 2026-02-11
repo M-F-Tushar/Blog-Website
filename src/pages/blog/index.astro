@@ -5,7 +5,6 @@ import Pagination from '../../components/astro/Pagination.astro';
 import Reveal from '@/components/astro/Reveal.astro';
 import NebulaGradient from '@/components/astro/NebulaGradient.astro';
 import { getPublishedPosts, slugify, getSiteSettings, isPageVisible } from '@/lib/supabase';
-import PageNotAvailable from '@/components/astro/PageNotAvailable.astro';
 
 const settings = await getSiteSettings();
 const pageVisible = isPageVisible(settings, '/blog');
@@ -123,5 +122,5 @@ const allTags = Object.entries(tagCounts).sort((a, b) => b[1] - a[1]).slice(0, 2
   </div>
 </BaseLayout>
 ) : (
-<PageNotAvailable pageTitle="Blog" />
+<html><head><meta http-equiv="refresh" content="0;url=/" /></head><body></body></html>
 )}
