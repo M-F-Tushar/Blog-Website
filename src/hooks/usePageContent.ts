@@ -22,6 +22,36 @@ export interface PageSection {
   updated_at?: string;
 }
 
+// Map DB format (page_name, is_initial) to PageSection format (page, visible)
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const mapDbToSection = (db: any): PageSection => ({
+  id: db.id,
+  page: db.page_name || db.page,
+  section_key: db.section_key,
+  title: db.title || undefined,
+  subtitle: db.subtitle || undefined,
+  content: db.content || undefined,
+  image_url: db.image_url || undefined,
+  metadata: db.metadata || undefined,
+  sort_order: db.sort_order ?? 0,
+  visible: db.visible !== undefined ? db.visible : true,
+  created_at: db.created_at,
+  updated_at: db.updated_at,
+});
+
+// Map PageSection format back to DB format for Supabase upsert
+const mapSectionToDb = (section: Omit<PageSection, 'id' | 'created_at' | 'updated_at'>) => ({
+  page_name: section.page,
+  section_key: section.section_key,
+  title: section.title || null,
+  content: section.content || null,
+  metadata: section.metadata || null,
+  sort_order: section.sort_order,
+  is_initial: false,
+});
+
+const DEFAULT_SECTIONS: PageSection[] = FALLBACK_PAGE_CONTENT.map(mapDbToSection);
+
 interface PageContentContextType {
   sections: PageSection[];
   getSection: (page: string, sectionKey: string) => PageSection | undefined;
@@ -58,9 +88,8 @@ export const PageContentProvider: React.FC<{ children: React.ReactNode }> = ({ c
   const [sections, setSections] = useState<PageSection[]>(() => {
     if (!useSupabase) {
       const userSections = getPageContentFromStorage();
-      const initialSections = FALLBACK_PAGE_CONTENT || [];
-      // Merge: user sections override fallback sections with same page+section_key
-      const mergedSections = [...initialSections];
+      // Merge: user sections override default sections with same page+section_key
+      const mergedSections = [...DEFAULT_SECTIONS];
       for (const userSection of userSections) {
         const existingIndex = mergedSections.findIndex(
           (s) => s.page === userSection.page && s.section_key === userSection.section_key
@@ -92,7 +121,8 @@ export const PageContentProvider: React.FC<{ children: React.ReactNode }> = ({ c
     const unsubscribe = subscribeToPageContentUpdates(
       (supabaseSections) => {
         if (mounted) {
-          setSections(supabaseSections);
+          const mapped = supabaseSections.map(mapDbToSection);
+          setSections(mapped.length > 0 ? mapped : DEFAULT_SECTIONS);
           setLoading(false);
           setError(null);
         }
@@ -103,8 +133,8 @@ export const PageContentProvider: React.FC<{ children: React.ReactNode }> = ({ c
         if (mounted) {
           setError(err.message);
           setLoading(false);
-          // On error, fall back to fallback page content if none loaded
-          setSections((prev) => (prev.length === 0 ? FALLBACK_PAGE_CONTENT : prev));
+          // On error, fall back to default sections if none loaded
+          setSections((prev) => (prev.length === 0 ? DEFAULT_SECTIONS : prev));
         }
       }
     );
@@ -128,9 +158,10 @@ export const PageContentProvider: React.FC<{ children: React.ReactNode }> = ({ c
     ): Promise<PageSection> => {
       if (useSupabase) {
         try {
-          const upserted = await upsertSectionSupabase(sectionData);
+          const dbData = mapSectionToDb(sectionData);
+          const upserted = await upsertSectionSupabase(dbData);
           // The subscription will update the state
-          return upserted;
+          return mapDbToSection(upserted);
         } catch (err) {
           console.error('Error upserting page section:', err);
           setError(err instanceof Error ? err.message : 'Failed to upsert page section');
