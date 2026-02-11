@@ -1,5 +1,5 @@
 import React, { Suspense, lazy } from 'react';
-import { HashRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
 // Providers (existing hooks/contexts)
 import { AuthProvider } from '@/hooks/useAuth';
@@ -74,7 +74,7 @@ const AdminApp: React.FC = () => {
                     <CVDataProvider>
                       <PageContentProvider>
                         <CustomPagesProvider>
-                          <HashRouter>
+                          <BrowserRouter basename="/admin">
                             <Suspense fallback={<LoadingFallback />}>
                               <Routes>
                                 <Route path="/login" element={<AdminLogin />} />
@@ -144,7 +144,7 @@ const AdminApp: React.FC = () => {
                                 </Route>
                               </Routes>
                             </Suspense>
-                          </HashRouter>
+                          </BrowserRouter>
                           <ToastContainerWrapper />
                         </CustomPagesProvider>
                       </PageContentProvider>
