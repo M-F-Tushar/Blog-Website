@@ -6,10 +6,26 @@
 -- SECURITY: All write policies (INSERT/UPDATE/DELETE) on content tables are
 -- locked to a single admin user. After creating your admin account in
 -- Supabase Auth, replace every occurrence of:
---   'YOUR_ADMIN_USER_UUID'
+--   '0010291f-acd6-4594-87aa-9c13f5acfccf'
 -- with your actual auth.users UUID. You can find it in the Supabase
 -- dashboard under Authentication → Users.
 -- ============================================================================
+
+-- ─── Cleanup existing objects ───────────────────────────────────────
+
+DROP VIEW IF EXISTS post_statistics CASCADE;
+DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users CASCADE;
+DO $$
+DECLARE
+  r RECORD;
+BEGIN
+  FOR r IN SELECT proname, oidvectortypes(proargtypes) as args
+           FROM pg_proc INNER JOIN pg_namespace ns ON (pg_proc.pronamespace = ns.oid)
+           WHERE ns.nspname = 'public' AND proname IN ('record_page_view', 'handle_new_user', 'update_updated_at_column')
+  LOOP
+    EXECUTE 'DROP FUNCTION IF EXISTS ' || r.proname || '(' || r.args || ') CASCADE';
+  END LOOP;
+END $$;
 
 -- ─── Utility function ───────────────────────────────────────────────
 
@@ -41,9 +57,9 @@ CREATE TABLE IF NOT EXISTS posts (
 ALTER TABLE posts ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "posts_public_read"   ON posts FOR SELECT USING (true);
-CREATE POLICY "posts_admin_insert"  ON posts FOR INSERT TO authenticated WITH CHECK (auth.uid() = 'YOUR_ADMIN_USER_UUID'::uuid);
-CREATE POLICY "posts_admin_update"  ON posts FOR UPDATE TO authenticated USING  (auth.uid() = 'YOUR_ADMIN_USER_UUID'::uuid);
-CREATE POLICY "posts_admin_delete"  ON posts FOR DELETE TO authenticated USING  (auth.uid() = 'YOUR_ADMIN_USER_UUID'::uuid);
+CREATE POLICY "posts_admin_insert"  ON posts FOR INSERT TO authenticated WITH CHECK (auth.uid() = '0010291f-acd6-4594-87aa-9c13f5acfccf'::uuid);
+CREATE POLICY "posts_admin_update"  ON posts FOR UPDATE TO authenticated USING  (auth.uid() = '0010291f-acd6-4594-87aa-9c13f5acfccf'::uuid);
+CREATE POLICY "posts_admin_delete"  ON posts FOR DELETE TO authenticated USING  (auth.uid() = '0010291f-acd6-4594-87aa-9c13f5acfccf'::uuid);
 
 CREATE INDEX IF NOT EXISTS idx_posts_date   ON posts(date DESC);
 CREATE INDEX IF NOT EXISTS idx_posts_status ON posts(status);
@@ -74,9 +90,9 @@ CREATE TABLE IF NOT EXISTS recommendations (
 ALTER TABLE recommendations ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "rec_public_read"   ON recommendations FOR SELECT USING (true);
-CREATE POLICY "rec_admin_insert"  ON recommendations FOR INSERT TO authenticated WITH CHECK (auth.uid() = 'YOUR_ADMIN_USER_UUID'::uuid);
-CREATE POLICY "rec_admin_update"  ON recommendations FOR UPDATE TO authenticated USING  (auth.uid() = 'YOUR_ADMIN_USER_UUID'::uuid);
-CREATE POLICY "rec_admin_delete"  ON recommendations FOR DELETE TO authenticated USING  (auth.uid() = 'YOUR_ADMIN_USER_UUID'::uuid);
+CREATE POLICY "rec_admin_insert"  ON recommendations FOR INSERT TO authenticated WITH CHECK (auth.uid() = '0010291f-acd6-4594-87aa-9c13f5acfccf'::uuid);
+CREATE POLICY "rec_admin_update"  ON recommendations FOR UPDATE TO authenticated USING  (auth.uid() = '0010291f-acd6-4594-87aa-9c13f5acfccf'::uuid);
+CREATE POLICY "rec_admin_delete"  ON recommendations FOR DELETE TO authenticated USING  (auth.uid() = '0010291f-acd6-4594-87aa-9c13f5acfccf'::uuid);
 
 CREATE TRIGGER update_recommendations_updated_at BEFORE UPDATE ON recommendations
   FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
@@ -115,8 +131,8 @@ CREATE TABLE IF NOT EXISTS site_settings (
 ALTER TABLE site_settings ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "settings_public_read"   ON site_settings FOR SELECT USING (true);
-CREATE POLICY "settings_admin_insert"  ON site_settings FOR INSERT TO authenticated WITH CHECK (auth.uid() = 'YOUR_ADMIN_USER_UUID'::uuid);
-CREATE POLICY "settings_admin_update"  ON site_settings FOR UPDATE TO authenticated USING  (auth.uid() = 'YOUR_ADMIN_USER_UUID'::uuid);
+CREATE POLICY "settings_admin_insert"  ON site_settings FOR INSERT TO authenticated WITH CHECK (auth.uid() = '0010291f-acd6-4594-87aa-9c13f5acfccf'::uuid);
+CREATE POLICY "settings_admin_update"  ON site_settings FOR UPDATE TO authenticated USING  (auth.uid() = '0010291f-acd6-4594-87aa-9c13f5acfccf'::uuid);
 
 CREATE INDEX IF NOT EXISTS idx_site_settings_featured ON site_settings(featured_post_id);
 
@@ -145,9 +161,9 @@ CREATE TABLE IF NOT EXISTS projects (
 ALTER TABLE projects ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "projects_public_read"   ON projects FOR SELECT USING (true);
-CREATE POLICY "projects_admin_insert"  ON projects FOR INSERT TO authenticated WITH CHECK (auth.uid() = 'YOUR_ADMIN_USER_UUID'::uuid);
-CREATE POLICY "projects_admin_update"  ON projects FOR UPDATE TO authenticated USING  (auth.uid() = 'YOUR_ADMIN_USER_UUID'::uuid);
-CREATE POLICY "projects_admin_delete"  ON projects FOR DELETE TO authenticated USING  (auth.uid() = 'YOUR_ADMIN_USER_UUID'::uuid);
+CREATE POLICY "projects_admin_insert"  ON projects FOR INSERT TO authenticated WITH CHECK (auth.uid() = '0010291f-acd6-4594-87aa-9c13f5acfccf'::uuid);
+CREATE POLICY "projects_admin_update"  ON projects FOR UPDATE TO authenticated USING  (auth.uid() = '0010291f-acd6-4594-87aa-9c13f5acfccf'::uuid);
+CREATE POLICY "projects_admin_delete"  ON projects FOR DELETE TO authenticated USING  (auth.uid() = '0010291f-acd6-4594-87aa-9c13f5acfccf'::uuid);
 
 CREATE TRIGGER update_projects_updated_at BEFORE UPDATE ON projects
   FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
@@ -178,9 +194,9 @@ CREATE TABLE IF NOT EXISTS publications (
 ALTER TABLE publications ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "pubs_public_read"   ON publications FOR SELECT USING (true);
-CREATE POLICY "pubs_admin_insert"  ON publications FOR INSERT TO authenticated WITH CHECK (auth.uid() = 'YOUR_ADMIN_USER_UUID'::uuid);
-CREATE POLICY "pubs_admin_update"  ON publications FOR UPDATE TO authenticated USING  (auth.uid() = 'YOUR_ADMIN_USER_UUID'::uuid);
-CREATE POLICY "pubs_admin_delete"  ON publications FOR DELETE TO authenticated USING  (auth.uid() = 'YOUR_ADMIN_USER_UUID'::uuid);
+CREATE POLICY "pubs_admin_insert"  ON publications FOR INSERT TO authenticated WITH CHECK (auth.uid() = '0010291f-acd6-4594-87aa-9c13f5acfccf'::uuid);
+CREATE POLICY "pubs_admin_update"  ON publications FOR UPDATE TO authenticated USING  (auth.uid() = '0010291f-acd6-4594-87aa-9c13f5acfccf'::uuid);
+CREATE POLICY "pubs_admin_delete"  ON publications FOR DELETE TO authenticated USING  (auth.uid() = '0010291f-acd6-4594-87aa-9c13f5acfccf'::uuid);
 
 CREATE TRIGGER update_publications_updated_at BEFORE UPDATE ON publications
   FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
@@ -204,9 +220,9 @@ CREATE TABLE IF NOT EXISTS cv_education (
 ALTER TABLE cv_education ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "cv_edu_public_read"   ON cv_education FOR SELECT USING (true);
-CREATE POLICY "cv_edu_admin_insert"  ON cv_education FOR INSERT TO authenticated WITH CHECK (auth.uid() = 'YOUR_ADMIN_USER_UUID'::uuid);
-CREATE POLICY "cv_edu_admin_update"  ON cv_education FOR UPDATE TO authenticated USING  (auth.uid() = 'YOUR_ADMIN_USER_UUID'::uuid);
-CREATE POLICY "cv_edu_admin_delete"  ON cv_education FOR DELETE TO authenticated USING  (auth.uid() = 'YOUR_ADMIN_USER_UUID'::uuid);
+CREATE POLICY "cv_edu_admin_insert"  ON cv_education FOR INSERT TO authenticated WITH CHECK (auth.uid() = '0010291f-acd6-4594-87aa-9c13f5acfccf'::uuid);
+CREATE POLICY "cv_edu_admin_update"  ON cv_education FOR UPDATE TO authenticated USING  (auth.uid() = '0010291f-acd6-4594-87aa-9c13f5acfccf'::uuid);
+CREATE POLICY "cv_edu_admin_delete"  ON cv_education FOR DELETE TO authenticated USING  (auth.uid() = '0010291f-acd6-4594-87aa-9c13f5acfccf'::uuid);
 
 CREATE TRIGGER update_cv_education_updated_at BEFORE UPDATE ON cv_education
   FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
@@ -230,9 +246,9 @@ CREATE TABLE IF NOT EXISTS cv_experience (
 ALTER TABLE cv_experience ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "cv_exp_public_read"   ON cv_experience FOR SELECT USING (true);
-CREATE POLICY "cv_exp_admin_insert"  ON cv_experience FOR INSERT TO authenticated WITH CHECK (auth.uid() = 'YOUR_ADMIN_USER_UUID'::uuid);
-CREATE POLICY "cv_exp_admin_update"  ON cv_experience FOR UPDATE TO authenticated USING  (auth.uid() = 'YOUR_ADMIN_USER_UUID'::uuid);
-CREATE POLICY "cv_exp_admin_delete"  ON cv_experience FOR DELETE TO authenticated USING  (auth.uid() = 'YOUR_ADMIN_USER_UUID'::uuid);
+CREATE POLICY "cv_exp_admin_insert"  ON cv_experience FOR INSERT TO authenticated WITH CHECK (auth.uid() = '0010291f-acd6-4594-87aa-9c13f5acfccf'::uuid);
+CREATE POLICY "cv_exp_admin_update"  ON cv_experience FOR UPDATE TO authenticated USING  (auth.uid() = '0010291f-acd6-4594-87aa-9c13f5acfccf'::uuid);
+CREATE POLICY "cv_exp_admin_delete"  ON cv_experience FOR DELETE TO authenticated USING  (auth.uid() = '0010291f-acd6-4594-87aa-9c13f5acfccf'::uuid);
 
 CREATE TRIGGER update_cv_experience_updated_at BEFORE UPDATE ON cv_experience
   FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
@@ -255,9 +271,9 @@ CREATE TABLE IF NOT EXISTS cv_certifications (
 ALTER TABLE cv_certifications ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "cv_cert_public_read"   ON cv_certifications FOR SELECT USING (true);
-CREATE POLICY "cv_cert_admin_insert"  ON cv_certifications FOR INSERT TO authenticated WITH CHECK (auth.uid() = 'YOUR_ADMIN_USER_UUID'::uuid);
-CREATE POLICY "cv_cert_admin_update"  ON cv_certifications FOR UPDATE TO authenticated USING  (auth.uid() = 'YOUR_ADMIN_USER_UUID'::uuid);
-CREATE POLICY "cv_cert_admin_delete"  ON cv_certifications FOR DELETE TO authenticated USING  (auth.uid() = 'YOUR_ADMIN_USER_UUID'::uuid);
+CREATE POLICY "cv_cert_admin_insert"  ON cv_certifications FOR INSERT TO authenticated WITH CHECK (auth.uid() = '0010291f-acd6-4594-87aa-9c13f5acfccf'::uuid);
+CREATE POLICY "cv_cert_admin_update"  ON cv_certifications FOR UPDATE TO authenticated USING  (auth.uid() = '0010291f-acd6-4594-87aa-9c13f5acfccf'::uuid);
+CREATE POLICY "cv_cert_admin_delete"  ON cv_certifications FOR DELETE TO authenticated USING  (auth.uid() = '0010291f-acd6-4594-87aa-9c13f5acfccf'::uuid);
 
 CREATE TRIGGER update_cv_certifications_updated_at BEFORE UPDATE ON cv_certifications
   FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
@@ -281,9 +297,9 @@ CREATE TABLE IF NOT EXISTS page_content (
 ALTER TABLE page_content ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "pc_public_read"   ON page_content FOR SELECT USING (true);
-CREATE POLICY "pc_admin_insert"  ON page_content FOR INSERT TO authenticated WITH CHECK (auth.uid() = 'YOUR_ADMIN_USER_UUID'::uuid);
-CREATE POLICY "pc_admin_update"  ON page_content FOR UPDATE TO authenticated USING  (auth.uid() = 'YOUR_ADMIN_USER_UUID'::uuid);
-CREATE POLICY "pc_admin_delete"  ON page_content FOR DELETE TO authenticated USING  (auth.uid() = 'YOUR_ADMIN_USER_UUID'::uuid);
+CREATE POLICY "pc_admin_insert"  ON page_content FOR INSERT TO authenticated WITH CHECK (auth.uid() = '0010291f-acd6-4594-87aa-9c13f5acfccf'::uuid);
+CREATE POLICY "pc_admin_update"  ON page_content FOR UPDATE TO authenticated USING  (auth.uid() = '0010291f-acd6-4594-87aa-9c13f5acfccf'::uuid);
+CREATE POLICY "pc_admin_delete"  ON page_content FOR DELETE TO authenticated USING  (auth.uid() = '0010291f-acd6-4594-87aa-9c13f5acfccf'::uuid);
 
 CREATE TRIGGER update_page_content_updated_at BEFORE UPDATE ON page_content
   FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
@@ -309,7 +325,7 @@ CREATE TABLE IF NOT EXISTS custom_pages (
 ALTER TABLE custom_pages ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "cp_public_read"   ON custom_pages FOR SELECT USING (status = 'published');
-CREATE POLICY "cp_admin_all"     ON custom_pages FOR ALL TO authenticated USING (auth.uid() = 'YOUR_ADMIN_USER_UUID'::uuid) WITH CHECK (auth.uid() = 'YOUR_ADMIN_USER_UUID'::uuid);
+CREATE POLICY "cp_admin_all"     ON custom_pages FOR ALL TO authenticated USING (auth.uid() = '0010291f-acd6-4594-87aa-9c13f5acfccf'::uuid) WITH CHECK (auth.uid() = '0010291f-acd6-4594-87aa-9c13f5acfccf'::uuid);
 
 CREATE TRIGGER update_custom_pages_updated_at BEFORE UPDATE ON custom_pages
   FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
@@ -334,7 +350,7 @@ CREATE TABLE IF NOT EXISTS custom_page_sections (
 ALTER TABLE custom_page_sections ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "cps_public_read"  ON custom_page_sections FOR SELECT USING (visible = TRUE);
-CREATE POLICY "cps_admin_all"    ON custom_page_sections FOR ALL TO authenticated USING (auth.uid() = 'YOUR_ADMIN_USER_UUID'::uuid) WITH CHECK (auth.uid() = 'YOUR_ADMIN_USER_UUID'::uuid);
+CREATE POLICY "cps_admin_all"    ON custom_page_sections FOR ALL TO authenticated USING (auth.uid() = '0010291f-acd6-4594-87aa-9c13f5acfccf'::uuid) WITH CHECK (auth.uid() = '0010291f-acd6-4594-87aa-9c13f5acfccf'::uuid);
 
 CREATE TRIGGER update_custom_page_sections_updated_at BEFORE UPDATE ON custom_page_sections
   FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
@@ -391,9 +407,9 @@ CREATE TABLE IF NOT EXISTS contact_messages (
 ALTER TABLE contact_messages ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "msg_anon_insert"   ON contact_messages FOR INSERT TO anon      WITH CHECK (true);
-CREATE POLICY "msg_admin_select"  ON contact_messages FOR SELECT TO authenticated USING (auth.uid() = 'YOUR_ADMIN_USER_UUID'::uuid);
-CREATE POLICY "msg_admin_update"  ON contact_messages FOR UPDATE TO authenticated USING (auth.uid() = 'YOUR_ADMIN_USER_UUID'::uuid);
-CREATE POLICY "msg_admin_delete"  ON contact_messages FOR DELETE TO authenticated USING (auth.uid() = 'YOUR_ADMIN_USER_UUID'::uuid);
+CREATE POLICY "msg_admin_select"  ON contact_messages FOR SELECT TO authenticated USING (auth.uid() = '0010291f-acd6-4594-87aa-9c13f5acfccf'::uuid);
+CREATE POLICY "msg_admin_update"  ON contact_messages FOR UPDATE TO authenticated USING (auth.uid() = '0010291f-acd6-4594-87aa-9c13f5acfccf'::uuid);
+CREATE POLICY "msg_admin_delete"  ON contact_messages FOR DELETE TO authenticated USING (auth.uid() = '0010291f-acd6-4594-87aa-9c13f5acfccf'::uuid);
 
 -- ─── Newsletter Subscribers (public insert, admin read) ─────────────
 
@@ -406,7 +422,7 @@ CREATE TABLE IF NOT EXISTS newsletter_subscribers (
 ALTER TABLE newsletter_subscribers ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "newsletter_anon_insert"   ON newsletter_subscribers FOR INSERT TO anon      WITH CHECK (true);
-CREATE POLICY "newsletter_admin_select"  ON newsletter_subscribers FOR SELECT TO authenticated USING (auth.uid() = 'YOUR_ADMIN_USER_UUID'::uuid);
+CREATE POLICY "newsletter_admin_select"  ON newsletter_subscribers FOR SELECT TO authenticated USING (auth.uid() = '0010291f-acd6-4594-87aa-9c13f5acfccf'::uuid);
 
 -- ─── Post Views (analytics) ─────────────────────────────────────────
 
@@ -426,13 +442,13 @@ ALTER TABLE post_views ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "views_anon_insert"  ON post_views FOR INSERT TO anon         WITH CHECK (true);
 CREATE POLICY "views_auth_insert"  ON post_views FOR INSERT TO authenticated WITH CHECK (true);
-CREATE POLICY "views_admin_select" ON post_views FOR SELECT TO authenticated USING (auth.uid() = 'YOUR_ADMIN_USER_UUID'::uuid);
+CREATE POLICY "views_admin_select" ON post_views FOR SELECT TO authenticated USING (auth.uid() = '0010291f-acd6-4594-87aa-9c13f5acfccf'::uuid);
 
 CREATE INDEX IF NOT EXISTS idx_post_views_post ON post_views(post_id);
 CREATE INDEX IF NOT EXISTS idx_post_views_time ON post_views(viewed_at);
 
 -- Aggregated analytics view
-CREATE OR REPLACE VIEW post_statistics AS
+CREATE VIEW post_statistics AS
 SELECT
   post_id,
   COUNT(*)                                                          AS total_views,
@@ -444,7 +460,7 @@ FROM post_views
 GROUP BY post_id;
 
 -- Function to record a page view (callable by anon and authenticated)
-CREATE OR REPLACE FUNCTION record_page_view(
+CREATE FUNCTION record_page_view(
   p_post_id      TEXT,
   p_ip_hash      TEXT,
   p_user_agent   TEXT DEFAULT NULL,
@@ -477,7 +493,7 @@ CREATE POLICY "profiles_own_insert"   ON profiles FOR INSERT TO authenticated WI
 CREATE POLICY "profiles_own_update"   ON profiles FOR UPDATE TO authenticated USING  (auth.uid() = id);
 
 -- Auto-create profile on new user signup
-CREATE OR REPLACE FUNCTION handle_new_user()
+CREATE FUNCTION handle_new_user()
 RETURNS TRIGGER AS $$
 BEGIN
   INSERT INTO profiles (id, full_name, avatar_url)
@@ -508,6 +524,6 @@ WHERE NOT EXISTS (SELECT 1 FROM site_settings LIMIT 1);
 --
 --   CREATE POLICY "media_public_read"  ON storage.objects FOR SELECT USING (bucket_id = 'media');
 --   CREATE POLICY "media_admin_upload" ON storage.objects FOR INSERT TO authenticated
---     WITH CHECK (bucket_id = 'media' AND auth.uid() = 'YOUR_ADMIN_USER_UUID'::uuid);
+--     WITH CHECK (bucket_id = 'media' AND auth.uid() = '0010291f-acd6-4594-87aa-9c13f5acfccf'::uuid);
 --   CREATE POLICY "media_admin_delete" ON storage.objects FOR DELETE TO authenticated
---     USING (bucket_id = 'media' AND auth.uid() = 'YOUR_ADMIN_USER_UUID'::uuid);
+--     USING (bucket_id = 'media' AND auth.uid() = '0010291f-acd6-4594-87aa-9c13f5acfccf'::uuid);
