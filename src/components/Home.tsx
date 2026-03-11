@@ -33,8 +33,6 @@ const Home: React.FC = () => {
     subscribeButton: 'Subscribe',
   };
 
-  // const schema = useMemo(() => generateWebSiteSchema(), []);
-
   const structuredDataSchema = useMemo(
     () => generateJsonLdWebSite(siteName, siteConfig.url, siteDescription, { name: authorName }),
     [siteName, siteDescription, authorName]
