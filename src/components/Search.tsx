@@ -139,6 +139,7 @@ const Search: React.FC = () => {
               value={query}
               onChange={(e) => handleSearch(e.target.value)}
               className="w-full pl-12 pr-4 py-4 rounded-full bg-white dark:bg-secondary-800 border border-secondary-200 dark:border-secondary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 shadow-lg shadow-secondary-200/50 dark:shadow-none transition-all text-lg"
+              aria-label="Search query"
             />
             <SearchIcon className="absolute left-5 top-1/2 -translate-y-1/2 text-secondary-400" size={20} />
           </div>
@@ -162,6 +163,8 @@ const Search: React.FC = () => {
               <div className="flex items-center gap-4">
                 <button
                   onClick={() => setShowFilters(!showFilters)}
+                  aria-expanded={showFilters}
+                  aria-controls="filters-panel"
                   className={`inline-flex items-center gap-2 px-4 py-2 rounded-lg transition-colors font-medium text-sm ${showFilters
                     ? 'bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300'
                     : 'bg-secondary-100 dark:bg-secondary-800 text-secondary-700 dark:text-secondary-300 hover:bg-secondary-200 dark:hover:bg-secondary-700'
@@ -182,6 +185,7 @@ const Search: React.FC = () => {
                     value={sortBy}
                     onChange={(e) => setSortBy(e.target.value as SortOption)}
                     className="bg-transparent border-none text-sm font-medium text-secondary-700 dark:text-secondary-300 focus:ring-0 cursor-pointer py-1 pr-8"
+                    aria-label="Sort results by"
                   >
                     <option value="relevance">Relevance</option>
                     <option value="newest">Newest</option>
@@ -197,6 +201,7 @@ const Search: React.FC = () => {
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: 'auto' }}
                 exit={{ opacity: 0, height: 0 }}
+                id="filters-panel"
                 className="mb-8 overflow-hidden"
               >
                 <div className="bg-white dark:bg-secondary-800 rounded-2xl p-6 border border-secondary-200 dark:border-secondary-700 shadow-sm">
