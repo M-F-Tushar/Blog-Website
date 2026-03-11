@@ -14,8 +14,8 @@
     "test:coverage": "vitest --coverage",
     "test:e2e": "playwright test",
     "test:e2e:ui": "playwright test --ui",
-    "lint": "eslint .",
-    "lint:fix": "eslint . --fix",
+    "lint": "eslint . --ext .ts,.tsx,.astro",
+    "lint:fix": "eslint . --ext .ts,.tsx,.astro --fix",
     "format": "prettier --write \"src/**/*.{ts,tsx,css,astro,mdx,md}\"",
     "format:check": "prettier --check \"src/**/*.{ts,tsx,css,astro,mdx,md}\""
   },

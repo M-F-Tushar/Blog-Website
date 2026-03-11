@@ -42,7 +42,7 @@ import {
   CheckSquare,
 } from 'lucide-react';
 import { usePosts } from '../hooks/usePosts';
-import { PostStatus } from '../types/types';
+import type { PostStatus } from '../types/types';
 import { useSiteSettings } from '../hooks/useSiteSettings';
 import { isSupabaseConfigured } from '../supabase/client';
 import { uploadFile, generateUniqueFilename } from '../services/storageService';
@@ -471,6 +471,7 @@ const CreatePost: React.FC = () => {
         avatar: DEFAULT_AVATAR,
       },
       readTime: `${readingTime.minutes} min read`,
+      slug: title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, ''),
     };
 
     try {

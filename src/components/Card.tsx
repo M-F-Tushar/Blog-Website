@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Calendar, Clock, ArrowRight, Folder } from 'lucide-react';
-import { Post } from '../types/types';
+import type { Post } from '../types/types';
 import { calculateReadingTime, formatReadingTime } from '../utils/readingTime';
 import { useBookmarks } from '../hooks/useBookmarks';
 import BookmarkButton from './common/BookmarkButton';
