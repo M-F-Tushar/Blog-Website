@@ -1,5 +1,6 @@
 import fs from 'fs';
-import { Post, PostStatus } from '../types/types';
+import type { Post } from '../types/types';
+import { PostStatus } from '../types/types';
 import { siteConfig } from './seo';
 
 const escapeXml = (unsafe: string) => {
