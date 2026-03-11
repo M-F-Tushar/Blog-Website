@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import type React from 'react';
 
 interface FormData {
   name: string;
@@ -21,11 +22,11 @@ export default function ContactForm({ formspreeEndpoint, contactEmail }: Props) 
   });
   const [status, setStatus] = useState<'idle' | 'sending' | 'success' | 'error'>('idle');
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (e: import('react').ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: import('react').FormEvent) => {
     e.preventDefault();
     setStatus('sending');
 

@@ -10,6 +10,7 @@ import rehypeSlug from 'rehype-slug';
 import 'katex/dist/katex.min.css';
 import 'highlight.js/styles/github-dark.css';
 import { Calendar, Clock, Tag, ChevronLeft, User } from 'lucide-react';
+import type React from 'react';
 import { usePosts } from '../hooks/usePosts';
 import { useSiteSettings } from '../hooks/useSiteSettings';
 import SEO from './common/SEO';
@@ -59,13 +60,6 @@ const BlogPost: React.FC = () => {
   const showContinuePrompt =
     position && position.scrollPercentage > 5 && position.scrollPercentage < 95;
   const [promptDismissed, setPromptDismissed] = useState(false);
-
-  const schema = useMemo(() => {
-    if (post) {
-      return generateBlogPostSchema(post);
-    }
-    return undefined;
-  }, [post]);
 
   const structuredDataSchema = useMemo(() => {
     if (post) {

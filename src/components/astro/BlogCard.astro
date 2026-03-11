@@ -49,7 +49,7 @@ const formattedDate = new Date(post.date).toLocaleDateString(undefined, {
     featured ? 'md:w-1/2 p-8 justify-center' : 'p-6 flex-grow',
   ]}>
     <header class="flex-grow">
-      <!-- Meta -->
+
       <div class="flex items-center flex-wrap gap-3 text-xs font-medium text-secondary-500 mb-2">
         <span class="bg-accent-500/10 text-accent-400 border border-accent-500/20 px-2 py-1 rounded-full">
           {post.category}
@@ -80,7 +80,7 @@ const formattedDate = new Date(post.date).toLocaleDateString(undefined, {
         {post.excerpt}
       </p>
 
-      <!-- Tags -->
+
       {displayTags.length > 0 && (
         <div class="flex flex-wrap gap-2 mb-4">
           {displayTags.map((tag) => (

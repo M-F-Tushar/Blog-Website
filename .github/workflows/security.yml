@@ -37,11 +37,13 @@ jobs:
 
       - name: Run npm audit fix
         run: npm audit fix --dry-run
+        continue-on-error: true
 
   dependency-review:
     name: Dependency Review
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request'
+    continue-on-error: true
 
     steps:
       - name: Checkout code

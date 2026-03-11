@@ -12,6 +12,7 @@ import {
   GraduationCap,
   Sparkles,
 } from 'lucide-react';
+import type React from 'react';
 import SEO from './common/SEO';
 import { generatePersonSchema } from '../utils/seo';
 import { useProfile } from '../hooks/useProfile';
@@ -37,8 +38,6 @@ const About: React.FC = () => {
   const { photoUrl, loading: profileLoading } = useProfile();
   const { posts } = usePosts();
 
-  const schema = useMemo(() => generatePersonSchema(), []);
-
   const structuredDataSchema = useMemo(
     () =>
       generateJsonLdPerson(
@@ -53,8 +52,6 @@ const About: React.FC = () => {
       ),
     [authorName, authorBio, socialLinks]
   );
-
-
 
   // Calculate statistics
 
@@ -253,10 +250,11 @@ const About: React.FC = () => {
                     >
                       <div className="absolute -left-[41px] md:-left-[57px] top-0 p-2 bg-white dark:bg-secondary-950 border-2 border-secondary-200 dark:border-secondary-800 rounded-full">
                         <div
-                          className={`p-1.5 rounded-full ${item.type === 'work'
-                            ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400'
-                            : 'bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400'
-                            }`}
+                          className={`p-1.5 rounded-full ${
+                            item.type === 'work'
+                              ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400'
+                              : 'bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400'
+                          }`}
                         >
                           {item.type === 'work' ? (
                             <Briefcase size={16} />

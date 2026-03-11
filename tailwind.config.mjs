@@ -1,8 +1,8 @@
+import typography from '@tailwindcss/typography';
+
 /** @type {import('tailwindcss').Config} */
 export default {
-  content: [
-    './src/**/*.{astro,html,js,jsx,md,mdx,ts,tsx}',
-  ],
+  content: ['./src/**/*.{astro,html,js,jsx,md,mdx,ts,tsx}'],
   darkMode: 'class',
   theme: {
     extend: {
@@ -178,11 +178,11 @@ export default {
         'slide-left': 'slideLeft 0.5s ease-out',
         'slide-right': 'slideRight 0.5s ease-out',
         'scale-in': 'scaleIn 0.2s ease-out',
-        'shimmer': 'shimmer 2s infinite',
-        'blob': 'blob 7s infinite',
+        shimmer: 'shimmer 2s infinite',
+        blob: 'blob 7s infinite',
         'glow-pulse': 'glowPulse 2s ease-in-out infinite',
-        'aurora': 'aurora 15s ease infinite',
-        'float': 'float 6s ease-in-out infinite',
+        aurora: 'aurora 15s ease infinite',
+        float: 'float 6s ease-in-out infinite',
         'gradient-shift': 'gradientShift 8s ease infinite',
         'typewriter-cursor': 'typewriterCursor 1s step-end infinite',
         'border-glow': 'borderGlow 3s linear infinite',
@@ -191,10 +191,10 @@ export default {
         'bounce-gentle': 'bounceGentle 2s ease-in-out infinite',
         'pulse-glow': 'pulseGlow 2s ease-in-out infinite',
         // Cosmic animations
-        'twinkle': 'twinkle 3s ease-in-out infinite',
+        twinkle: 'twinkle 3s ease-in-out infinite',
         'twinkle-slow': 'twinkle 5s ease-in-out infinite',
         'shooting-star': 'shootingStar 1.5s ease-in forwards',
-        'orbit': 'orbit 20s linear infinite',
+        orbit: 'orbit 20s linear infinite',
         'nebula-drift': 'nebulaDrift 30s ease-in-out infinite',
         'star-glow': 'starGlow 4s ease-in-out infinite',
         'constellation-draw': 'constellationDraw 3s ease-in-out infinite alternate',
@@ -236,7 +236,9 @@ export default {
           '100%': { transform: 'translate(0px, 0px) scale(1)' },
         },
         glowPulse: {
-          '0%, 100%': { boxShadow: '0 0 20px rgba(6, 182, 212, 0.3), 0 0 40px rgba(6, 182, 212, 0.1)' },
+          '0%, 100%': {
+            boxShadow: '0 0 20px rgba(6, 182, 212, 0.3), 0 0 40px rgba(6, 182, 212, 0.1)',
+          },
           '50%': { boxShadow: '0 0 30px rgba(6, 182, 212, 0.5), 0 0 60px rgba(6, 182, 212, 0.2)' },
         },
         aurora: {
@@ -282,10 +284,18 @@ export default {
           '50%': { opacity: '1' },
         },
         shootingStar: {
-          '0%': { transform: 'translateX(0) translateY(0) rotate(-45deg)', opacity: '0', width: '0px' },
+          '0%': {
+            transform: 'translateX(0) translateY(0) rotate(-45deg)',
+            opacity: '0',
+            width: '0px',
+          },
           '5%': { opacity: '1', width: '80px' },
           '80%': { opacity: '1' },
-          '100%': { transform: 'translateX(-300px) translateY(300px) rotate(-45deg)', opacity: '0', width: '80px' },
+          '100%': {
+            transform: 'translateX(-300px) translateY(300px) rotate(-45deg)',
+            opacity: '0',
+            width: '80px',
+          },
         },
         orbit: {
           '0%': { transform: 'rotate(0deg)' },
@@ -319,7 +329,8 @@ export default {
       },
       boxShadow: {
         'glow-cyan': '0 0 20px rgba(6, 182, 212, 0.3), 0 0 40px rgba(6, 182, 212, 0.1)',
-        'glow-cyan-lg': '0 0 30px rgba(6, 182, 212, 0.4), 0 0 60px rgba(6, 182, 212, 0.15), 0 0 100px rgba(6, 182, 212, 0.05)',
+        'glow-cyan-lg':
+          '0 0 30px rgba(6, 182, 212, 0.4), 0 0 60px rgba(6, 182, 212, 0.15), 0 0 100px rgba(6, 182, 212, 0.05)',
         'glow-violet': '0 0 20px rgba(139, 92, 246, 0.3), 0 0 40px rgba(139, 92, 246, 0.1)',
         'glow-violet-lg': '0 0 30px rgba(139, 92, 246, 0.4), 0 0 60px rgba(139, 92, 246, 0.15)',
         'glow-gold': '0 0 20px rgba(245, 158, 11, 0.3), 0 0 40px rgba(245, 158, 11, 0.1)',
@@ -328,7 +339,8 @@ export default {
         // Cosmic shadows
         'glow-nebula': '0 0 20px rgba(236, 72, 153, 0.3), 0 0 40px rgba(236, 72, 153, 0.1)',
         'glow-cosmic': '0 0 20px rgba(20, 184, 166, 0.3), 0 0 40px rgba(20, 184, 166, 0.1)',
-        'cosmic-card': '0 0 0 1px rgba(6,182,212,0.1), 0 4px 30px rgba(0,0,0,0.3), 0 0 40px rgba(6,182,212,0.05)',
+        'cosmic-card':
+          '0 0 0 1px rgba(6,182,212,0.1), 0 4px 30px rgba(0,0,0,0.3), 0 0 40px rgba(6,182,212,0.05)',
       },
       typography: {
         DEFAULT: {
@@ -347,7 +359,7 @@ export default {
       },
     },
   },
-  plugins: [require('@tailwindcss/typography')],
+  plugins: [typography],
   safelist: [
     'prose-base',
     'prose-lg',
