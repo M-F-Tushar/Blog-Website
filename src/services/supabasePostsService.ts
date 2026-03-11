@@ -21,13 +21,13 @@ export const getAllPosts = async (): Promise<Post[]> => {
       .order('created_at', { ascending: false });
 
     if (error) {
-      console.error('Error fetching posts:', error);
+      console.error('Error in getAllPosts:', error);
       throw error;
     }
 
     return (data || []).map(postFromDatabase);
   } catch (error) {
-    console.error('Error fetching posts:', error);
+    console.error('Error in getAllPosts:', error);
     throw error;
   }
 };
