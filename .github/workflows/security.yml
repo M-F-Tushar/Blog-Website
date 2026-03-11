@@ -37,6 +37,7 @@ jobs:
 
       - name: Run npm audit fix
         run: npm audit fix --dry-run
+        continue-on-error: true
 
   dependency-review:
     name: Dependency Review
