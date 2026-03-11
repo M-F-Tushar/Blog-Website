@@ -84,7 +84,7 @@ jobs:
         run: npm ci
 
       - name: Check formatting
-        run: npm run format:check || true
+        run: npm run format:check
 
       - name: Run ESLint
-        run: npm run lint || true
+        run: npm run lint
