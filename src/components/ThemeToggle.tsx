@@ -24,9 +24,7 @@ const ThemeToggle: React.FC = () => {
 
     if (newPreference === 'system') {
       // Use system preference
-      const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches
-        ? 'dark'
-        : 'light';
+      const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
       if (theme !== systemTheme) {
         toggleTheme();
       }
@@ -46,14 +44,9 @@ const ThemeToggle: React.FC = () => {
     { value: 'system', label: 'System', icon: <Monitor size={18} /> },
   ];
 
-  const currentIcon =
-    preference === 'light' ? (
-      <Sun size={20} />
-    ) : preference === 'dark' ? (
-      <Moon size={20} />
-    ) : (
-      <Monitor size={20} />
-    );
+  const currentIcon = preference === 'light' ? <Sun size={20} /> :
+    preference === 'dark' ? <Moon size={20} /> :
+      <Monitor size={20} />;
 
   return (
     <div className="relative">
@@ -80,7 +73,10 @@ const ThemeToggle: React.FC = () => {
         {showMenu && (
           <>
             {/* Backdrop */}
-            <div className="fixed inset-0 z-40" onClick={() => setShowMenu(false)} />
+            <div
+              className="fixed inset-0 z-40"
+              onClick={() => setShowMenu(false)}
+            />
 
             {/* Menu */}
             <motion.div
@@ -94,11 +90,10 @@ const ThemeToggle: React.FC = () => {
                 <button
                   key={option.value}
                   onClick={() => handleThemeChange(option.value)}
-                  className={`w-full px-4 py-3 flex items-center gap-3 text-left transition-colors ${
-                    preference === option.value
+                  className={`w-full px-4 py-3 flex items-center gap-3 text-left transition-colors ${preference === option.value
                       ? 'bg-accent text-white'
                       : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
-                  }`}
+                    }`}
                 >
                   {option.icon}
                   <span className="font-medium">{option.label}</span>

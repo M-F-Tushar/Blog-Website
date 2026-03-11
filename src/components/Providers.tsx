@@ -10,7 +10,7 @@ import { ToastProvider } from '../context/ToastContext';
 import { CommandPaletteProvider } from '../context/CommandPaletteContext';
 
 interface ProvidersProps {
-  children: React.ReactNode;
+    children: React.ReactNode;
 }
 
 /**
@@ -26,25 +26,27 @@ interface ProvidersProps {
  * 6. Bookmarks - requires user auth
  */
 const Providers: React.FC<ProvidersProps> = ({ children }) => {
-  return (
-    <AuthProvider>
-      <ThemeProvider>
-        <ToastProvider>
-          <CommandPaletteProvider>
-            <SiteSettingsProvider>
-              <PostsProvider>
-                <ProfileProvider>
-                  <RecommendationsProvider>
-                    <BookmarksProvider>{children}</BookmarksProvider>
-                  </RecommendationsProvider>
-                </ProfileProvider>
-              </PostsProvider>
-            </SiteSettingsProvider>
-          </CommandPaletteProvider>
-        </ToastProvider>
-      </ThemeProvider>
-    </AuthProvider>
-  );
+    return (
+        <AuthProvider>
+            <ThemeProvider>
+                <ToastProvider>
+                    <CommandPaletteProvider>
+                        <SiteSettingsProvider>
+                            <PostsProvider>
+                                <ProfileProvider>
+                                    <RecommendationsProvider>
+                                        <BookmarksProvider>
+                                            {children}
+                                        </BookmarksProvider>
+                                    </RecommendationsProvider>
+                                </ProfileProvider>
+                            </PostsProvider>
+                        </SiteSettingsProvider>
+                    </CommandPaletteProvider>
+                </ToastProvider>
+            </ThemeProvider>
+        </AuthProvider>
+    );
 };
 
 export default Providers;

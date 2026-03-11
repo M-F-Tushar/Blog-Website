@@ -19,22 +19,22 @@ const Breadcrumbs: React.FC<BreadcrumbsProps> = ({ items }) => {
   // Add structured data for SEO
   useEffect(() => {
     const breadcrumbSchema = {
-      '@context': 'https://schema.org',
-      '@type': 'BreadcrumbList',
-      itemListElement: [
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
         {
-          '@type': 'ListItem',
-          position: 1,
-          name: 'Home',
-          item: `${window.location.origin}/`,
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home",
+          "item": `${window.location.origin}/`
         },
         ...items.map((item, index) => ({
-          '@type': 'ListItem',
-          position: index + 2,
-          name: item.label,
-          item: item.path ? `${window.location.origin}${item.path}` : undefined,
-        })),
-      ],
+          "@type": "ListItem",
+          "position": index + 2,
+          "name": item.label,
+          "item": item.path ? `${window.location.origin}${item.path}` : undefined
+        }))
+      ]
     };
 
     const script = document.createElement('script');
@@ -70,7 +70,7 @@ const Breadcrumbs: React.FC<BreadcrumbsProps> = ({ items }) => {
 
   // Copy path to clipboard
   const copyPath = () => {
-    const path = ['Home', ...items.map((i) => i.label)].join(' > ');
+    const path = ['Home', ...items.map(i => i.label)].join(' > ');
     navigator.clipboard.writeText(path).then(() => {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
@@ -79,11 +79,10 @@ const Breadcrumbs: React.FC<BreadcrumbsProps> = ({ items }) => {
 
   return (
     <nav
-      className={`flex items-center justify-between gap-4 text-sm mb-6 transition-all duration-300 ${
-        isSticky
+      className={`flex items-center justify-between gap-4 text-sm mb-6 transition-all duration-300 ${isSticky
           ? 'sticky top-0 z-40 bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm border-b border-gray-200 dark:border-gray-700 py-3 px-4 -mx-4 shadow-sm'
           : ''
-      }`}
+        }`}
       aria-label="Breadcrumb"
     >
       {/* Breadcrumb trail */}
@@ -129,7 +128,11 @@ const Breadcrumbs: React.FC<BreadcrumbsProps> = ({ items }) => {
         aria-label="Copy breadcrumb path"
       >
         {copied ? (
-          <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} className="text-green-500">
+          <motion.div
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            className="text-green-500"
+          >
             <Check size={16} />
           </motion.div>
         ) : (

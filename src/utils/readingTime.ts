@@ -14,7 +14,10 @@ export const getWordCount = (content: string): number => {
   return content.trim().split(/\s+/).length;
 };
 
-export const calculateRemainingTime = (totalWords: number, scrollPercentage: number): number => {
+export const calculateRemainingTime = (
+  totalWords: number,
+  scrollPercentage: number
+): number => {
   const wordsRead = Math.floor(totalWords * scrollPercentage);
   const wordsRemaining = totalWords - wordsRead;
   const minutesRemaining = Math.ceil(wordsRemaining / WORDS_PER_MINUTE);

@@ -6,37 +6,15 @@ import DOMPurify from 'dompurify';
  * @returns Sanitized HTML string
  */
 export const sanitizeHtml = (dirty: string): string => {
-  return DOMPurify.sanitize(dirty, {
-    ALLOWED_TAGS: [
-      'p',
-      'br',
-      'strong',
-      'em',
-      'u',
-      'h1',
-      'h2',
-      'h3',
-      'h4',
-      'h5',
-      'h6',
-      'ul',
-      'ol',
-      'li',
-      'a',
-      'img',
-      'blockquote',
-      'code',
-      'pre',
-      'table',
-      'thead',
-      'tbody',
-      'tr',
-      'th',
-      'td',
-    ],
-    ALLOWED_ATTR: ['href', 'src', 'alt', 'title', 'class', 'id', 'target', 'rel'],
-    ALLOW_DATA_ATTR: false,
-  });
+    return DOMPurify.sanitize(dirty, {
+        ALLOWED_TAGS: [
+            'p', 'br', 'strong', 'em', 'u', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
+            'ul', 'ol', 'li', 'a', 'img', 'blockquote', 'code', 'pre',
+            'table', 'thead', 'tbody', 'tr', 'th', 'td'
+        ],
+        ALLOWED_ATTR: ['href', 'src', 'alt', 'title', 'class', 'id', 'target', 'rel'],
+        ALLOW_DATA_ATTR: false,
+    });
 };
 
 /**
@@ -45,7 +23,7 @@ export const sanitizeHtml = (dirty: string): string => {
  * @returns Plain text with HTML stripped
  */
 export const sanitizeText = (dirty: string): string => {
-  return DOMPurify.sanitize(dirty, { ALLOWED_TAGS: [] });
+    return DOMPurify.sanitize(dirty, { ALLOWED_TAGS: [] });
 };
 
 /**
@@ -54,6 +32,6 @@ export const sanitizeText = (dirty: string): string => {
  * @returns true if content appears safe, false otherwise
  */
 export const isSafeContent = (content: string): boolean => {
-  const sanitized = DOMPurify.sanitize(content);
-  return sanitized === content;
+    const sanitized = DOMPurify.sanitize(content);
+    return sanitized === content;
 };

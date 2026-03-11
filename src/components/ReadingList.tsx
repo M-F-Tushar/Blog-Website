@@ -24,7 +24,10 @@ const ReadingList: React.FC = () => {
 
   return (
     <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
-      <SEO title="My Reading List" description="Your saved articles and bookmarks." />
+      <SEO
+        title="My Reading List"
+        description="Your saved articles and bookmarks."
+      />
       <div className="text-center">
         <h1 className="text-4xl font-bold font-serif text-gray-900 dark:text-white">
           My Reading List

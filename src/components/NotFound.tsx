@@ -31,8 +31,7 @@ const NotFound: React.FC = () => {
             Page Not Found
           </h2>
           <p className="text-lg text-secondary-600 dark:text-secondary-300 mb-8 max-w-md mx-auto">
-            Oops! The page you are looking for might have been removed, had its name changed, or is
-            temporarily unavailable.
+            Oops! The page you are looking for might have been removed, had its name changed, or is temporarily unavailable.
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
