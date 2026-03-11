@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useSiteSettings } from '../../hooks/useSiteSettings';
 import {
   Save,
@@ -124,13 +124,15 @@ const AdminHomepageLayout: React.FC = () => {
   }, [homepageLayout]);
 
   // Get ordered sections based on sectionOrder
-  const orderedSections = sectionOrder
-    .map((id) => SECTION_DEFS.find((d) => d.id === id))
-    .filter(Boolean) as HomepageSectionDef[];
+  const allOrderedSections = useMemo(() => {
+    const orderedSections = sectionOrder
+      .map((id) => SECTION_DEFS.find((d) => d.id === id))
+      .filter(Boolean) as HomepageSectionDef[];
 
-  // Include any sections not in the order array
-  const remainingSections = SECTION_DEFS.filter((d) => !sectionOrder.includes(d.id));
-  const allOrderedSections = [...orderedSections, ...remainingSections];
+    // Include any sections not in the order array
+    const remainingSections = SECTION_DEFS.filter((d) => !sectionOrder.includes(d.id));
+    return [...orderedSections, ...remainingSections];
+  }, [sectionOrder]);
 
   const toggleSection = (showKey: string) => {
     setVisibility((prev) => ({ ...prev, [showKey]: !prev[showKey] }));
