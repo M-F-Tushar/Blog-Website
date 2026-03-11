@@ -7,6 +7,7 @@ import {
   type MouseEvent,
   type ComponentPropsWithoutRef,
 } from 'react';
+import type React from 'react';
 
 type BaseButtonProps = Omit<ComponentPropsWithoutRef<'button'>, 'className' | 'children'>;
 type BaseAnchorProps = Omit<ComponentPropsWithoutRef<'a'>, 'className' | 'children'>;

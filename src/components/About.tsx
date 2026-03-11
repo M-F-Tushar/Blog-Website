@@ -12,6 +12,7 @@ import {
   GraduationCap,
   Sparkles,
 } from 'lucide-react';
+import type React from 'react';
 import SEO from './common/SEO';
 import { generatePersonSchema } from '../utils/seo';
 import { useProfile } from '../hooks/useProfile';

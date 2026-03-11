@@ -1,3 +1,5 @@
+import typography from '@tailwindcss/typography';
+
 /** @type {import('tailwindcss').Config} */
 export default {
   content: ['./src/**/*.{astro,html,js,jsx,md,mdx,ts,tsx}'],
@@ -357,7 +359,7 @@ export default {
       },
     },
   },
-  plugins: [(await import('@tailwindcss/typography')).default],
+  plugins: [typography],
   safelist: [
     'prose-base',
     'prose-lg',
