@@ -27,7 +27,7 @@ export const getAllPosts = async (): Promise<Post[]> => {
 
     return (data || []).map(postFromDatabase);
   } catch (error) {
-    console.error('Error fetching posts:', error);
+    console.error('Error in getAllPosts:', error);
     throw error;
   }
 };
