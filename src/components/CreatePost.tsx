@@ -6,11 +6,8 @@ import {
   Save,
   X,
   Split,
-  Maximize2,
-  Minimize2,
   Bold,
   Italic,
-  Underline,
   Strikethrough,
   Heading1,
   Heading2,
@@ -22,17 +19,11 @@ import {
   Link2,
   Image,
   Table,
-  AlignLeft,
-  AlignCenter,
-  AlignRight,
   Youtube,
-  Twitter,
   FileCode,
-  FileText,
   Upload,
   Clock,
   Search,
-  ChevronDown,
   Undo,
   Redo,
   Keyboard,
@@ -50,24 +41,11 @@ import MarkdownRenderer from './markdown/MarkdownRenderer';
 import { DEFAULT_AVATAR } from '../constants/constants';
 import { cosmic } from './admin/ui/cosmicClassNames';
 
-interface ToolbarButton {
-  icon: React.FC<{ size?: number; className?: string }>;
-  label: string;
-  action: string | (() => void);
-  shortcut?: string;
-}
-
-interface ToolbarDropdown {
-  icon: React.FC<{ size?: number; className?: string }>;
-  label: string;
-  items: { label: string; action: string }[];
-}
-
 const CreatePost: React.FC = () => {
   const { postId } = useParams<{ postId?: string }>();
   const isEditMode = Boolean(postId);
   const { posts, addPost, updatePost } = usePosts();
-  const { categories, authorName, seo } = useSiteSettings();
+  const { categories, authorName } = useSiteSettings();
   const navigate = useNavigate();
   const supabaseEnabled = isSupabaseConfigured();
 
@@ -78,8 +56,6 @@ const CreatePost: React.FC = () => {
   const [tags, setTags] = useState('');
   const [status, setStatus] = useState<PostStatus>(PostStatus.DRAFT);
   const [coverImage, setCoverImage] = useState('');
-  const [metaTitle, setMetaTitle] = useState('');
-  const [metaDescription, setMetaDescription] = useState('');
 
   // UI state
   const [isUploading, setIsUploading] = useState(false);

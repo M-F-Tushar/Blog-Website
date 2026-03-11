@@ -60,13 +60,6 @@ const BlogPost: React.FC = () => {
     position && position.scrollPercentage > 5 && position.scrollPercentage < 95;
   const [promptDismissed, setPromptDismissed] = useState(false);
 
-  const schema = useMemo(() => {
-    if (post) {
-      return generateBlogPostSchema(post);
-    }
-    return undefined;
-  }, [post]);
-
   const structuredDataSchema = useMemo(() => {
     if (post) {
       return generateBlogPostingSchema(post, centralSiteConfig.url, centralSiteConfig.name, {
