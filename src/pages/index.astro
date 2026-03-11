@@ -78,10 +78,10 @@ const yearsActive = postDates.length > 0 ? new Date().getFullYear() - Math.min(.
 <BaseLayout structuredData={structuredData}>
   <div class="flex flex-col pb-16" style="gap: 5rem;">
 
-    <!-- ======================== HERO SECTION ======================== -->
+
     {showHero && (
       <section class="relative min-h-screen flex items-center justify-center -mt-20 pt-20 overflow-hidden" style={`order: ${orderMap.hero ?? 0}`}>
-        <!-- Cosmic background -->
+
         <CosmicStarfield
           client:idle
           starCount={2500}
@@ -92,12 +92,12 @@ const yearsActive = postDates.length > 0 ? new Date().getFullYear() - Math.min(.
         <ShootingStar count={2} />
         <ConstellationDecor variant="left" class="absolute top-20 left-0 opacity-20 w-64 hidden lg:block" />
 
-        <!-- Aurora gradient overlay -->
+
         <div class="absolute inset-0 aurora-bg opacity-30 z-0"></div>
 
-        <!-- Content -->
+
         <div class="container mx-auto max-w-5xl text-center relative z-10 px-4">
-          <!-- Welcome badge -->
+
           <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-surface/50 backdrop-blur-sm border border-white/10 mb-8">
             <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gold-400">
               <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"></path>
@@ -111,12 +111,12 @@ const yearsActive = postDates.length > 0 ? new Date().getFullYear() - Math.min(.
             </span>
           </div>
 
-          <!-- Name -->
+
           <h1 class="text-5xl md:text-7xl font-bold font-serif text-secondary-50 mb-4 tracking-tight leading-tight">
             Hi, I&apos;m <span class="text-gradient-cyan">{settings.author_name}</span>
           </h1>
 
-          <!-- Typewriter effect -->
+
           <div class="mb-6">
             <TypewriterEffect
               client:visible
@@ -129,12 +129,12 @@ const yearsActive = postDates.length > 0 ? new Date().getFullYear() - Math.min(.
             />
           </div>
 
-          <!-- Tagline -->
+
           <p class="text-xl md:text-2xl text-secondary-400 mb-10 max-w-2xl mx-auto leading-relaxed">
             {settings.author_tagline}
           </p>
 
-          <!-- CTA buttons -->
+
           <div class="flex flex-col sm:flex-row justify-center gap-4">
             {blogVisible && (
             <MagneticButton
@@ -158,7 +158,7 @@ const yearsActive = postDates.length > 0 ? new Date().getFullYear() - Math.min(.
           </div>
         </div>
 
-        <!-- Scroll indicator -->
+
         <div class="absolute bottom-8 left-1/2 -translate-x-1/2 z-10">
           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="animate-bounce text-secondary-500">
             <path d="m6 9 6 6 6-6"></path>
@@ -167,11 +167,11 @@ const yearsActive = postDates.length > 0 ? new Date().getFullYear() - Math.min(.
       </section>
     )}
 
-    <!-- ======================== STATS BAR ======================== -->
+
     {showStats && (
       <section class="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10" style={`order: ${orderMap.stats ?? 1}`}>
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <!-- Articles -->
+
           <div class="glass-cosmic rounded-xl p-6 text-center hover:shadow-cosmic-card transition-all">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mx-auto mb-2 text-primary-400">
               <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"></path>
@@ -182,7 +182,7 @@ const yearsActive = postDates.length > 0 ? new Date().getFullYear() - Math.min(.
             <p class="text-sm text-secondary-400 font-medium">Articles</p>
           </div>
 
-          <!-- Total Words -->
+
           <div class="glass-cosmic rounded-xl p-6 text-center hover:shadow-cosmic-card transition-all">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mx-auto mb-2 text-gold-400">
               <path d="M17 6.1H3"></path>
@@ -195,7 +195,7 @@ const yearsActive = postDates.length > 0 ? new Date().getFullYear() - Math.min(.
             <p class="text-sm text-secondary-400 font-medium">Total Words</p>
           </div>
 
-          <!-- Years Active -->
+
           <div class="glass-cosmic rounded-xl p-6 text-center hover:shadow-cosmic-card transition-all">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mx-auto mb-2 text-accent-400">
               <circle cx="12" cy="12" r="10"></circle>
@@ -207,7 +207,7 @@ const yearsActive = postDates.length > 0 ? new Date().getFullYear() - Math.min(.
             <p class="text-sm text-secondary-400 font-medium">Years Active</p>
           </div>
 
-          <!-- Topics -->
+
           <div class="glass-cosmic rounded-xl p-6 text-center hover:shadow-cosmic-card transition-all">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mx-auto mb-2 text-primary-400">
               <path d="M12 2H2v10l9.29 9.29c.94.94 2.48.94 3.42 0l6.58-6.58c.94-.94.94-2.48 0-3.42L12 2Z"></path>
@@ -222,7 +222,7 @@ const yearsActive = postDates.length > 0 ? new Date().getFullYear() - Math.min(.
       </section>
     )}
 
-    <!-- ======================== FEATURED POST ======================== -->
+
     {showFeatured && blogVisible && featuredPost && (
       <Reveal direction="up">
         <section class="container mx-auto px-4 sm:px-6 lg:px-8" style={`order: ${orderMap.featured ?? 2}`}>
@@ -242,7 +242,7 @@ const yearsActive = postDates.length > 0 ? new Date().getFullYear() - Math.min(.
       </Reveal>
     )}
 
-    <!-- ======================== POPULAR TAGS ======================== -->
+
     {showTrending && blogVisible && popularTags.length > 0 && (
       <Reveal direction="up">
         <section class="container mx-auto px-4 sm:px-6 lg:px-8" style={`order: ${orderMap.trending ?? 3}`}>
@@ -267,7 +267,7 @@ const yearsActive = postDates.length > 0 ? new Date().getFullYear() - Math.min(.
       </Reveal>
     )}
 
-    <!-- ======================== RECENT POSTS ======================== -->
+
     {showArticles && blogVisible && recentPosts.length > 0 && (
       <Reveal direction="up">
         <section class="container mx-auto px-4 sm:px-6 lg:px-8" style={`order: ${orderMap.articles ?? 4}`}>
@@ -301,19 +301,19 @@ const yearsActive = postDates.length > 0 ? new Date().getFullYear() - Math.min(.
       </Reveal>
     )}
 
-    <!-- ======================== NEWSLETTER CTA ======================== -->
+
     {showNewsletter && (
       <Reveal direction="up">
         <section class="container mx-auto px-4 sm:px-6 lg:px-8" style={`order: ${orderMap.newsletter ?? 5}`}>
           <div class="relative rounded-3xl overflow-hidden bg-abyss px-6 py-16 md:px-16 md:py-20 text-center border border-white/[0.06]">
-            <!-- Dot pattern overlay -->
+
             <div class="absolute inset-0 opacity-10 star-pattern"></div>
 
-            <!-- Gradient border glow at top -->
+
             <div class="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-primary-500/30 to-transparent"></div>
 
             <div class="relative z-10 max-w-2xl mx-auto space-y-8">
-              <!-- Mail icon -->
+
               <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-primary-500/20 text-primary-400 mb-4">
                 <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                   <rect width="20" height="16" x="2" y="4" rx="2"></rect>
@@ -321,15 +321,15 @@ const yearsActive = postDates.length > 0 ? new Date().getFullYear() - Math.min(.
                 </svg>
               </div>
 
-              <!-- Title -->
+
               <h2 class="text-3xl md:text-4xl font-bold font-serif text-secondary-50" set:html={uiText.newsletterTitle || 'Subscribe to my <span class="text-gradient-gold">newsletter</span>'} />
 
-              <!-- Description -->
+
               <p class="text-lg text-secondary-300">
                 {uiText.newsletterDescription || 'Get the latest articles, tutorials, and research insights delivered straight to your inbox. No spam, just quality content.'}
               </p>
 
-              <!-- Form -->
+
               <form class="flex flex-col sm:flex-row gap-4 max-w-md mx-auto" action="#" method="POST">
                 <input
                   type="email"

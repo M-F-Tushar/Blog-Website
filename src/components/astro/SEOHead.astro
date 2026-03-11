@@ -25,17 +25,17 @@ const fullImageUrl = image.startsWith('http') ? image : `${siteUrl}${image}`;
 const canonical = canonicalUrl || new URL(Astro.url.pathname, siteUrl).toString();
 ---
 
-<!-- Primary Meta Tags -->
+
 <title>{pageTitle}</title>
 <meta name="title" content={pageTitle} />
 <meta name="description" content={description} />
 <meta name="author" content="Mahir Faysal Tushar" />
 {noindex ? <meta name="robots" content="noindex, nofollow" /> : <meta name="robots" content="index, follow" />}
 
-<!-- Canonical URL -->
+
 <link rel="canonical" href={canonical} />
 
-<!-- Open Graph / Facebook -->
+
 <meta property="og:type" content={type} />
 <meta property="og:url" content={canonical} />
 <meta property="og:title" content={pageTitle} />
@@ -43,14 +43,14 @@ const canonical = canonicalUrl || new URL(Astro.url.pathname, siteUrl).toString(
 <meta property="og:image" content={fullImageUrl} />
 <meta property="og:site_name" content="Mahir Faysal Tushar" />
 
-<!-- Twitter -->
+
 <meta property="twitter:card" content="summary_large_image" />
 <meta property="twitter:url" content={canonical} />
 <meta property="twitter:title" content={pageTitle} />
 <meta property="twitter:description" content={description} />
 <meta property="twitter:image" content={fullImageUrl} />
 
-<!-- RSS Feed -->
+
 <link rel="alternate" type="application/rss+xml" title="Mahir Faysal Tushar - Blog RSS" href={`${siteUrl}/rss.xml`} />
 
 {structuredData && (

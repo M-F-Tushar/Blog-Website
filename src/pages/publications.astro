@@ -36,7 +36,7 @@ const personSchema = generatePersonSchema(
 >
   <section class="max-w-5xl mx-auto px-4 py-12 sm:px-6 lg:px-8 relative">
     <NebulaGradient variant="subtle" />
-    <!-- Header -->
+
     <div class="text-center mb-12">
       <h1 class="text-4xl md:text-5xl font-bold font-serif text-secondary-50 mb-4">
         Publications
@@ -46,7 +46,7 @@ const personSchema = generatePersonSchema(
       </p>
     </div>
 
-    <!-- Filter tabs -->
+
     <div class="flex flex-wrap justify-center gap-2 mb-10" id="pub-filters">
       {pubTypes.map((type) => (
         <button
@@ -63,7 +63,7 @@ const personSchema = generatePersonSchema(
       ))}
     </div>
 
-    <!-- Publications list -->
+
     <div class="space-y-6" id="pub-list">
       {years.map((year) => (
         <div>
@@ -105,7 +105,7 @@ const personSchema = generatePersonSchema(
                     </p>
                   )}
 
-                  <!-- Action buttons -->
+
                   <div class="flex flex-wrap gap-2">
                     {pub.arxivUrl && (
                       <a
@@ -170,14 +170,14 @@ const personSchema = generatePersonSchema(
       ))}
     </div>
 
-    <!-- Empty state -->
+
     <div id="pub-empty" class="hidden text-center py-16">
       <p class="text-secondary-400 text-lg">
         No publications found for this filter.
       </p>
     </div>
 
-    <!-- BibTeX Modal -->
+
     <div id="bibtex-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
       <div class="bg-surface rounded-xl p-6 max-w-lg w-full mx-4 border border-white/[0.06] shadow-2xl">
         <div class="flex justify-between items-center mb-4">

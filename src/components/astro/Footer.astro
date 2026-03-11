@@ -40,7 +40,7 @@ const allFooterLinks = [...footerLinks, ...customPageLinks];
   <ConstellationDecor variant="right" class="absolute top-8 right-8 opacity-10 w-48 hidden lg:block" />
   <div class="container mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-8">
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-12 mb-12">
-      <!-- Brand Column -->
+
       <div class="lg:col-span-4 space-y-6">
         <a href="/" class="text-gradient-cyan text-2xl font-bold font-serif tracking-tight">
           {settings.site_name}
@@ -83,7 +83,7 @@ const allFooterLinks = [...footerLinks, ...customPageLinks];
         </div>
       </div>
 
-      <!-- Quick Links -->
+
       <div class="lg:col-span-2">
         <h3 class="text-secondary-50 font-semibold text-lg mb-6">{uiText.exploreTitle || 'Explore'}</h3>
         <nav class="space-y-3" aria-label="Footer navigation">
@@ -98,7 +98,7 @@ const allFooterLinks = [...footerLinks, ...customPageLinks];
         </nav>
       </div>
 
-      <!-- Latest Articles -->
+
       <div class="lg:col-span-3">
         <h3 class="text-secondary-50 font-semibold text-lg mb-6">{uiText.latestTitle || 'Latest Articles'}</h3>
         <div class="space-y-4">
@@ -123,7 +123,7 @@ const allFooterLinks = [...footerLinks, ...customPageLinks];
         </div>
       </div>
 
-      <!-- Newsletter CTA -->
+
       <div class="lg:col-span-3">
         <h3 class="text-secondary-50 font-semibold text-lg mb-6">{uiText.stayConnectedTitle || 'Stay Connected'}</h3>
         <p class="text-sm text-secondary-400 mb-4">
@@ -150,7 +150,7 @@ const allFooterLinks = [...footerLinks, ...customPageLinks];
       </div>
     </div>
 
-    <!-- Bottom Bar -->
+
     <div class="border-t border-white/5 pt-8 mt-8 flex flex-col md:flex-row justify-between items-center gap-4">
       <p class="text-sm text-secondary-500">
         &copy; {currentYear} {settings.author_name}. {uiText.copyrightText || 'Built with Astro & React.'}
