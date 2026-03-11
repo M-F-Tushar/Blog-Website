@@ -37,7 +37,6 @@ jobs:
 
       - name: Run npm audit fix
         run: npm audit fix --dry-run
-        continue-on-error: true
 
   dependency-review:
     name: Dependency Review
@@ -50,6 +49,5 @@ jobs:
 
       - name: Dependency Review
         uses: actions/dependency-review-action@v4
-        continue-on-error: true
         with:
           fail-on-severity: moderate
