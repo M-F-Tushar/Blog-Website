@@ -7,18 +7,18 @@ import { analytics } from '../utils/analytics';
  * Automatically tracks page views on route changes
  */
 export const useAnalytics = () => {
-    const location = useLocation();
+  const location = useLocation();
 
-    // Track page views on route change
-    useEffect(() => {
-        analytics.trackPageView(location.pathname + location.search);
-    }, [location]);
+  // Track page views on route change
+  useEffect(() => {
+    analytics.trackPageView(location.pathname + location.search);
+  }, [location]);
 
-    return {
-        trackEvent: analytics.trackEvent.bind(analytics),
-        trackSearch: analytics.trackSearch.bind(analytics),
-        trackBookmark: analytics.trackBookmark.bind(analytics),
-        trackComment: analytics.trackComment.bind(analytics),
-        trackThemeChange: analytics.trackThemeChange.bind(analytics),
-    };
+  return {
+    trackEvent: analytics.trackEvent.bind(analytics),
+    trackSearch: analytics.trackSearch.bind(analytics),
+    trackBookmark: analytics.trackBookmark.bind(analytics),
+    trackComment: analytics.trackComment.bind(analytics),
+    trackThemeChange: analytics.trackThemeChange.bind(analytics),
+  };
 };

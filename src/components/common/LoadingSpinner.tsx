@@ -11,16 +11,14 @@ export const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({ size = 'md', mes
   const sizeClasses = {
     sm: 'h-6 w-6',
     md: 'h-12 w-12',
-    lg: 'h-16 w-16'
+    lg: 'h-16 w-16',
   };
 
   return (
     <div className="flex flex-col justify-center items-center py-12 gap-4">
       <div className={`animate-spin rounded-full border-b-2 border-accent ${sizeClasses[size]}`} />
       {message && (
-        <p className="text-sm text-gray-600 dark:text-gray-400 animate-pulse">
-          {message}
-        </p>
+        <p className="text-sm text-gray-600 dark:text-gray-400 animate-pulse">{message}</p>
       )}
     </div>
   );
@@ -68,16 +66,12 @@ interface ErrorStateProps {
 
 export const ErrorState: React.FC<ErrorStateProps> = ({
   message = 'Something went wrong',
-  onRetry
+  onRetry,
 }) => (
   <div className="flex flex-col items-center justify-center py-12 px-4">
     <div className="text-6xl mb-4">⚠️</div>
-    <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
-      Oops!
-    </h3>
-    <p className="text-gray-600 dark:text-gray-400 text-center mb-6 max-w-md">
-      {message}
-    </p>
+    <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">Oops!</h3>
+    <p className="text-gray-600 dark:text-gray-400 text-center mb-6 max-w-md">{message}</p>
     {onRetry && (
       <button
         onClick={onRetry}
@@ -102,9 +96,7 @@ export const LoadingProgress: React.FC<LoadingProgressProps> = ({ progress, mess
       <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
         {message || 'Loading...'}
       </span>
-      <span className="text-sm font-medium text-accent">
-        {Math.round(progress)}%
-      </span>
+      <span className="text-sm font-medium text-accent">{Math.round(progress)}%</span>
     </div>
     <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5 overflow-hidden">
       <div

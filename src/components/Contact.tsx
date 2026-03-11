@@ -32,8 +32,7 @@ interface FAQ {
 const faqs: FAQ[] = [
   {
     question: "What's the best way to reach you?",
-    answer:
-      'Email is the best way to reach me for any inquiries. I typically reply quickly.',
+    answer: 'Email is the best way to reach me for any inquiries. I typically reply quickly.',
   },
   {
     question: 'Can you help with my project?',

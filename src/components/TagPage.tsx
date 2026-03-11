@@ -14,9 +14,9 @@ const TagPage: React.FC = () => {
 
   const filteredPosts = useMemo(() => {
     if (!tagName) return [];
-    return posts.filter(post =>
-      post.status === PostStatus.PUBLISHED && post.tags.includes(tagName)
-    ).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+    return posts
+      .filter((post) => post.status === PostStatus.PUBLISHED && post.tags.includes(tagName))
+      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
   }, [posts, tagName]);
 
   return (
@@ -42,14 +42,18 @@ const TagPage: React.FC = () => {
           </h1>
 
           <p className="text-lg text-secondary-600 dark:text-secondary-300">
-            {filteredPosts.length} {filteredPosts.length === 1 ? 'article' : 'articles'} found with this tag.
+            {filteredPosts.length} {filteredPosts.length === 1 ? 'article' : 'articles'} found with
+            this tag.
           </p>
         </motion.div>
       </section>
 
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mb-8">
-          <Link to="/tags" className="inline-flex items-center text-secondary-600 dark:text-secondary-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
+          <Link
+            to="/tags"
+            className="inline-flex items-center text-secondary-600 dark:text-secondary-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors"
+          >
             <ArrowLeft size={18} className="mr-2" />
             Back to all tags
           </Link>
@@ -62,7 +66,7 @@ const TagPage: React.FC = () => {
             transition={{ duration: 0.5, delay: 0.2 }}
             className="grid gap-8 md:grid-cols-2 lg:grid-cols-3"
           >
-            {filteredPosts.map(post => (
+            {filteredPosts.map((post) => (
               <Card key={post.id} post={post} />
             ))}
           </motion.div>

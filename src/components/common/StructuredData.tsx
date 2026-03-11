@@ -25,9 +25,7 @@ const sanitizeJson = (jsonString: string): string => {
  */
 const StructuredData: React.FC<StructuredDataProps> = ({ data }) => {
   const sanitizedJson = sanitizeJson(JSON.stringify(data));
-  return (
-    <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: sanitizedJson }} />
-  );
+  return <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: sanitizedJson }} />;
 };
 
 export default StructuredData;

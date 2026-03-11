@@ -14,7 +14,7 @@ const Pagination: React.FC<PaginationProps> = ({
   totalPages,
   onPageChange,
   totalResults,
-  resultsPerPage = 6
+  resultsPerPage = 6,
 }) => {
   const [jumpToPage, setJumpToPage] = useState('');
 
@@ -117,10 +117,13 @@ const Pagination: React.FC<PaginationProps> = ({
     return null;
   }
 
-  const baseButtonClasses = "px-3 py-2 rounded-md transition-all duration-200 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 dark:focus:ring-offset-gray-900";
-  const activeButtonClasses = "bg-accent text-white shadow-md hover:bg-indigo-700";
-  const inactiveButtonClasses = "bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600";
-  const disabledButtonClasses = "bg-gray-100 text-gray-400 cursor-not-allowed dark:bg-gray-800 dark:text-gray-500";
+  const baseButtonClasses =
+    'px-3 py-2 rounded-md transition-all duration-200 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 dark:focus:ring-offset-gray-900';
+  const activeButtonClasses = 'bg-accent text-white shadow-md hover:bg-indigo-700';
+  const inactiveButtonClasses =
+    'bg-gray-200 text-gray-700 hover:bg-gray-300 dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600';
+  const disabledButtonClasses =
+    'bg-gray-100 text-gray-400 cursor-not-allowed dark:bg-gray-800 dark:text-gray-500';
 
   const pageNumbers = getPageNumbers();
 
@@ -129,9 +132,11 @@ const Pagination: React.FC<PaginationProps> = ({
       {/* Results count */}
       {totalResults !== undefined && (
         <p className="text-sm text-gray-600 dark:text-gray-400">
-          Showing <span className="font-semibold">{((currentPage - 1) * resultsPerPage) + 1}</span> to{' '}
-          <span className="font-semibold">{Math.min(currentPage * resultsPerPage, totalResults)}</span> of{' '}
-          <span className="font-semibold">{totalResults}</span> results
+          Showing <span className="font-semibold">{(currentPage - 1) * resultsPerPage + 1}</span> to{' '}
+          <span className="font-semibold">
+            {Math.min(currentPage * resultsPerPage, totalResults)}
+          </span>{' '}
+          of <span className="font-semibold">{totalResults}</span> results
         </p>
       )}
 
@@ -160,7 +165,7 @@ const Pagination: React.FC<PaginationProps> = ({
         </button>
 
         {/* Page numbers */}
-        {pageNumbers.map((page, index) => (
+        {pageNumbers.map((page, index) =>
           page === '...' ? (
             <span key={`ellipsis-${index}`} className="px-2 text-gray-500 dark:text-gray-400">
               ...
@@ -176,7 +181,7 @@ const Pagination: React.FC<PaginationProps> = ({
               {page}
             </button>
           )
-        ))}
+        )}
 
         {/* Next page */}
         <button

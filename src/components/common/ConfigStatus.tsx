@@ -10,10 +10,10 @@ interface StatusItem {
 
 /**
  * ConfigStatus Component
- * 
+ *
  * Displays configuration status for debugging purposes.
  * Only visible in development mode or when ?debug=true query parameter is present.
- * 
+ *
  * Shows:
  * - Supabase connection status
  * - Formspree configuration status
@@ -42,9 +42,7 @@ export default function ConfigStatus() {
     const supabaseStatus: StatusItem = {
       label: 'Supabase',
       status: supabaseConfigured ? 'ok' : 'warning',
-      message: supabaseConfigured
-        ? 'Connected'
-        : 'Not configured - using demo mode',
+      message: supabaseConfigured ? 'Connected' : 'Not configured - using demo mode',
     };
 
     // Check Formspree configuration
@@ -64,8 +62,7 @@ export default function ConfigStatus() {
     const pwaStatus: StatusItem = {
       label: 'PWA',
       status: 'serviceWorker' in navigator ? 'ok' : 'error',
-      message:
-        'serviceWorker' in navigator ? 'Service Worker available' : 'Not supported',
+      message: 'serviceWorker' in navigator ? 'Service Worker available' : 'Not supported',
     };
 
     // Check demo mode

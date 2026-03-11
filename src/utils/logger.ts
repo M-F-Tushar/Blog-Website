@@ -12,55 +12,55 @@ const VERBOSE_LOGGING = import.meta.env.VITE_VERBOSE_LOGGING === 'true';
  * These logs will be stripped in production by Terser
  */
 export const logger = {
-    /**
-     * General information logging
-     */
-    info: (message: string, ...args: unknown[]) => {
-        if (isDevelopment && VERBOSE_LOGGING) {
-            // eslint-disable-next-line no-console
-            console.log(`ℹ️ ${message}`, ...args);
-        }
-    },
+  /**
+   * General information logging
+   */
+  info: (message: string, ...args: unknown[]) => {
+    if (isDevelopment && VERBOSE_LOGGING) {
+      // eslint-disable-next-line no-console
+      console.log(`ℹ️ ${message}`, ...args);
+    }
+  },
 
-    /**
-     * Success/completion logging
-     */
-    success: (message: string, ...args: unknown[]) => {
-        if (isDevelopment && VERBOSE_LOGGING) {
-            // eslint-disable-next-line no-console
-            console.log(`✅ ${message}`, ...args);
-        }
-    },
+  /**
+   * Success/completion logging
+   */
+  success: (message: string, ...args: unknown[]) => {
+    if (isDevelopment && VERBOSE_LOGGING) {
+      // eslint-disable-next-line no-console
+      console.log(`✅ ${message}`, ...args);
+    }
+  },
 
-    /**
-     * Warning logging (shown even without verbose flag)
-     */
-    warn: (message: string, ...args: unknown[]) => {
-        if (isDevelopment) {
-            // eslint-disable-next-line no-console
-            console.warn(`⚠️ ${message}`, ...args);
-        }
-    },
+  /**
+   * Warning logging (shown even without verbose flag)
+   */
+  warn: (message: string, ...args: unknown[]) => {
+    if (isDevelopment) {
+      // eslint-disable-next-line no-console
+      console.warn(`⚠️ ${message}`, ...args);
+    }
+  },
 
-    /**
-     * Error logging (always shown in development)
-     */
-    error: (message: string, ...args: unknown[]) => {
-        if (isDevelopment) {
-            // eslint-disable-next-line no-console
-            console.error(`❌ ${message}`, ...args);
-        }
-    },
+  /**
+   * Error logging (always shown in development)
+   */
+  error: (message: string, ...args: unknown[]) => {
+    if (isDevelopment) {
+      // eslint-disable-next-line no-console
+      console.error(`❌ ${message}`, ...args);
+    }
+  },
 
-    /**
-     * Debug logging for detailed tracing
-     */
-    debug: (message: string, ...args: unknown[]) => {
-        if (isDevelopment && VERBOSE_LOGGING) {
-            // eslint-disable-next-line no-console
-            console.log(`🔍 ${message}`, ...args);
-        }
-    },
+  /**
+   * Debug logging for detailed tracing
+   */
+  debug: (message: string, ...args: unknown[]) => {
+    if (isDevelopment && VERBOSE_LOGGING) {
+      // eslint-disable-next-line no-console
+      console.log(`🔍 ${message}`, ...args);
+    }
+  },
 };
 
 export default logger;
