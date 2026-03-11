@@ -40,6 +40,8 @@ const Search: React.FC = () => {
 
     const lowerCaseQuery = query.toLowerCase();
     const now = new Date();
+    const categoryFilterSet = new Set(filters.categories);
+    const tagFilterSet = new Set(filters.tags);
 
     return posts.filter((post) => {
       // Text search
@@ -52,12 +54,12 @@ const Search: React.FC = () => {
       if (!matchesQuery) return false;
 
       // Category filter
-      if (filters.categories.length > 0 && !filters.categories.includes(post.category)) {
+      if (categoryFilterSet.size > 0 && !categoryFilterSet.has(post.category)) {
         return false;
       }
 
       // Tag filter
-      if (filters.tags.length > 0 && !filters.tags.some(tag => post.tags.includes(tag))) {
+      if (tagFilterSet.size > 0 && !post.tags.some(tag => tagFilterSet.has(tag))) {
         return false;
       }
 

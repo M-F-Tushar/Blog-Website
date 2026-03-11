@@ -29,7 +29,8 @@ const Tags: React.FC = () => {
 
     const filteredTags = useMemo(() => {
         if (!searchQuery) return allTags;
-        return allTags.filter(t => (t.tag || '').toLowerCase().includes(searchQuery.toLowerCase()));
+        const lowerQuery = searchQuery.toLowerCase();
+        return allTags.filter(t => (t.tag || '').toLowerCase().includes(lowerQuery));
     }, [allTags, searchQuery]);
 
     if (loading) {

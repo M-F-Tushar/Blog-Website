@@ -12,11 +12,12 @@ interface RelatedPostsProps {
 const RelatedPosts: React.FC<RelatedPostsProps> = ({ currentPost, allPosts }) => {
     const relatedPosts = useMemo(() => {
         // Find posts with matching tags
+        const currentTagsSet = new Set(currentPost.tags);
         const related = allPosts
             .filter(post => post.id !== currentPost.id)
             .map(post => {
                 // Calculate relevance score based on shared tags
-                const sharedTags = post.tags.filter(tag => currentPost.tags.includes(tag));
+                const sharedTags = post.tags.filter(tag => currentTagsSet.has(tag));
                 return {
                     post,
                     score: sharedTags.length
