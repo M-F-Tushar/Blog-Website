@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Comment } from '../../types';
 import { useAuth } from '../../hooks/useAuth';
 import CommentForm from './CommentForm';
@@ -111,8 +111,27 @@ const CommentItem: React.FC<{
 
 const CommentList: React.FC<CommentListProps> = ({ comments, onReply, onDelete }) => {
     // Organize comments into a tree structure
-    const rootComments = comments.filter(c => !c.parent_id);
-    const getReplies = (parentId: string) => comments.filter(c => c.parent_id === parentId);
+    const { rootComments, repliesMap } = useMemo(() => {
+        const root: Comment[] = [];
+        const map = new Map<string, Comment[]>();
+
+        for (const comment of comments) {
+            if (!comment.parent_id) {
+                root.push(comment);
+            } else {
+                let replies = map.get(comment.parent_id);
+                if (!replies) {
+                    replies = [];
+                    map.set(comment.parent_id, replies);
+                }
+                replies.push(comment);
+            }
+        }
+
+        return { rootComments: root, repliesMap: map };
+    }, [comments]);
+
+    const getReplies = (parentId: string) => repliesMap.get(parentId) || [];
 
     return (
         <div className="space-y-6">

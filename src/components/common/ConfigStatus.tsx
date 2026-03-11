@@ -10,10 +10,10 @@ interface StatusItem {
 
 /**
  * ConfigStatus Component
- * 
+ *
  * Displays configuration status for debugging purposes.
  * Only visible in development mode or when ?debug=true query parameter is present.
- * 
+ *
  * Shows:
  * - Supabase connection status
  * - Formspree configuration status

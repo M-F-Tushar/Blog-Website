@@ -16,7 +16,7 @@ interface ProvidersProps {
 /**
  * Composed providers wrapper to reduce nesting depth in App.tsx
  * Centralizes all context providers for easier maintenance
- * 
+ *
  * Provider order matters:
  * 1. Auth - required by other providers for user state
  * 2. Theme - UI theming, should be early
