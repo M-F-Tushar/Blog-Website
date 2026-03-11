@@ -11,7 +11,8 @@ const ReadingList: React.FC = () => {
   const { bookmarks, isLoading: bookmarksLoading } = useBookmarks();
 
   const bookmarkedPosts = useMemo(() => {
-    return posts.filter((post) => bookmarks.includes(post.id));
+    const bookmarkSet = new Set(bookmarks);
+    return posts.filter((post) => bookmarkSet.has(post.id));
   }, [posts, bookmarks]);
 
   if (postsLoading || bookmarksLoading) {

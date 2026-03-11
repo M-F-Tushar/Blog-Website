@@ -129,7 +129,8 @@ const AdminHomepageLayout: React.FC = () => {
     .filter(Boolean) as HomepageSectionDef[];
 
   // Include any sections not in the order array
-  const remainingSections = SECTION_DEFS.filter((d) => !sectionOrder.includes(d.id));
+  const sectionOrderSet = new Set(sectionOrder);
+  const remainingSections = SECTION_DEFS.filter((d) => !sectionOrderSet.has(d.id));
   const allOrderedSections = [...orderedSections, ...remainingSections];
 
   const toggleSection = (showKey: string) => {
