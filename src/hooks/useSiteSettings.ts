@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useMemo, useCallback, useEffect } from 'react';
 import { supabase, isSupabaseConfigured } from '../supabase/client';
 import { FALLBACK_SETTINGS } from '../data/fallback';
+import type { DatabaseSettings } from '../types/database';
 
 interface SocialLinks {
   github: string;
@@ -280,37 +281,37 @@ export const SiteSettingsProvider: React.FC<{ children: React.ReactNode }> = ({ 
         console.log('📦 Supabase site_settings data:', data);
 
         if (data && !error) {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          const settingsData = data as Record<string, any>;
           const fetchedSettings: SiteSettings = {
-            siteName: settingsData.site_name || FALLBACK_SETTINGS.site_name,
-            siteDescription: settingsData.site_description || FALLBACK_SETTINGS.site_description,
-            authorName: settingsData.author_name || FALLBACK_SETTINGS.author_name,
-            authorTagline: settingsData.author_tagline || FALLBACK_SETTINGS.author_tagline,
-            authorBio: settingsData.author_bio || FALLBACK_SETTINGS.author_bio,
+            siteName: data.site_name || FALLBACK_SETTINGS.site_name,
+            siteDescription: data.site_description || FALLBACK_SETTINGS.site_description,
+            authorName: data.author_name || FALLBACK_SETTINGS.author_name,
+            authorTagline: data.author_tagline || FALLBACK_SETTINGS.author_tagline,
+            authorBio: data.author_bio || FALLBACK_SETTINGS.author_bio,
             socialLinks: {
-              github: settingsData.social_github || FALLBACK_SETTINGS.social_github,
-              linkedin: settingsData.social_linkedin || FALLBACK_SETTINGS.social_linkedin,
-              email: settingsData.social_email || FALLBACK_SETTINGS.social_email,
-              twitter: settingsData.social_twitter || '',
-              instagram: settingsData.social_instagram || '',
-              youtube: settingsData.social_youtube || '',
-              discord: settingsData.social_discord || '',
+              github: data.social_github || FALLBACK_SETTINGS.social_github,
+              linkedin: data.social_linkedin || FALLBACK_SETTINGS.social_linkedin,
+              email: data.social_email || FALLBACK_SETTINGS.social_email,
+              twitter: data.social_twitter || '',
+              instagram: data.social_instagram || '',
+              youtube: data.social_youtube || '',
+              discord: data.social_discord || '',
             },
-            categories: settingsData.categories || FALLBACK_SETTINGS.categories,
-            skills: (settingsData.skills || FALLBACK_SETTINGS.skills) as unknown as Skill[],
-            timeline: (settingsData.timeline ||
+            categories: data.categories || FALLBACK_SETTINGS.categories,
+            skills: (data.skills || FALLBACK_SETTINGS.skills) as unknown as Skill[],
+            timeline: (data.timeline ||
               FALLBACK_SETTINGS.timeline) as unknown as TimelineItem[],
-            achievements: (settingsData.achievements ||
+            achievements: (data.achievements ||
               FALLBACK_SETTINGS.achievements) as unknown as Achievement[],
-            uiText: settingsData.ui_text || settings.uiText,
-            homepageLayout: settingsData.homepage_layout || settings.homepageLayout,
-            appearance: settingsData.appearance || settings.appearance,
+            uiText: data.ui_text || settings.uiText,
+            homepageLayout: data.homepage_layout || settings.homepageLayout,
+            appearance: data.appearance || settings.appearance,
             navigation:
-              settingsData.navigation?.menuItems?.length > 0
-                ? settingsData.navigation
+              data.navigation &&
+              data.navigation.menuItems &&
+              data.navigation.menuItems.length > 0
+                ? (data.navigation as SiteSettings['navigation'])
                 : settings.navigation,
-            seo: settingsData.seo || settings.seo,
+            seo: (data.seo as SiteSettings['seo']) || settings.seo,
           };
           console.log('✅ Settings fetched successfully:', fetchedSettings);
           setSettings(fetchedSettings);
@@ -359,8 +360,7 @@ export const SiteSettingsProvider: React.FC<{ children: React.ReactNode }> = ({ 
       }
 
       // Prepare the update data with snake_case field names
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      const updateData: Record<string, any> = {};
+      const updateData: Partial<DatabaseSettings> = {};
 
       if (newSettings.siteName !== undefined) updateData.site_name = newSettings.siteName;
       if (newSettings.siteDescription !== undefined)
@@ -396,8 +396,7 @@ export const SiteSettingsProvider: React.FC<{ children: React.ReactNode }> = ({ 
       console.log('📤 Sending update to Supabase:', updateData);
 
       if (existingSettings) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const settingsId = (existingSettings as Record<string, any>).id;
+        const settingsId = existingSettings.id;
         // Update existing row
         const { error: updateError } = await supabase
           .from('site_settings')
