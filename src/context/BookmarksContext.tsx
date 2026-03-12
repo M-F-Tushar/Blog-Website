@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import { supabase, Database } from '../services/supabase';
+import { supabase } from '../services/supabase';
+import type { Database } from '../services/supabase';
 import { SupabaseClient } from '@supabase/supabase-js';
 import { useAuth } from '../hooks/useAuth';
 
@@ -76,7 +77,6 @@ export const BookmarksProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       } else {
         const { error } = await client
           .from('bookmarks')
-          // @ts-expect-error - Supabase bookmarks table type inference issue
           .insert({ user_id: user.id, post_id: postId });
 
         if (error) {

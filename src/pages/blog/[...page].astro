@@ -6,14 +6,26 @@ import Reveal from '@/components/astro/Reveal.astro';
 import NebulaGradient from '@/components/astro/NebulaGradient.astro';
 import { getPublishedPosts, slugify, getSiteSettings, isPageVisible } from '@/lib/supabase';
 
+const POSTS_PER_PAGE = 9;
+
+export async function getStaticPaths() {
+  const postsPerPage = 9;
+  const allPosts = await getPublishedPosts();
+  const totalPages = Math.max(1, Math.ceil(allPosts.length / postsPerPage));
+
+  return Array.from({ length: totalPages }, (_, i) => ({
+    params: { page: i === 0 ? undefined : String(i + 1) },
+    props: { currentPage: i + 1 },
+  }));
+}
+
+const { currentPage } = Astro.props;
 const settings = await getSiteSettings();
 const pageVisible = isPageVisible(settings, '/blog');
 
-const POSTS_PER_PAGE = 9;
-
 const allPosts = await getPublishedPosts();
 const totalPages = Math.ceil(allPosts.length / POSTS_PER_PAGE);
-const posts = allPosts.slice(0, POSTS_PER_PAGE);
+const posts = allPosts.slice((currentPage - 1) * POSTS_PER_PAGE, currentPage * POSTS_PER_PAGE);
 
 // Get all categories and tags for filtering
 const categories = [...new Set(allPosts.map((p) => p.category))].sort();
@@ -24,7 +36,7 @@ const allTags = Object.entries(tagCounts).sort((a, b) => b[1] - a[1]).slice(0, 2
 
 {pageVisible ? (
 <BaseLayout
-  title="Blog"
+  title={currentPage === 1 ? 'Blog' : `Blog - Page ${currentPage}`}
   description="Articles about AI, machine learning, deep learning, MLOps, and technology."
 >
   <div class="pb-12">
@@ -34,7 +46,7 @@ const allTags = Object.entries(tagCounts).sort((a, b) => b[1] - a[1]).slice(0, 2
       <div class="max-w-3xl mx-auto relative z-10">
         <Reveal>
           <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-surface border border-white/10 mb-6">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-primary-500"><path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+            <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-primary-500"><path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
             <span class="text-sm font-medium text-secondary-300">Blog</span>
           </div>
         </Reveal>
@@ -67,7 +79,7 @@ const allTags = Object.entries(tagCounts).sort((a, b) => b[1] - a[1]).slice(0, 2
                   <BlogCard post={post} />
                 ))}
               </div>
-              <Pagination currentPage={1} totalPages={totalPages} basePath="/blog" />
+              <Pagination currentPage={currentPage} totalPages={totalPages} basePath="/blog" />
             </>
           ) : (
             <div class="text-center py-20">

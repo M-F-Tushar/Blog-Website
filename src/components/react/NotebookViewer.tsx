@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+import { sanitizeHtml } from '@/utils/sanitize';
 
 interface NotebookCell {
   cell_type: 'code' | 'markdown' | 'raw';
@@ -107,7 +108,7 @@ const NotebookViewer: React.FC<Props> = ({ notebook: notebookProp, title }) => {
           <div
             key={key}
             className="overflow-x-auto text-sm"
-            dangerouslySetInnerHTML={{ __html: output.data['text/html'].join('') }}
+            dangerouslySetInnerHTML={{ __html: sanitizeHtml(output.data['text/html'].join('')) }}
           />
         );
       }

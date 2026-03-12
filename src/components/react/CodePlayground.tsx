@@ -34,7 +34,7 @@ const CodePlayground: React.FC<Props> = ({
         script.onerror = () => reject(new Error('Failed to load Pyodide'));
       });
 
-      const py = await (window as any).loadPyodide({
+      const py = await window.loadPyodide({
         indexURL: 'https://cdn.jsdelivr.net/pyodide/v0.26.4/full/',
       });
 
@@ -189,7 +189,7 @@ sys.stderr = sys.__stderr__
           value={code}
           onChange={(e) => setCode(e.target.value)}
           onKeyDown={handleKeyDown}
-          className="w-full min-h-[200px] p-4 font-mono text-sm bg-gray-900 text-gray-100 resize-y focus:outline-none"
+          className="w-full min-h-[200px] p-4 font-mono text-sm bg-gray-900 text-gray-100 resize-y focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500/50"
           spellCheck={false}
           placeholder="# Write Python code here..."
         />

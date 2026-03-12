@@ -37,10 +37,9 @@ export default defineConfig({
     },
     ssr: {
       noExternal: ['lucide-react'],
-      external: ['three'],
     },
-    optimizeDeps: {
-      exclude: ['@react-three/fiber', '@react-three/drei'],
+    esbuild: {
+      drop: process.env.NODE_ENV === 'production' ? ['console', 'debugger'] : [],
     },
   },
   server: {

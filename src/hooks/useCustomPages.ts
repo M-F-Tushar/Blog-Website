@@ -1,8 +1,7 @@
 import React, { createContext, useContext, useState, useCallback, useMemo, useEffect } from 'react';
 import { isSupabaseConfigured } from '../supabase/client';
+import type { CustomPage, CustomPageSection } from '../types/types';
 import {
-  type CustomPage,
-  type CustomPageSection,
   createCustomPage as createPageService,
   updateCustomPage as updatePageService,
   deleteCustomPage as deletePageService,

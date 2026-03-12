@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import AdminStarryBackground from './ui/AdminStarryBackground';
@@ -6,11 +6,16 @@ import AdminNebulaGradient from './ui/AdminNebulaGradient';
 import AdminShootingStar from './ui/AdminShootingStar';
 import { cosmic } from './ui/cosmicClassNames';
 
+const MAX_ATTEMPTS = 5;
+const BASE_DELAY_MS = 2000;
+
 const AdminLogin: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [lockedUntil, setLockedUntil] = useState(0);
+  const attemptsRef = useRef(0);
   const navigate = useNavigate();
   const { signIn, isAuthenticated } = useAuth();
 
@@ -20,17 +25,33 @@ const AdminLogin: React.FC = () => {
     }
   }, [isAuthenticated, navigate]);
 
+  const isLocked = lockedUntil > Date.now();
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (Date.now() < lockedUntil) {
+      setError('Too many attempts. Please wait before trying again.');
+      return;
+    }
+
     setError('');
     setLoading(true);
 
     const result = await signIn(email, password);
 
     if (result.success) {
+      attemptsRef.current = 0;
       navigate('/dashboard');
     } else {
-      setError(result.error || 'Invalid credentials');
+      attemptsRef.current += 1;
+      if (attemptsRef.current >= MAX_ATTEMPTS) {
+        const delay = BASE_DELAY_MS * Math.pow(2, attemptsRef.current - MAX_ATTEMPTS);
+        setLockedUntil(Date.now() + delay);
+        setError(`Too many failed attempts. Please wait ${Math.round(delay / 1000)}s.`);
+      } else {
+        setError(result.error || 'Invalid credentials');
+      }
     }
 
     setLoading(false);
@@ -65,7 +86,7 @@ const AdminLogin: React.FC = () => {
                   className={cosmic.input}
                   placeholder="admin@example.com"
                   required
-                  disabled={loading}
+                  disabled={loading || isLocked}
                 />
               </div>
               <div>
@@ -80,19 +101,19 @@ const AdminLogin: React.FC = () => {
                   className={cosmic.input}
                   placeholder="Enter your password"
                   required
-                  disabled={loading}
+                  disabled={loading || isLocked}
                 />
               </div>
 
               {error && (
-                <div className={cosmic.alertError}>
+                <div role="alert" className={cosmic.alertError}>
                   <p className="text-sm">{error}</p>
                 </div>
               )}
 
               <button
                 type="submit"
-                disabled={loading}
+                disabled={loading || isLocked}
                 className="w-full px-6 py-3 bg-gradient-to-r from-primary-600 to-accent-600 text-white font-semibold rounded-lg shadow-lg shadow-primary-500/25 hover:shadow-primary-500/40 hover:from-primary-500 hover:to-accent-500 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {loading ? (

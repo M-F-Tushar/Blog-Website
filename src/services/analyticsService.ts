@@ -41,7 +41,6 @@ export async function recordPageView(postId: string): Promise<void> {
     }
 
     // Use the Supabase function to record the view
-    // @ts-expect-error - post_views table and record_page_view function may not be in generated types yet
     await supabase.rpc('record_page_view', {
       p_post_id: postId,
       p_session_id: sessionId,
@@ -63,28 +62,15 @@ export async function getPostViewStats(): Promise<PostViewStats[]> {
     return [];
   }
 
-  // Interface for the post_statistics view row
-  interface PostStatisticsRow {
-    post_id: string;
-    title: string;
-    category: string | null;
-    status: string | null;
-    total_views: number | null;
-    unique_views: number | null;
-    views_last_7_days: number | null;
-    views_last_30_days: number | null;
-  }
-
   try {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data, error } = await (supabase as any).from('post_statistics').select('*');
+    const { data, error } = await supabase.from('post_statistics').select('*');
 
     if (error) {
       console.error('Error fetching post statistics:', error);
       return [];
     }
 
-    return ((data || []) as PostStatisticsRow[]).map((row) => ({
+    return (data || []).map((row) => ({
       postId: row.post_id,
       title: row.title,
       category: row.category || 'Uncategorized',

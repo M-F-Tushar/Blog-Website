@@ -120,7 +120,7 @@ const difficultyConfig: Record<string, { dots: number; color: string; label: str
 
       <div class="container mx-auto max-w-6xl text-center">
         <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-surface/50 backdrop-blur-sm border border-white/10 mb-6">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gold-400">
+          <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gold-400">
             <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"></path>
           </svg>
           <span class="text-sm font-medium text-secondary-300">Curated Resources</span>
@@ -159,13 +159,14 @@ const difficultyConfig: Record<string, { dots: number; color: string; label: str
         <div class="flex flex-col md:flex-row items-center gap-4">
           <!-- Search -->
           <div class="relative w-full md:w-96">
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="absolute left-3 top-1/2 -translate-y-1/2 text-secondary-500">
+            <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="absolute left-3 top-1/2 -translate-y-1/2 text-secondary-500">
               <circle cx="11" cy="11" r="8"></circle>
               <path d="m21 21-4.3-4.3"></path>
             </svg>
             <input
               type="text"
               id="rec-search"
+              aria-label="Search recommendations"
               placeholder="Search by title, description, or tag..."
               class="w-full pl-10 pr-4 py-2.5 bg-white/5 border border-white/10 rounded-xl text-secondary-200 placeholder-secondary-500 focus:outline-none focus:border-primary-500/50 focus:shadow-[0_0_0_3px_rgba(6,182,212,0.1)] transition-all text-sm"
             />
@@ -177,7 +178,7 @@ const difficultyConfig: Record<string, { dots: number; color: string; label: str
               id="filter-toggle"
               class="md:hidden flex items-center gap-2 px-4 py-2.5 bg-white/5 text-secondary-300 rounded-xl font-medium border border-white/10 text-sm"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
+              <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
               Filters
             </button>
 
@@ -188,14 +189,14 @@ const difficultyConfig: Record<string, { dots: number; color: string; label: str
                 class="view-btn p-2 rounded-lg transition-all bg-primary-500/20 text-primary-300"
                 title="Grid View"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="7" height="7" x="3" y="3" rx="1"></rect><rect width="7" height="7" x="14" y="3" rx="1"></rect><rect width="7" height="7" x="14" y="14" rx="1"></rect><rect width="7" height="7" x="3" y="14" rx="1"></rect></svg>
+                <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="7" height="7" x="3" y="3" rx="1"></rect><rect width="7" height="7" x="14" y="3" rx="1"></rect><rect width="7" height="7" x="14" y="14" rx="1"></rect><rect width="7" height="7" x="3" y="14" rx="1"></rect></svg>
               </button>
               <button
                 data-view="list"
                 class="view-btn p-2 rounded-lg transition-all text-secondary-500 hover:text-secondary-300"
                 title="List View"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" x2="21" y1="6" y2="6"></line><line x1="8" x2="21" y1="12" y2="12"></line><line x1="8" x2="21" y1="18" y2="18"></line><line x1="3" x2="3.01" y1="6" y2="6"></line><line x1="3" x2="3.01" y1="12" y2="12"></line><line x1="3" x2="3.01" y1="18" y2="18"></line></svg>
+                <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" x2="21" y1="6" y2="6"></line><line x1="8" x2="21" y1="12" y2="12"></line><line x1="8" x2="21" y1="18" y2="18"></line><line x1="3" x2="3.01" y1="6" y2="6"></line><line x1="3" x2="3.01" y1="12" y2="12"></line><line x1="3" x2="3.01" y1="18" y2="18"></line></svg>
               </button>
             </div>
           </div>
@@ -243,7 +244,7 @@ const difficultyConfig: Record<string, { dots: number; color: string; label: str
       <Reveal>
         <section id="featured-section" class="container mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 mt-12">
           <div class="flex items-center gap-3 mb-8">
-            <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="currentColor" class="text-gold-400">
+            <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="currentColor" class="text-gold-400">
               <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>
             </svg>
             <h2 class="text-2xl font-bold font-serif text-secondary-100">Featured Picks</h2>
@@ -273,13 +274,13 @@ const difficultyConfig: Record<string, { dots: number; color: string; label: str
                         />
                       ) : (
                         <div class={`w-full h-full bg-gradient-to-br ${gradient} flex items-center justify-center min-h-[10rem]`}>
-                          <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="text-white/40">
+                          <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="text-white/40">
                             <path d={typeIcons[rec.type] || typeIcons.Article} />
                           </svg>
                         </div>
                       )}
                       <div class="absolute top-3 left-3 px-2 py-1 bg-gold-500 text-white text-xs font-semibold rounded-full flex items-center gap-1 shadow-lg">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                        <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
                         Featured
                       </div>
                     </div>
@@ -288,7 +289,7 @@ const difficultyConfig: Record<string, { dots: number; color: string; label: str
                     <div class="flex-1 p-6 flex flex-col">
                       <div class="flex flex-wrap items-center gap-3 mb-3">
                         <span class={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold ${color.bg} ${color.text} border ${color.border}`}>
-                          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                          <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d={typeIcons[rec.type] || typeIcons.Article} />
                           </svg>
                           {rec.type}
@@ -305,7 +306,7 @@ const difficultyConfig: Record<string, { dots: number; color: string; label: str
                         )}
                         {rec.estimatedTime && (
                           <span class="inline-flex items-center gap-1 text-xs text-secondary-400">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                            <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
                             {rec.estimatedTime}
                           </span>
                         )}
@@ -340,7 +341,7 @@ const difficultyConfig: Record<string, { dots: number; color: string; label: str
                           class="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium bg-primary-600 text-white rounded-lg hover:bg-primary-500 transition-colors"
                         >
                           Visit Resource
-                          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                          <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
                         </a>
                       </div>
                     </div>
@@ -390,7 +391,7 @@ const difficultyConfig: Record<string, { dots: number; color: string; label: str
                     />
                   ) : (
                     <div class={`w-full h-full bg-gradient-to-br ${gradient} flex items-center justify-center`}>
-                      <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="text-white/30">
+                      <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="text-white/30">
                         <path d={typeIcons[rec.type] || typeIcons.Article} />
                       </svg>
                     </div>
@@ -402,7 +403,7 @@ const difficultyConfig: Record<string, { dots: number; color: string; label: str
                 <div class="p-5 flex flex-col flex-1">
                   <div class="flex flex-wrap items-center gap-2 mb-3">
                     <span class={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold ${color.bg} ${color.text} border ${color.border}`}>
-                      <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d={typeIcons[rec.type] || typeIcons.Article} />
                       </svg>
                       {rec.type}
@@ -422,7 +423,7 @@ const difficultyConfig: Record<string, { dots: number; color: string; label: str
                     )}
                     {rec.estimatedTime && (
                       <span class="inline-flex items-center gap-1 text-xs text-secondary-400">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                        <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
                         {rec.estimatedTime}
                       </span>
                     )}
@@ -460,7 +461,7 @@ const difficultyConfig: Record<string, { dots: number; color: string; label: str
                       class="inline-flex items-center justify-center w-full gap-2 px-4 py-2.5 bg-white/5 text-secondary-200 font-medium rounded-lg border border-white/10 hover:bg-primary-600 hover:text-white hover:border-primary-500 transition-all duration-300 text-sm"
                     >
                       Visit Resource
-                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+                      <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
                     </a>
                   </div>
                 </div>

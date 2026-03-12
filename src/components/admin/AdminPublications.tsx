@@ -214,7 +214,7 @@ const AdminPublications: React.FC = () => {
                     <div className="flex items-center justify-end space-x-3">
                       <button
                         onClick={() => handleToggleFeatured(pub)}
-                        className="focus:outline-none transition-colors"
+                        className="focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500/50 rounded transition-colors"
                         title={pub.featured ? 'Remove from featured' : 'Mark as featured'}
                         aria-label={pub.featured ? 'Remove from featured' : 'Mark as featured'}
                       >

@@ -5,8 +5,8 @@ import React, {
   useEffect,
   useCallback,
   useMemo,
-  ReactNode,
 } from 'react';
+import type { ReactNode } from 'react';
 import { authService } from '../services/authService';
 import type { User, Session } from '@supabase/supabase-js';
 
@@ -70,9 +70,9 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         return { success: true };
       }
       return { success: false, error: 'Invalid response from auth service' };
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (error: any) {
-      return { success: false, error: error.message };
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : 'Sign in failed';
+      return { success: false, error: message };
     } finally {
       setLoading(false);
     }
@@ -86,9 +86,9 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       setUser(null);
       setIsAuthenticated(false);
       return { success: true };
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (error: any) {
-      return { success: false, error: error.message };
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : 'Sign out failed';
+      return { success: false, error: message };
     } finally {
       setLoading(false);
     }

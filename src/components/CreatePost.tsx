@@ -589,7 +589,7 @@ const CreatePost: React.FC = () => {
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder="Post title..."
-              className="w-full text-3xl font-bold font-serif bg-transparent border-none focus:outline-none text-secondary-50 placeholder-secondary-600"
+              className="w-full text-3xl font-bold font-serif bg-transparent border-none focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500/50 focus-visible:rounded text-secondary-50 placeholder-secondary-600"
               required
             />
           </div>
@@ -838,7 +838,7 @@ const CreatePost: React.FC = () => {
                   value={content}
                   onChange={(e) => setContent(e.target.value)}
                   placeholder="Start writing your content in Markdown..."
-                  className="w-full h-[500px] p-4 bg-surface text-secondary-200 focus:outline-none resize-none font-mono text-sm leading-relaxed placeholder-secondary-600"
+                  className="w-full h-[500px] p-4 bg-surface text-secondary-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500/50 resize-none font-mono text-sm leading-relaxed placeholder-secondary-600"
                   required
                 />
               </div>

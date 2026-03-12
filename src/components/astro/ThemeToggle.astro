@@ -1,0 +1,94 @@
+---
+/**
+ * Theme toggle button — pure Astro, zero React.
+ * Defaults to dark; reads `localStorage.theme` on the client.
+ * The dark-mode FOUC script in BaseLayout already sets the class before paint,
+ * so we just need to sync the button icon on load.
+ */
+---
+
+<button
+  id="theme-toggle"
+  data-theme-toggle
+  class="p-2 rounded-full transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary-500/50 hover:scale-110 bg-secondary-800 text-amber-400 hover:bg-secondary-700"
+  aria-label="Switch to light mode"
+>
+  <!-- Sun icon (shown in dark mode → means "switch to light") -->
+  <svg
+    id="theme-icon-sun"
+    xmlns="http://www.w3.org/2000/svg"
+    width="20"
+    height="20"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <circle cx="12" cy="12" r="4"></circle>
+    <path d="M12 2v2"></path>
+    <path d="M12 20v2"></path>
+    <path d="m4.93 4.93 1.41 1.41"></path>
+    <path d="m17.66 17.66 1.41 1.41"></path>
+    <path d="M2 12h2"></path>
+    <path d="M20 12h2"></path>
+    <path d="m6.34 17.66-1.41 1.41"></path>
+    <path d="m19.07 4.93-1.41 1.41"></path>
+  </svg>
+  <!-- Moon icon (shown in light mode → means "switch to dark") -->
+  <svg
+    id="theme-icon-moon"
+    xmlns="http://www.w3.org/2000/svg"
+    width="20"
+    height="20"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    style="display:none;"
+  >
+    <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path>
+  </svg>
+</button>
+
+<script>
+  function initThemeToggle() {
+    const btn = document.getElementById('theme-toggle');
+    const sunIcon = document.getElementById('theme-icon-sun');
+    const moonIcon = document.getElementById('theme-icon-moon');
+    if (!btn || !sunIcon || !moonIcon) return;
+
+    function applyUI(isDark: boolean) {
+      if (isDark) {
+        sunIcon.style.display = '';
+        moonIcon.style.display = 'none';
+        btn.className = 'p-2 rounded-full transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary-500/50 hover:scale-110 bg-secondary-800 text-amber-400 hover:bg-secondary-700';
+        btn.setAttribute('aria-label', 'Switch to light mode');
+      } else {
+        sunIcon.style.display = 'none';
+        moonIcon.style.display = '';
+        btn.className = 'p-2 rounded-full transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary-500/50 hover:scale-110 bg-secondary-100 text-indigo-600 hover:bg-secondary-200';
+        btn.setAttribute('aria-label', 'Switch to dark mode');
+      }
+    }
+
+    // Sync icon with current state (class already set by BaseLayout inline script)
+    const isDark = document.documentElement.classList.contains('dark');
+    applyUI(isDark);
+
+    btn.addEventListener('click', () => {
+      const nowDark = document.documentElement.classList.toggle('dark');
+      localStorage.setItem('theme', nowDark ? 'dark' : 'light');
+      applyUI(nowDark);
+    });
+  }
+
+  // Run on initial load
+  initThemeToggle();
+
+  // Re-run after Astro view transitions (swaps DOM)
+  document.addEventListener('astro:after-swap', initThemeToggle);
+</script>

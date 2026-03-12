@@ -56,7 +56,7 @@ CREATE TABLE IF NOT EXISTS posts (
 
 ALTER TABLE posts ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY "posts_public_read"   ON posts FOR SELECT USING (true);
+CREATE POLICY "posts_public_read"   ON posts FOR SELECT USING (status = 'Published' OR (auth.uid() = '0010291f-acd6-4594-87aa-9c13f5acfccf'::uuid));
 CREATE POLICY "posts_admin_insert"  ON posts FOR INSERT TO authenticated WITH CHECK (auth.uid() = '0010291f-acd6-4594-87aa-9c13f5acfccf'::uuid);
 CREATE POLICY "posts_admin_update"  ON posts FOR UPDATE TO authenticated USING  (auth.uid() = '0010291f-acd6-4594-87aa-9c13f5acfccf'::uuid);
 CREATE POLICY "posts_admin_delete"  ON posts FOR DELETE TO authenticated USING  (auth.uid() = '0010291f-acd6-4594-87aa-9c13f5acfccf'::uuid);
@@ -462,7 +462,7 @@ GROUP BY post_id;
 -- Function to record a page view (callable by anon and authenticated)
 CREATE FUNCTION record_page_view(
   p_post_id      TEXT,
-  p_ip_hash      TEXT,
+  p_ip_hash      TEXT DEFAULT 'unknown',
   p_user_agent   TEXT DEFAULT NULL,
   p_referrer     TEXT DEFAULT NULL,
   p_country_code TEXT DEFAULT NULL,
@@ -470,10 +470,21 @@ CREATE FUNCTION record_page_view(
 )
 RETURNS VOID AS $$
 BEGIN
+  -- Rate limit: skip if same session already viewed this post in the last hour
+  IF EXISTS (
+    SELECT 1 FROM post_views
+    WHERE post_id = p_post_id
+      AND session_id = p_session_id
+      AND p_session_id IS NOT NULL
+      AND viewed_at > NOW() - INTERVAL '1 hour'
+  ) THEN
+    RETURN;
+  END IF;
+
   INSERT INTO post_views (post_id, viewer_id, ip_hash, user_agent, referrer, country_code, session_id)
   VALUES (p_post_id, auth.uid(), p_ip_hash, p_user_agent, p_referrer, p_country_code, p_session_id);
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$ LANGUAGE plpgsql SECURITY INVOKER;
 
 GRANT EXECUTE ON FUNCTION record_page_view TO anon, authenticated;
 

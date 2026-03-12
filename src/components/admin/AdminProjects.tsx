@@ -160,7 +160,7 @@ const AdminProjects: React.FC = () => {
                   <td className={cosmic.tableCell}>
                     <button
                       onClick={() => handleToggleFeatured(project)}
-                      className="focus:outline-none transition-colors"
+                      className="focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500/50 rounded transition-colors"
                       title={project.featured ? 'Remove from featured' : 'Mark as featured'}
                       aria-label={project.featured ? 'Remove from featured' : 'Mark as featured'}
                     >

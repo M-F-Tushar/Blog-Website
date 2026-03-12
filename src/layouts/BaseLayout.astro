@@ -3,7 +3,7 @@ import SEOHead from '../components/astro/SEOHead.astro';
 import Header from '../components/astro/Header.astro';
 import Footer from '../components/astro/Footer.astro';
 import StarryBackground from '../components/astro/StarryBackground.astro';
-import CursorGlow from '../components/react/CursorGlow';
+import CursorGlow from '../components/astro/CursorGlow.astro';
 import { ViewTransitions } from 'astro:transitions';
 import '../styles/global.css';
 
@@ -96,7 +96,7 @@ const {
   </head>
   <body class="flex flex-col min-h-screen noise-overlay">
     <StarryBackground density="sparse" />
-    <CursorGlow client:idle />
+    <CursorGlow />
 
     <a
       href="#main-content"

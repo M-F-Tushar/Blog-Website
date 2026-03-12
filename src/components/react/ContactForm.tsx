@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 
 interface FormData {
   name: string;
@@ -12,6 +12,8 @@ interface Props {
   contactEmail?: string;
 }
 
+const COOLDOWN_MS = 30000; // 30 seconds between submissions
+
 export default function ContactForm({ formspreeEndpoint, contactEmail }: Props) {
   const [formData, setFormData] = useState<FormData>({
     name: '',
@@ -19,7 +21,8 @@ export default function ContactForm({ formspreeEndpoint, contactEmail }: Props) 
     subject: '',
     message: '',
   });
-  const [status, setStatus] = useState<'idle' | 'sending' | 'success' | 'error'>('idle');
+  const [status, setStatus] = useState<'idle' | 'sending' | 'success' | 'error' | 'cooldown'>('idle');
+  const lastSubmitRef = useRef<number>(0);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -27,6 +30,14 @@ export default function ContactForm({ formspreeEndpoint, contactEmail }: Props) 
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    const now = Date.now();
+    if (now - lastSubmitRef.current < COOLDOWN_MS) {
+      setStatus('cooldown');
+      setTimeout(() => setStatus('idle'), 3000);
+      return;
+    }
+    lastSubmitRef.current = now;
     setStatus('sending');
 
     if (formspreeEndpoint) {
@@ -73,6 +84,7 @@ export default function ContactForm({ formspreeEndpoint, contactEmail }: Props) 
           value={formData.name}
           onChange={handleChange}
           required
+          maxLength={100}
           className="w-full px-4 py-3 rounded-xl bg-white dark:bg-secondary-800 border border-secondary-200 dark:border-secondary-700 focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all outline-none"
           placeholder="John Doe"
         />
@@ -91,6 +103,7 @@ export default function ContactForm({ formspreeEndpoint, contactEmail }: Props) 
           value={formData.email}
           onChange={handleChange}
           required
+          maxLength={254}
           className="w-full px-4 py-3 rounded-xl bg-white dark:bg-secondary-800 border border-secondary-200 dark:border-secondary-700 focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all outline-none"
           placeholder="john@example.com"
         />
@@ -109,6 +122,7 @@ export default function ContactForm({ formspreeEndpoint, contactEmail }: Props) 
           value={formData.subject}
           onChange={handleChange}
           required
+          maxLength={200}
           className="w-full px-4 py-3 rounded-xl bg-white dark:bg-secondary-800 border border-secondary-200 dark:border-secondary-700 focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all outline-none"
           placeholder="Project Inquiry"
         />
@@ -127,13 +141,14 @@ export default function ContactForm({ formspreeEndpoint, contactEmail }: Props) 
           onChange={handleChange}
           required
           rows={6}
+          maxLength={5000}
           className="w-full px-4 py-3 rounded-xl bg-white dark:bg-secondary-800 border border-secondary-200 dark:border-secondary-700 focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all outline-none resize-none"
           placeholder="Tell me about your project or inquiry..."
         />
       </div>
       <button
         type="submit"
-        disabled={!isValid || status === 'sending'}
+        disabled={!isValid || status === 'sending' || status === 'cooldown'}
         className="w-full px-6 py-4 bg-primary-600 hover:bg-primary-700 text-white font-semibold rounded-xl shadow-lg shadow-primary-500/30 transition-all duration-300 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed hover:-translate-y-1"
       >
         {status === 'sending' ? (
@@ -163,7 +178,7 @@ export default function ContactForm({ formspreeEndpoint, contactEmail }: Props) 
       </button>
 
       {status === 'success' && (
-        <div className="p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-xl flex items-start gap-3 animate-fade-in">
+        <div role="alert" className="p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-xl flex items-start gap-3 animate-fade-in">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="20"
@@ -190,7 +205,7 @@ export default function ContactForm({ formspreeEndpoint, contactEmail }: Props) 
         </div>
       )}
       {status === 'error' && (
-        <div className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl flex items-start gap-3 animate-fade-in">
+        <div role="alert" className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl flex items-start gap-3 animate-fade-in">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="20"
@@ -213,6 +228,11 @@ export default function ContactForm({ formspreeEndpoint, contactEmail }: Props) 
               Please try again or email me directly.
             </p>
           </div>
+        </div>
+      )}
+      {status === 'cooldown' && (
+        <div role="alert" className="p-4 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-xl text-sm text-amber-700 dark:text-amber-300 animate-fade-in">
+          Please wait a moment before sending another message.
         </div>
       )}
     </form>

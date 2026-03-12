@@ -26,10 +26,11 @@ const searchIndex = posts.map((p) => ({
           Search <span class="text-gradient-cyan">Articles</span>
         </h1>
         <div class="relative max-w-xl mx-auto">
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="absolute left-4 top-1/2 -translate-y-1/2 text-secondary-400 pointer-events-none"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
+          <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="absolute left-4 top-1/2 -translate-y-1/2 text-secondary-400 pointer-events-none"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
           <input
             id="search-input"
             type="search"
+            aria-label="Search articles"
             placeholder="Search by title, tag, or keyword..."
             class="w-full pl-12 pr-4 py-4 rounded-2xl bg-surface border border-white/10 text-secondary-200 placeholder-secondary-500 focus:outline-none focus:border-primary-500/50 focus:shadow-glow-cyan shadow-lg text-lg"
             autocomplete="off"
@@ -55,7 +56,7 @@ const searchIndex = posts.map((p) => ({
       </div>
       <div id="no-results" class="text-center py-20 hidden">
         <div class="text-6xl mb-6">
-          <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="mx-auto text-secondary-600"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path><path d="M8 11h6"></path></svg>
+          <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="mx-auto text-secondary-600"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path><path d="M8 11h6"></path></svg>
         </div>
         <h2 class="text-2xl font-bold text-secondary-50 mb-4">No results found</h2>
         <p class="text-secondary-400">Try searching with different keywords.</p>

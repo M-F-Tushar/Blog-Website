@@ -3,4 +3,4 @@ Allow: /
 Disallow: /admin/
 Disallow: /private/
 
-Sitemap: https://mahirfaysaltusherblog.is-a.dev/sitemap.xml
+Sitemap: https://mahirfaysaltusherblog.is-a.dev/sitemap-index.xml

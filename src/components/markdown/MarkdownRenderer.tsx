@@ -3,7 +3,7 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import remarkMath from 'remark-math';
 import remarkDirective from 'remark-directive';
-import rehypeRaw from 'rehype-raw';
+import rehypeSanitize, { defaultSchema } from 'rehype-sanitize';
 import rehypeHighlight from 'rehype-highlight';
 import rehypeKatex from 'rehype-katex';
 import rehypeSlug from 'rehype-slug';
@@ -44,17 +44,36 @@ interface MarkdownRendererProps {
   content: string;
 }
 
+// Sanitization schema: allow classes, IDs, and KaTeX/code-highlight elements
+const sanitizeSchema = {
+  ...defaultSchema,
+  attributes: {
+    ...defaultSchema.attributes,
+    '*': [...(defaultSchema.attributes?.['*'] || []), 'className', 'class', 'id', 'style'],
+    code: [...(defaultSchema.attributes?.code || []), 'className', 'class'],
+    span: [...(defaultSchema.attributes?.span || []), 'className', 'class', 'style'],
+    div: [...(defaultSchema.attributes?.div || []), 'className', 'class', 'style'],
+    pre: [...(defaultSchema.attributes?.pre || []), 'className', 'class', 'style'],
+  },
+  tagNames: [
+    ...(defaultSchema.tagNames || []),
+    'details', 'summary', 'mark', 'abbr', 'kbd', 'sub', 'sup', 'admonition',
+    'math', 'semantics', 'mrow', 'mi', 'mo', 'mn', 'msup', 'msub',
+    'mfrac', 'mover', 'munder', 'msqrt', 'mtext', 'annotation',
+  ],
+};
+
 const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ content }) => {
   return (
     <div className="prose prose-lg dark:prose-invert max-w-none">
       <ReactMarkdown
         remarkPlugins={[remarkGfm, remarkMath, remarkDirective, remarkAdmonitions]}
         rehypePlugins={[
-          rehypeRaw,
           rehypeHighlight,
           rehypeKatex,
           rehypeSlug,
           [rehypeAutolinkHeadings, { behavior: 'wrap' }],
+          [rehypeSanitize, sanitizeSchema],
         ]}
         components={{
           // eslint-disable-next-line @typescript-eslint/no-explicit-any

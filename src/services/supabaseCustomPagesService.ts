@@ -1,135 +1,14 @@
 import { supabase } from '../supabase/client';
-import type { Json } from '../types/database';
+import type { DatabaseCustomPage, DatabaseCustomPageSection } from '../types/database';
+import type { CustomPage, CustomPageSection } from '../types/types';
+import {
+  customPageFromDatabase,
+  customPageToDatabase,
+  customPageSectionFromDatabase,
+  customPageSectionToDatabase,
+} from '../types/converters';
 
-// ---------- Database types ----------
-
-export interface DatabaseCustomPage {
-  id: string;
-  title: string;
-  slug: string;
-  description: string | null;
-  meta_title: string | null;
-  meta_description: string | null;
-  og_image: string | null;
-  layout: string;
-  status: string;
-  sort_order: number;
-  show_in_navigation: boolean;
-  created_at: string;
-  updated_at: string;
-}
-
-export interface DatabaseCustomPageSection {
-  id: string;
-  page_id: string;
-  section_type: string;
-  title: string | null;
-  subtitle: string | null;
-  content: string | null;
-  image_url: string | null;
-  metadata: Json | null;
-  sort_order: number;
-  visible: boolean;
-  created_at: string;
-  updated_at: string;
-}
-
-// ---------- App types ----------
-
-export interface CustomPage {
-  id: string;
-  title: string;
-  slug: string;
-  description?: string;
-  metaTitle?: string;
-  metaDescription?: string;
-  ogImage?: string;
-  layout: string;
-  status: 'draft' | 'published' | 'archived';
-  sortOrder: number;
-  showInNavigation: boolean;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface CustomPageSection {
-  id: string;
-  pageId: string;
-  sectionType: string;
-  title?: string;
-  subtitle?: string;
-  content?: string;
-  imageUrl?: string;
-  metadata?: Record<string, unknown>;
-  sortOrder: number;
-  visible: boolean;
-  createdAt: string;
-  updatedAt: string;
-}
-
-// ---------- Converters ----------
-
-export const customPageFromDatabase = (db: DatabaseCustomPage): CustomPage => ({
-  id: db.id,
-  title: db.title,
-  slug: db.slug,
-  description: db.description || undefined,
-  metaTitle: db.meta_title || undefined,
-  metaDescription: db.meta_description || undefined,
-  ogImage: db.og_image || undefined,
-  layout: db.layout,
-  status: db.status as CustomPage['status'],
-  sortOrder: db.sort_order,
-  showInNavigation: db.show_in_navigation,
-  createdAt: db.created_at,
-  updatedAt: db.updated_at,
-});
-
-export const customPageToDatabase = (
-  page: Omit<CustomPage, 'id' | 'createdAt' | 'updatedAt'>
-): Omit<DatabaseCustomPage, 'id' | 'created_at' | 'updated_at'> => ({
-  title: page.title,
-  slug: page.slug,
-  description: page.description || null,
-  meta_title: page.metaTitle || null,
-  meta_description: page.metaDescription || null,
-  og_image: page.ogImage || null,
-  layout: page.layout,
-  status: page.status,
-  sort_order: page.sortOrder,
-  show_in_navigation: page.showInNavigation,
-});
-
-export const customPageSectionFromDatabase = (
-  db: DatabaseCustomPageSection
-): CustomPageSection => ({
-  id: db.id,
-  pageId: db.page_id,
-  sectionType: db.section_type,
-  title: db.title || undefined,
-  subtitle: db.subtitle || undefined,
-  content: db.content || undefined,
-  imageUrl: db.image_url || undefined,
-  metadata: (db.metadata as Record<string, unknown>) || undefined,
-  sortOrder: db.sort_order,
-  visible: db.visible,
-  createdAt: db.created_at,
-  updatedAt: db.updated_at,
-});
-
-export const customPageSectionToDatabase = (
-  section: Omit<CustomPageSection, 'id' | 'createdAt' | 'updatedAt'>
-): Omit<DatabaseCustomPageSection, 'id' | 'created_at' | 'updated_at'> => ({
-  page_id: section.pageId,
-  section_type: section.sectionType,
-  title: section.title || null,
-  subtitle: section.subtitle || null,
-  content: section.content || null,
-  image_url: section.imageUrl || null,
-  metadata: (section.metadata as Json) || null,
-  sort_order: section.sortOrder,
-  visible: section.visible,
-});
+export type { CustomPage, CustomPageSection };
 
 // ---------- Page CRUD ----------
 

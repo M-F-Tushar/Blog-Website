@@ -420,8 +420,32 @@ export interface Database {
         Relationships: [];
       };
     };
-    Views: { [_ in never]: never };
-    Functions: { [_ in never]: never };
+    Views: {
+      post_statistics: {
+        Row: {
+          post_id: string;
+          title: string;
+          category: string | null;
+          status: string | null;
+          total_views: number | null;
+          unique_views: number | null;
+          views_last_7_days: number | null;
+          views_last_30_days: number | null;
+        };
+        Relationships: [];
+      };
+    };
+    Functions: {
+      record_page_view: {
+        Args: {
+          p_post_id: string;
+          p_session_id: string;
+          p_referrer: string | null;
+          p_user_agent: string | null;
+        };
+        Returns: void;
+      };
+    };
     Enums: { [_ in never]: never };
     CompositeTypes: { [_ in never]: never };
   };

@@ -1,0 +1,132 @@
+---
+/**
+ * Lightweight canvas-based starfield that replaces the Three.js CosmicStarfield.
+ * Renders animated stars with mouse parallax — zero React, zero Three.js.
+ * ~3KB vs ~250KB+ gzipped.
+ */
+interface Props {
+  starCount?: number;
+  speed?: number;
+  class?: string;
+}
+
+const { starCount = 2500, speed = 0.2, class: className = '' } = Astro.props;
+---
+
+<div class:list={['absolute inset-0 z-0', className]} aria-hidden="true">
+  <canvas id="starfield-canvas" style="position:absolute;inset:0;width:100%;height:100%;"></canvas>
+</div>
+
+<script define:vars={{ starCount, speed }}>
+(function () {
+  const canvas = document.getElementById('starfield-canvas');
+  if (!canvas || !(canvas instanceof HTMLCanvasElement)) return;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+
+  // Respect reduced motion
+  const mqlMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+  let reducedMotion = mqlMotion.matches;
+  mqlMotion.addEventListener('change', function (e) { reducedMotion = e.matches; });
+
+  // Reduce stars on mobile
+  const isMobile = window.innerWidth < 768;
+  const count = isMobile ? Math.min(starCount, 1000) : starCount;
+
+  // Generate stars: x, y, z (depth), size, color
+  const stars = [];
+  for (let i = 0; i < count; i++) {
+    stars.push({
+      x: (Math.random() - 0.5) * 2,   // -1..1 normalized
+      y: (Math.random() - 0.5) * 2,
+      z: Math.random(),                 // 0..1 depth
+      blueish: Math.random() > 0.55,
+    });
+  }
+
+  // Mouse tracking for parallax
+  let mouseX = 0;
+  let mouseY = 0;
+  let smoothX = 0;
+  let smoothY = 0;
+  document.addEventListener('mousemove', function (e) {
+    mouseX = (e.clientX / window.innerWidth - 0.5) * 2;
+    mouseY = (e.clientY / window.innerHeight - 0.5) * 2;
+  }, { passive: true });
+
+  // Resize handler
+  let w = 0, h = 0;
+  function resize() {
+    const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
+    w = canvas.clientWidth;
+    h = canvas.clientHeight;
+    canvas.width = w * dpr;
+    canvas.height = h * dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+  resize();
+  window.addEventListener('resize', resize, { passive: true });
+
+  // Intersection observer — pause when off-screen
+  let visible = true;
+  const observer = new IntersectionObserver(function (entries) {
+    visible = entries[0].isIntersecting;
+  }, { threshold: 0.1 });
+  observer.observe(canvas);
+
+  // Subtle twinkle phase
+  let time = 0;
+
+  function draw() {
+    if (!visible) { requestAnimationFrame(draw); return; }
+
+    ctx.clearRect(0, 0, w, h);
+
+    // Smooth mouse parallax
+    if (!reducedMotion) {
+      smoothX += (mouseX * 0.02 - smoothX) * 0.05;
+      smoothY += (mouseY * 0.02 - smoothY) * 0.05;
+      time += speed * 0.01;
+    }
+
+    for (let i = 0; i < count; i++) {
+      const s = stars[i];
+      const depth = 0.3 + s.z * 0.7; // 0.3..1
+      const parallaxX = smoothX * depth * 40;
+      const parallaxY = smoothY * depth * 40;
+
+      const sx = (s.x * w * 0.6) + w / 2 + parallaxX;
+      const sy = (s.y * h * 0.6) + h / 2 + parallaxY;
+
+      // Skip if off-screen
+      if (sx < -5 || sx > w + 5 || sy < -5 || sy > h + 5) continue;
+
+      const size = (1 - s.z) * 2.2 + 0.4; // closer = bigger
+
+      // Subtle twinkle
+      const twinkle = reducedMotion ? 1 : 0.6 + 0.4 * Math.sin(time * 3 + i * 1.7);
+      const alpha = twinkle * (0.5 + depth * 0.5);
+
+      if (s.blueish) {
+        ctx.fillStyle = 'rgba(210,225,255,' + alpha.toFixed(2) + ')';
+      } else {
+        ctx.fillStyle = 'rgba(255,255,255,' + alpha.toFixed(2) + ')';
+      }
+
+      ctx.beginPath();
+      ctx.arc(sx, sy, size, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    requestAnimationFrame(draw);
+  }
+
+  // Start only if not reduced motion (static fallback from StarryBackground handles that)
+  if (!reducedMotion) {
+    requestAnimationFrame(draw);
+  } else {
+    // Draw once statically
+    draw();
+  }
+})();
+</script>
