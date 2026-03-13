@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, type ChangeEvent, type FormEvent } from 'react';
 
 interface FormData {
   name: string;
@@ -24,11 +24,11 @@ export default function ContactForm({ formspreeEndpoint, contactEmail }: Props) 
   const [status, setStatus] = useState<'idle' | 'sending' | 'success' | 'error' | 'cooldown'>('idle');
   const lastSubmitRef = useRef<number>(0);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
 
     const now = Date.now();
@@ -73,7 +73,7 @@ export default function ContactForm({ formspreeEndpoint, contactEmail }: Props) 
       <div>
         <label
           htmlFor="name"
-          className="block text-sm font-medium text-secondary-700 dark:text-secondary-300 mb-2"
+          className="block text-sm font-medium text-secondary-300 mb-2"
         >
           Your Name <span className="text-red-500">*</span>
         </label>
@@ -85,14 +85,14 @@ export default function ContactForm({ formspreeEndpoint, contactEmail }: Props) 
           onChange={handleChange}
           required
           maxLength={100}
-          className="w-full px-4 py-3 rounded-xl bg-white dark:bg-secondary-800 border border-secondary-200 dark:border-secondary-700 focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all outline-none"
+          className="input-cosmic px-4 py-3 rounded-xl bg-surface"
           placeholder="John Doe"
         />
       </div>
       <div>
         <label
           htmlFor="email"
-          className="block text-sm font-medium text-secondary-700 dark:text-secondary-300 mb-2"
+          className="block text-sm font-medium text-secondary-300 mb-2"
         >
           Email Address <span className="text-red-500">*</span>
         </label>
@@ -104,14 +104,14 @@ export default function ContactForm({ formspreeEndpoint, contactEmail }: Props) 
           onChange={handleChange}
           required
           maxLength={254}
-          className="w-full px-4 py-3 rounded-xl bg-white dark:bg-secondary-800 border border-secondary-200 dark:border-secondary-700 focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all outline-none"
+          className="input-cosmic px-4 py-3 rounded-xl bg-surface"
           placeholder="john@example.com"
         />
       </div>
       <div>
         <label
           htmlFor="subject"
-          className="block text-sm font-medium text-secondary-700 dark:text-secondary-300 mb-2"
+          className="block text-sm font-medium text-secondary-300 mb-2"
         >
           Subject <span className="text-red-500">*</span>
         </label>
@@ -123,14 +123,14 @@ export default function ContactForm({ formspreeEndpoint, contactEmail }: Props) 
           onChange={handleChange}
           required
           maxLength={200}
-          className="w-full px-4 py-3 rounded-xl bg-white dark:bg-secondary-800 border border-secondary-200 dark:border-secondary-700 focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all outline-none"
+          className="input-cosmic px-4 py-3 rounded-xl bg-surface"
           placeholder="Project Inquiry"
         />
       </div>
       <div>
         <label
           htmlFor="message"
-          className="block text-sm font-medium text-secondary-700 dark:text-secondary-300 mb-2"
+          className="block text-sm font-medium text-secondary-300 mb-2"
         >
           Message <span className="text-red-500">*</span>
         </label>
@@ -142,7 +142,7 @@ export default function ContactForm({ formspreeEndpoint, contactEmail }: Props) 
           required
           rows={6}
           maxLength={5000}
-          className="w-full px-4 py-3 rounded-xl bg-white dark:bg-secondary-800 border border-secondary-200 dark:border-secondary-700 focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all outline-none resize-none"
+          className="input-cosmic px-4 py-3 rounded-xl bg-surface resize-none"
           placeholder="Tell me about your project or inquiry..."
         />
       </div>
@@ -178,7 +178,7 @@ export default function ContactForm({ formspreeEndpoint, contactEmail }: Props) 
       </button>
 
       {status === 'success' && (
-        <div role="alert" className="p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-xl flex items-start gap-3 animate-fade-in">
+        <div role="alert" className="p-4 bg-green-500/10 border border-green-500/30 rounded-xl flex items-start gap-3 animate-fade-in">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="20"
@@ -189,23 +189,23 @@ export default function ContactForm({ formspreeEndpoint, contactEmail }: Props) 
             strokeWidth="2"
             strokeLinecap="round"
             strokeLinejoin="round"
-            className="text-green-600 dark:text-green-400 flex-shrink-0 mt-0.5"
+            className="text-green-400 flex-shrink-0 mt-0.5"
           >
             <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
             <path d="m9 11 3 3L22 4"></path>
           </svg>
           <div>
-            <p className="font-semibold text-green-900 dark:text-green-100">
+            <p className="font-semibold text-green-100">
               Message sent successfully!
             </p>
-            <p className="text-sm text-green-700 dark:text-green-300 mt-1">
+            <p className="text-sm text-green-200 mt-1">
               I&apos;ll get back to you as soon as possible.
             </p>
           </div>
         </div>
       )}
       {status === 'error' && (
-        <div role="alert" className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl flex items-start gap-3 animate-fade-in">
+        <div role="alert" className="p-4 bg-red-500/10 border border-red-500/30 rounded-xl flex items-start gap-3 animate-fade-in">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="20"
@@ -216,22 +216,22 @@ export default function ContactForm({ formspreeEndpoint, contactEmail }: Props) 
             strokeWidth="2"
             strokeLinecap="round"
             strokeLinejoin="round"
-            className="text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5"
+            className="text-red-400 flex-shrink-0 mt-0.5"
           >
             <circle cx="12" cy="12" r="10"></circle>
             <line x1="12" x2="12" y1="8" y2="12"></line>
             <line x1="12" x2="12.01" y1="16" y2="16"></line>
           </svg>
           <div>
-            <p className="font-semibold text-red-900 dark:text-red-100">Failed to send message</p>
-            <p className="text-sm text-red-700 dark:text-red-300 mt-1">
+            <p className="font-semibold text-red-100">Failed to send message</p>
+            <p className="text-sm text-red-200 mt-1">
               Please try again or email me directly.
             </p>
           </div>
         </div>
       )}
       {status === 'cooldown' && (
-        <div role="alert" className="p-4 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-xl text-sm text-amber-700 dark:text-amber-300 animate-fade-in">
+        <div role="alert" className="p-4 bg-amber-500/10 border border-amber-500/30 rounded-xl text-sm text-amber-200 animate-fade-in">
           Please wait a moment before sending another message.
         </div>
       )}

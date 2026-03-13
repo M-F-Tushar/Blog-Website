@@ -15,6 +15,7 @@ const AdminLogin: React.FC = () => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [lockedUntil, setLockedUntil] = useState(0);
+  const [now, setNow] = useState(() => Date.now());
   const attemptsRef = useRef(0);
   const navigate = useNavigate();
   const { signIn, isAuthenticated } = useAuth();
@@ -25,7 +26,13 @@ const AdminLogin: React.FC = () => {
     }
   }, [isAuthenticated, navigate]);
 
-  const isLocked = lockedUntil > Date.now();
+  useEffect(() => {
+    if (!lockedUntil) return;
+    const timer = window.setInterval(() => setNow(Date.now()), 500);
+    return () => window.clearInterval(timer);
+  }, [lockedUntil]);
+
+  const isLocked = lockedUntil > now;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

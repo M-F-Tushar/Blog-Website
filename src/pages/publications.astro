@@ -50,9 +50,11 @@ const personSchema = generatePersonSchema(
     <div class="flex flex-wrap justify-center gap-2 mb-10" id="pub-filters">
       {pubTypes.map((type) => (
         <button
+          type="button"
           data-filter={type.id}
+          aria-pressed={type.id === 'all' ? 'true' : 'false'}
           class:list={[
-            'px-4 py-2 rounded-full text-sm font-medium transition-all duration-200',
+            'pub-filter-btn px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-sm font-medium transition-all duration-200',
             type.id === 'all'
               ? 'bg-primary-600 text-white shadow-md shadow-primary-500/20'
               : 'bg-surface text-secondary-300 border border-white/10 hover:border-primary-500/30 hover:text-primary-300',
@@ -66,7 +68,7 @@ const personSchema = generatePersonSchema(
     <!-- Publications list -->
     <div class="space-y-6" id="pub-list">
       {years.map((year) => (
-        <div>
+        <div class="pub-year-group" data-year={year}>
           <h2 class="text-2xl font-bold font-serif text-secondary-100 mb-4 border-b border-white/[0.06] pb-2">
             {year}
           </h2>
@@ -77,6 +79,7 @@ const personSchema = generatePersonSchema(
                 <article
                   class="pub-item glass-cosmic rounded-xl p-6 border border-white/[0.06] hover:border-primary-500/20 hover:shadow-lg hover:shadow-primary-500/5 transition-all"
                   data-type={pub.type}
+                  data-year={pub.year}
                 >
                   {pub.isFeatured && (
                     <span class="inline-block text-xs font-semibold bg-gold-500/10 text-gold-400 border border-gold-500/20 px-2 py-0.5 rounded-full mb-2">
@@ -178,16 +181,16 @@ const personSchema = generatePersonSchema(
     </div>
 
     <!-- BibTeX Modal -->
-    <dialog id="bibtex-modal" class="bg-transparent p-0 m-auto backdrop:bg-black/60 backdrop:backdrop-blur-sm max-w-lg w-full">
+    <dialog id="bibtex-modal" aria-labelledby="bibtex-title" aria-modal="true" class="bg-transparent p-0 m-auto backdrop:bg-black/60 backdrop:backdrop-blur-sm max-w-lg w-full">
       <div class="bg-surface rounded-xl p-6 w-full mx-auto border border-white/[0.06] shadow-2xl">
         <div class="flex justify-between items-center mb-4">
-          <h3 class="text-lg font-semibold text-secondary-50">BibTeX Citation</h3>
-          <button id="bibtex-close" class="p-1 text-secondary-400 hover:text-secondary-200" aria-label="Close BibTeX modal">
+          <h3 id="bibtex-title" class="text-lg font-semibold text-secondary-50">BibTeX Citation</h3>
+          <button type="button" id="bibtex-close" class="p-1 text-secondary-400 hover:text-secondary-200" aria-label="Close BibTeX modal">
             <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
           </button>
         </div>
         <pre id="bibtex-content" class="bg-abyss p-4 rounded-lg text-sm font-mono text-secondary-200 overflow-x-auto whitespace-pre-wrap"></pre>
-        <button id="bibtex-copy" class="mt-4 w-full px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-500 transition-colors font-medium text-sm">
+        <button type="button" id="bibtex-copy" class="mt-4 w-full px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-500 transition-colors font-medium text-sm">
           Copy to Clipboard
         </button>
       </div>
@@ -206,9 +209,11 @@ const personSchema = generatePersonSchema(
 
       // Update active state
       document.querySelectorAll('#pub-filters button').forEach((b) => {
-        b.className = 'px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 bg-surface text-secondary-300 border border-white/10 hover:border-primary-500/30 hover:text-primary-300';
+        b.className = 'pub-filter-btn px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-sm font-medium transition-all duration-200 bg-surface text-secondary-300 border border-white/10 hover:border-primary-500/30 hover:text-primary-300';
+        b.setAttribute('aria-pressed', 'false');
       });
-      btn.className = 'px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 bg-primary-600 text-white shadow-md shadow-primary-500/20';
+      btn.className = 'pub-filter-btn px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-sm font-medium transition-all duration-200 bg-primary-600 text-white shadow-md shadow-primary-500/20';
+      btn.setAttribute('aria-pressed', 'true');
 
       // Filter items
       const items = document.querySelectorAll('.pub-item');
@@ -218,6 +223,16 @@ const personSchema = generatePersonSchema(
         const show = filter === 'all' || type === filter;
         (item as HTMLElement).style.display = show ? '' : 'none';
         if (show) visibleCount++;
+      });
+
+      // Hide year blocks with no visible items
+      const yearGroups = document.querySelectorAll('.pub-year-group');
+      yearGroups.forEach((group) => {
+        const groupItems = group.querySelectorAll('.pub-item');
+        const hasVisible = Array.from(groupItems).some(
+          (item) => (item as HTMLElement).style.display !== 'none'
+        );
+        (group as HTMLElement).style.display = hasVisible ? '' : 'none';
       });
 
       const emptyEl = document.getElementById('pub-empty');

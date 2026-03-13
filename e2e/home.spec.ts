@@ -27,22 +27,23 @@ test.describe('Homepage', () => {
     });
 
     test('should have theme toggle', async ({ page }) => {
-        const themeToggle = page.getByRole('button', { name: /toggle.*theme/i });
+        const themeToggle = page.getByRole('button', { name: /toggle theme/i });
         await expect(themeToggle).toBeVisible();
     });
 
     test('should toggle dark mode', async ({ page }) => {
-        const themeToggle = page.getByRole('button', { name: /toggle.*theme/i });
+        const themeToggle = page.getByRole('button', { name: /toggle theme/i });
+        const html = page.locator('html');
+        const before = await html.getAttribute('class');
         await themeToggle.click();
 
-        // Check if dark mode class is applied
-        const html = page.locator('html');
-        await expect(html).toHaveClass(/dark/);
+        const after = await html.getAttribute('class');
+        expect(Boolean(before?.includes('dark'))).not.toBe(Boolean(after?.includes('dark')));
     });
 
-    test('should have search functionality', async ({ page }) => {
-        const searchInput = page.getByRole('searchbox');
-        await expect(searchInput).toBeVisible();
+    test('should show search entrypoint in header', async ({ page }) => {
+        const searchLink = page.getByRole('link', { name: /open search page/i });
+        await expect(searchLink).toBeVisible();
     });
 
     test('should display hero section', async ({ page }) => {

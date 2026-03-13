@@ -34,20 +34,36 @@ const searchIndex = posts.map((p) => ({
             placeholder="Search by title, tag, or keyword..."
             class="w-full pl-12 pr-4 py-4 rounded-2xl bg-surface border border-white/10 text-secondary-200 placeholder-secondary-500 focus:outline-none focus:border-primary-500/50 focus:shadow-glow-cyan shadow-lg text-lg"
             autocomplete="off"
-            autofocus
           />
           <kbd class="hidden sm:flex items-center absolute right-4 top-1/2 -translate-y-1/2 px-2 py-1 text-xs text-secondary-500 bg-surface rounded border border-white/10">
             Esc
           </kbd>
         </div>
+        <div class="mt-4 flex flex-wrap justify-center gap-2" role="group" aria-label="Search scope">
+          <button type="button" data-search-scope="all" aria-pressed="true" class="search-scope-btn px-3 py-1.5 rounded-full text-sm font-medium bg-primary-500/20 text-primary-300 border border-primary-500/30">
+            All
+          </button>
+          <button type="button" data-search-scope="title" aria-pressed="false" class="search-scope-btn px-3 py-1.5 rounded-full text-sm font-medium bg-white/5 text-secondary-400 border border-white/10 hover:border-primary-500/20 hover:text-secondary-200">
+            Title
+          </button>
+          <button type="button" data-search-scope="tags" aria-pressed="false" class="search-scope-btn px-3 py-1.5 rounded-full text-sm font-medium bg-white/5 text-secondary-400 border border-white/10 hover:border-primary-500/20 hover:text-secondary-200">
+            Tags
+          </button>
+          <button type="button" data-search-scope="content" aria-pressed="false" class="search-scope-btn px-3 py-1.5 rounded-full text-sm font-medium bg-white/5 text-secondary-400 border border-white/10 hover:border-primary-500/20 hover:text-secondary-200">
+            Content
+          </button>
+        </div>
       </div>
     </section>
 
     <div class="container mx-auto px-4 sm:px-6 lg:px-8 max-w-6xl mt-12">
-      <div id="search-status" class="text-center text-secondary-400 mb-8">
-        Type to search across {posts.length} articles
+      <div id="search-status" role="status" aria-live="polite" class="text-center text-secondary-400 mb-8">
+        Start typing to search across {posts.length} articles
       </div>
-      <div id="search-results" class="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+      <div id="search-intent" class="text-center py-16">
+        <p class="text-secondary-400">Try a topic, tag, or keyword to find relevant posts quickly.</p>
+      </div>
+      <div id="search-results" class="hidden grid gap-8 md:grid-cols-2 lg:grid-cols-3">
         {posts.map((post) => (
           <div class="search-result-item" data-search-item>
             <BlogCard post={post} />
@@ -69,49 +85,84 @@ const searchIndex = posts.map((p) => ({
   const input = document.getElementById('search-input');
   const statusEl = document.getElementById('search-status');
   const resultsContainer = document.getElementById('search-results');
+  const intentState = document.getElementById('search-intent');
   const noResults = document.getElementById('no-results');
   const items = document.querySelectorAll('[data-search-item]');
+  const scopeButtons = document.querySelectorAll('[data-search-scope]');
   const totalCount = searchIndex.length;
+  let currentScope = 'all';
 
   function performSearch(query) {
     const q = query.toLowerCase().trim();
 
     if (!q) {
       items.forEach((item) => (item.style.display = ''));
+      items.forEach((item) => (item.style.order = '0'));
+      resultsContainer.classList.add('hidden');
+      intentState.classList.remove('hidden');
       noResults.classList.add('hidden');
-      statusEl.textContent = `Type to search across ${totalCount} articles`;
+      statusEl.textContent = `Start typing to search across ${totalCount} articles`;
       return;
     }
 
+    resultsContainer.classList.remove('hidden');
+    intentState.classList.add('hidden');
+
     let visibleCount = 0;
     searchIndex.forEach((entry, i) => {
-      const haystack = [
-        entry.title,
-        entry.excerpt,
-        entry.category,
-        ...entry.tags,
-        entry.content,
-      ]
-        .join(' ')
-        .toLowerCase();
+      const title = entry.title.toLowerCase();
+      const excerpt = entry.excerpt.toLowerCase();
+      const category = entry.category.toLowerCase();
+      const tags = (entry.tags || []).join(' ').toLowerCase();
+      const content = entry.content.toLowerCase();
 
+      const scopeMap = {
+        all: `${title} ${excerpt} ${category} ${tags} ${content}`,
+        title,
+        tags,
+        content: `${content} ${excerpt}`,
+      };
+
+      const haystack = scopeMap[currentScope] ?? scopeMap.all;
       const matches = haystack.includes(q);
+      let score = 0;
+      if (matches) {
+        if (title.includes(q)) score += 3;
+        if (tags.includes(q)) score += 2;
+        if (excerpt.includes(q) || content.includes(q)) score += 1;
+      }
+
       items[i].style.display = matches ? '' : 'none';
+      items[i].style.order = `${Math.max(0, 100 - score)}`;
       if (matches) visibleCount++;
     });
 
-    statusEl.textContent = `${visibleCount} ${visibleCount === 1 ? 'result' : 'results'} for "${query}"`;
+    statusEl.textContent = `${visibleCount} ${visibleCount === 1 ? 'result' : 'results'} in ${currentScope} for "${query}"`;
     noResults.classList.toggle('hidden', visibleCount > 0);
+    resultsContainer.classList.toggle('hidden', visibleCount === 0);
   }
 
   input.addEventListener('input', (e) => performSearch(e.target.value));
+
+  scopeButtons.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      currentScope = btn.getAttribute('data-search-scope') || 'all';
+      scopeButtons.forEach((b) => {
+        const active = (b.getAttribute('data-search-scope') || 'all') === currentScope;
+        b.setAttribute('aria-pressed', active ? 'true' : 'false');
+        b.className = active
+          ? 'search-scope-btn px-3 py-1.5 rounded-full text-sm font-medium bg-primary-500/20 text-primary-300 border border-primary-500/30'
+          : 'search-scope-btn px-3 py-1.5 rounded-full text-sm font-medium bg-white/5 text-secondary-400 border border-white/10 hover:border-primary-500/20 hover:text-secondary-200';
+      });
+      performSearch(input.value);
+    });
+  });
 
   // Keyboard shortcut: Escape clears search
   input.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
       e.target.value = '';
       performSearch('');
-      e.target.blur();
     }
   });
 

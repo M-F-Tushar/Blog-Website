@@ -19,7 +19,7 @@ const formattedDate = new Date(post.date).toLocaleDateString(undefined, {
 
 <article
   class:list={[
-    'bg-surface/80 backdrop-blur-sm rounded-xl shadow-lg shadow-black/20 hover:shadow-xl hover:shadow-primary-500/10 overflow-hidden flex group border border-white/[0.06] hover:border-primary-500/30 transition-all duration-500 hover:-translate-y-2',
+    'bg-surface/80 backdrop-blur-sm rounded-xl shadow-lg shadow-black/20 hover:shadow-xl hover:shadow-primary-500/10 overflow-hidden flex group border border-white/[0.06] hover:border-primary-500/30 transition-all duration-300 hover:-translate-y-1',
     featured ? 'flex-col md:flex-row md:h-96' : 'flex-col h-full',
   ]}
 >
@@ -50,7 +50,7 @@ const formattedDate = new Date(post.date).toLocaleDateString(undefined, {
   ]}>
     <header class="flex-grow">
       <!-- Meta -->
-      <div class="flex items-center flex-wrap gap-3 text-xs font-medium text-secondary-500 mb-2">
+      <div class="flex items-center flex-wrap gap-3 text-sm font-medium text-secondary-500 mb-2">
         <span class="bg-accent-500/10 text-accent-400 border border-accent-500/20 px-2 py-1 rounded-full">
           {post.category}
         </span>

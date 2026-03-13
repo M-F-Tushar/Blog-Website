@@ -9,8 +9,6 @@ import AnimatedCounter from '@/components/react/AnimatedCounter';
 import MagneticButton from '@/components/react/MagneticButton';
 import CanvasStarfield from '@/components/astro/CanvasStarfield.astro';
 import NebulaGradient from '@/components/astro/NebulaGradient.astro';
-import ShootingStar from '@/components/astro/ShootingStar.astro';
-import ConstellationDecor from '@/components/astro/ConstellationDecor.astro';
 
 const settings = await getSiteSettings();
 const uiText = (settings as any).ui_text?.home || {};
@@ -73,26 +71,26 @@ const totalWords = posts.reduce((sum, p) => sum + (p.content ? p.content.split(/
 const uniqueCategories = new Set(posts.flatMap((p) => p.tags || []));
 const postDates = posts.map((p) => new Date(p.date).getFullYear()).filter(Boolean);
 const yearsActive = postDates.length > 0 ? new Date().getFullYear() - Math.min(...postDates) + 1 : 1;
+const newsletterEndpoint = import.meta.env.PUBLIC_NEWSLETTER_ENDPOINT || '';
+const hasNewsletterEndpoint = Boolean(newsletterEndpoint);
 ---
 
 <BaseLayout structuredData={structuredData}>
-  <div class="flex flex-col pb-16" style="gap: 5rem;">
+  <div class="flex flex-col gap-20 lg:gap-24 pb-16">
 
     <!-- ======================== HERO SECTION ======================== -->
     {showHero && (
       <section class="relative min-h-screen flex items-center justify-center -mt-20 pt-20 overflow-hidden" style={`order: ${orderMap.hero ?? 0}`}>
         <!-- Cosmic background -->
         <CanvasStarfield
-          starCount={2500}
+          starCount={1600}
           speed={0.2}
           class="z-0"
         />
         <NebulaGradient variant="hero" />
-        <ShootingStar count={2} />
-        <ConstellationDecor variant="left" class="absolute top-20 left-0 opacity-20 w-64 hidden lg:block" />
 
         <!-- Aurora gradient overlay -->
-        <div class="absolute inset-0 aurora-bg opacity-30 z-0"></div>
+        <div class="absolute inset-0 aurora-bg opacity-[0.15] z-0"></div>
 
         <!-- Content -->
         <div class="container mx-auto max-w-5xl text-center relative z-10 px-4">
@@ -139,7 +137,7 @@ const yearsActive = postDates.length > 0 ? new Date().getFullYear() - Math.min(.
             <MagneticButton
               client:visible
               href="/blog"
-              className="px-6 py-2.5 bg-primary-600 text-white font-semibold rounded-full shadow-lg shadow-primary-500/30 hover:bg-primary-500 hover:shadow-primary-500/40 transition-all duration-300 inline-flex items-center gap-2"
+              className="btn-primary"
             >
               {uiText.startReading || 'Start Reading'}
               <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
@@ -149,12 +147,15 @@ const yearsActive = postDates.length > 0 ? new Date().getFullYear() - Math.min(.
             <MagneticButton
               client:visible
               href="/about"
-              className="px-6 py-2.5 bg-surface text-secondary-200 font-semibold rounded-full border border-white/10 hover:border-primary-500/30 transition-all duration-300"
+              className="btn-secondary"
             >
               {uiText.moreAboutMe || 'About me'}
             </MagneticButton>
             )}
           </div>
+          <p class="mt-4 text-sm text-secondary-500">
+            New research notes every week. No spam.
+          </p>
         </div>
 
         <!-- Scroll indicator -->
@@ -329,21 +330,32 @@ const yearsActive = postDates.length > 0 ? new Date().getFullYear() - Math.min(.
               </p>
 
               <!-- Form -->
-              <form class="flex flex-col sm:flex-row gap-4 max-w-md mx-auto" action="#" method="POST">
-                <input
-                  type="email"
-                  aria-label="Email for newsletter"
-                  placeholder="Enter your email"
-                  class="flex-1 px-6 py-3.5 rounded-full bg-white/5 border border-white/10 text-secondary-200 placeholder-secondary-500 focus:outline-none focus:border-primary-500/50 focus:shadow-[0_0_0_3px_rgba(6,182,212,0.1)] backdrop-blur-sm transition-all duration-200"
-                  required
-                />
-                <button
-                  type="submit"
-                  class="px-8 py-3.5 bg-primary-600 hover:bg-primary-500 text-white font-semibold rounded-full transition-colors shadow-lg shadow-primary-500/20"
-                >
-                  {uiText.subscribeButton || 'Subscribe'}
-                </button>
-              </form>
+              {hasNewsletterEndpoint ? (
+                <>
+                  <form class="flex flex-col sm:flex-row gap-4 max-w-md mx-auto" action={newsletterEndpoint} method="POST">
+                    <input
+                      type="email"
+                      name="email"
+                      aria-label="Email for newsletter"
+                      placeholder="Enter your email"
+                      class="input-cosmic rounded-full px-6 py-3.5 flex-1"
+                      required
+                    />
+                    <button type="submit" class="btn-primary px-8 py-3.5">
+                      {uiText.subscribeButton || 'Subscribe'}
+                    </button>
+                  </form>
+                  <p class="text-xs text-secondary-500">By subscribing, you agree to receive occasional email updates.</p>
+                </>
+              ) : (
+                <div class="max-w-md mx-auto space-y-4">
+                  <p class="text-sm text-secondary-400">Newsletter signup is coming soon. For now, follow updates through RSS.</p>
+                  <div class="flex flex-col sm:flex-row justify-center gap-3">
+                    <a class="btn-primary" href="/rss.xml">Follow via RSS</a>
+                    <a class="btn-secondary" href="/contact">Contact Me</a>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </section>

@@ -24,18 +24,23 @@ const defaultNavLinks: NavLink[] = [
 ];
 
 const menuItems = navigation?.menuItems;
-const navLinks: NavLink[] = (menuItems && Array.isArray(menuItems) && menuItems.length > 0)
+const navLinks: NavLink[] = menuItems && Array.isArray(menuItems) && menuItems.length > 0
   ? menuItems
       .filter((item: any) => item.visible !== false && item.path && item.label)
       .sort((a: any, b: any) => (a.order || 0) - (b.order || 0))
       .map((item: any) => ({ path: item.path, label: item.label }))
   : defaultNavLinks;
 
-// Append custom pages that have show_in_navigation enabled
 const customPageLinks: NavLink[] = customPages.map((p) => ({ path: `/p/${p.slug}`, label: p.title }));
 const allNavLinks = [...navLinks, ...customPageLinks];
 
 const currentPath = Astro.url.pathname;
+const maxPrimaryDesktopLinks = 7;
+const primaryNavLinks = allNavLinks.slice(0, maxPrimaryDesktopLinks);
+const overflowNavLinks = allNavLinks.slice(maxPrimaryDesktopLinks);
+const isOverflowActive = overflowNavLinks.some((link) =>
+  currentPath === link.path || (link.path !== '/' && currentPath.startsWith(link.path))
+);
 ---
 
 <header
@@ -44,7 +49,6 @@ const currentPath = Astro.url.pathname;
 >
   <nav class="container mx-auto px-4 sm:px-6 lg:px-8" aria-label="Main navigation">
     <div class="flex items-center justify-between">
-      <!-- Logo -->
       <a
         href="/"
         class="text-2xl font-bold font-serif tracking-tight text-gradient-cyan hover:drop-shadow-[0_0_8px_rgba(6,182,212,0.5)] transition-all duration-300"
@@ -53,9 +57,8 @@ const currentPath = Astro.url.pathname;
         {(settings as any).site_name || 'MFT Blog'}
       </a>
 
-      <!-- Desktop Navigation -->
-      <div class="hidden lg:flex items-center space-x-1" id="navigation">
-        {allNavLinks.map((link) => {
+      <div class="hidden lg:flex items-center gap-1" id="navigation">
+        {primaryNavLinks.map((link) => {
           const isActive = currentPath === link.path || (link.path !== '/' && currentPath.startsWith(link.path));
           return (
             <a
@@ -73,27 +76,55 @@ const currentPath = Astro.url.pathname;
             </a>
           );
         })}
+
+        {overflowNavLinks.length > 0 && (
+          <details id="desktop-more" class="relative">
+            <summary
+              class:list={[
+                'list-none px-3 py-2 cursor-pointer text-sm font-medium rounded-lg transition-colors',
+                isOverflowActive ? 'text-primary-400 bg-primary-500/10' : 'text-secondary-400 hover:text-primary-300 hover:bg-white/5',
+              ]}
+              aria-haspopup="menu"
+            >
+              More
+            </summary>
+            <div class="absolute right-0 mt-2 w-56 rounded-xl bg-surface/95 backdrop-blur-xl border border-white/[0.08] shadow-xl shadow-black/30 p-2">
+              {overflowNavLinks.map((link) => {
+                const isActive = currentPath === link.path || (link.path !== '/' && currentPath.startsWith(link.path));
+                return (
+                  <a
+                    href={link.path}
+                    class:list={[
+                      'block rounded-lg px-3 py-2 text-sm transition-colors',
+                      isActive ? 'text-primary-300 bg-primary-500/10' : 'text-secondary-300 hover:text-primary-300 hover:bg-white/5',
+                    ]}
+                    aria-current={isActive ? 'page' : undefined}
+                  >
+                    {link.label}
+                  </a>
+                );
+              })}
+            </div>
+          </details>
+        )}
       </div>
 
-      <!-- Actions -->
-      <div class="flex items-center space-x-3">
-        <!-- Search Button -->
+      <div class="flex items-center gap-2">
         <a
           href="/search"
-          class="p-2 rounded-full text-secondary-400 hover:text-primary-300 hover:bg-white/5 hover:shadow-glow-cyan transition-all duration-200"
-          aria-label="Search"
+          class="icon-btn text-secondary-400 hover:text-primary-300 hover:bg-white/5 hover:shadow-glow-cyan"
+          aria-label="Open search page"
         >
           <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
         </a>
 
-        <!-- Theme Toggle -->
         <ThemeToggle />
 
-        <!-- Mobile Menu Button -->
         <button
           id="mobile-menu-btn"
-          class="lg:hidden p-2 rounded-full text-secondary-400 hover:text-primary-300 hover:bg-white/5 hover:shadow-glow-cyan transition-all duration-200"
+          class="icon-btn lg:hidden text-secondary-400 hover:text-primary-300 hover:bg-white/5 hover:shadow-glow-cyan"
           aria-label="Open menu"
+          aria-controls="mobile-menu"
           aria-expanded="false"
         >
           <svg id="menu-icon-open" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" x2="20" y1="12" y2="12"></line><line x1="4" x2="20" y1="6" y2="6"></line><line x1="4" x2="20" y1="18" y2="18"></line></svg>
@@ -103,17 +134,15 @@ const currentPath = Astro.url.pathname;
     </div>
   </nav>
 
-  <!-- Bottom glow line -->
   <div
     id="header-border"
     class="absolute bottom-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-primary-500/20 to-transparent opacity-0 transition-opacity"
   ></div>
 
-  <!-- Mobile Menu Overlay -->
   <div
     id="mobile-menu"
-    class="lg:hidden fixed inset-0 z-40 bg-abyss/98 backdrop-blur-2xl star-pattern transition-transform duration-300 ease-in-out translate-x-full"
-    style="top: 64px;"
+    class="lg:hidden fixed inset-x-0 bottom-0 z-40 bg-abyss/95 backdrop-blur-2xl star-pattern transition-transform duration-300 ease-in-out translate-x-full"
+    aria-hidden="true"
   >
     <div class="p-4 space-y-4 h-full overflow-y-auto">
       <nav aria-label="Mobile navigation">
@@ -129,7 +158,7 @@ const currentPath = Astro.url.pathname;
                     ? 'bg-primary-500/10 text-primary-400 border-l-2 border-primary-400'
                     : 'text-secondary-300 hover:text-primary-300 hover:bg-white/5',
                 ]}
-                style={`transition-delay: ${index * 50}ms`}
+                style={`transition-delay: ${index * 40}ms`}
                 aria-current={isActive ? 'page' : undefined}
               >
                 {link.label}
@@ -143,66 +172,137 @@ const currentPath = Astro.url.pathname;
 </header>
 
 <script>
-  // Header scroll effect
-  const header = document.getElementById('site-header');
-  const headerBorder = document.getElementById('header-border');
+  function initHeader() {
+    const header = document.getElementById('site-header');
+    const headerBorder = document.getElementById('header-border');
+    const menuBtn = document.getElementById('mobile-menu-btn');
+    const mobileMenu = document.getElementById('mobile-menu');
+    const iconOpen = document.getElementById('menu-icon-open');
+    const iconClose = document.getElementById('menu-icon-close');
+    const moreMenu = document.getElementById('desktop-more');
+    if (!header || !mobileMenu || !menuBtn || !iconOpen || !iconClose) return;
 
-  if (header) {
-    window.addEventListener('scroll', () => {
+    if (header.dataset.initialized === 'true') return;
+    header.dataset.initialized = 'true';
+
+    const win = window as any;
+    if (typeof win.__headerCleanup === 'function') {
+      win.__headerCleanup();
+    }
+    const controller = new AbortController();
+    const { signal } = controller;
+
+    const mobileNavLinks = Array.from(mobileMenu.querySelectorAll('.mobile-nav-link'));
+    let isMenuOpen = false;
+
+    function updateHeaderStyles() {
       if (window.scrollY > 10) {
         header.classList.add('glass-dark', 'shadow-lg', 'shadow-black/20', 'py-3');
         header.style.boxShadow = '0 4px 30px rgba(6,182,212,0.05), 0 10px 30px rgba(0,0,0,0.2)';
         header.classList.remove('bg-transparent', 'py-5');
-        if (headerBorder) {
-          headerBorder.classList.remove('opacity-0');
-          headerBorder.classList.add('opacity-100');
-        }
+        headerBorder?.classList.remove('opacity-0');
+        headerBorder?.classList.add('opacity-100');
       } else {
         header.classList.remove('glass-dark', 'shadow-lg', 'shadow-black/20', 'py-3');
         header.style.boxShadow = '';
         header.classList.add('bg-transparent', 'py-5');
-        if (headerBorder) {
-          headerBorder.classList.add('opacity-0');
-          headerBorder.classList.remove('opacity-100');
-        }
+        headerBorder?.classList.add('opacity-0');
+        headerBorder?.classList.remove('opacity-100');
       }
-    });
-  }
+    }
 
-  // Mobile menu toggle
-  const menuBtn = document.getElementById('mobile-menu-btn');
-  const mobileMenu = document.getElementById('mobile-menu');
-  const iconOpen = document.getElementById('menu-icon-open');
-  const iconClose = document.getElementById('menu-icon-close');
-  const mobileNavLinks = document.querySelectorAll('.mobile-nav-link');
+    function updateMobileMenuTop() {
+      const headerHeight = Math.round(header.getBoundingClientRect().height);
+      mobileMenu.style.top = `${headerHeight}px`;
+    }
 
-  if (menuBtn && mobileMenu && iconOpen && iconClose) {
+    function setFocusableTrap(e) {
+      if (!isMenuOpen || e.key !== 'Tab') return;
+      const focusables = mobileMenu.querySelectorAll(
+        'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])'
+      );
+      if (!focusables.length) return;
+
+      const first = focusables[0];
+      const last = focusables[focusables.length - 1];
+      const active = document.activeElement;
+
+      if (e.shiftKey && active === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && active === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    }
+
+    function closeMenu({ returnFocus = true } = {}) {
+      if (!isMenuOpen) return;
+      isMenuOpen = false;
+      mobileNavLinks.forEach((link) => link.classList.add('opacity-0'));
+      mobileMenu.classList.add('translate-x-full');
+      mobileMenu.setAttribute('aria-hidden', 'true');
+      iconOpen.classList.remove('hidden');
+      iconClose.classList.add('hidden');
+      menuBtn.setAttribute('aria-expanded', 'false');
+      menuBtn.setAttribute('aria-label', 'Open menu');
+      document.body.style.overflow = '';
+      if (returnFocus) menuBtn.focus();
+    }
+
+    function openMenu() {
+      if (isMenuOpen) return;
+      isMenuOpen = true;
+      updateMobileMenuTop();
+      mobileMenu.classList.remove('translate-x-full');
+      mobileMenu.setAttribute('aria-hidden', 'false');
+      iconOpen.classList.add('hidden');
+      iconClose.classList.remove('hidden');
+      menuBtn.setAttribute('aria-expanded', 'true');
+      menuBtn.setAttribute('aria-label', 'Close menu');
+      document.body.style.overflow = 'hidden';
+      requestAnimationFrame(() => {
+        mobileNavLinks.forEach((link) => link.classList.remove('opacity-0'));
+        const firstLink = mobileMenu.querySelector('.mobile-nav-link');
+        if (firstLink instanceof HTMLElement) firstLink.focus();
+      });
+    }
+
+    window.addEventListener('scroll', updateHeaderStyles, { passive: true, signal });
+    window.addEventListener('resize', updateMobileMenuTop, { passive: true, signal });
+    updateHeaderStyles();
+    updateMobileMenuTop();
+
     menuBtn.addEventListener('click', () => {
-      const isOpen = !mobileMenu.classList.contains('translate-x-full');
-      if (isOpen) {
-        // Close menu
-        mobileNavLinks.forEach((link) => {
-          link.classList.add('opacity-0');
-        });
-        mobileMenu.classList.add('translate-x-full');
-        iconOpen.classList.remove('hidden');
-        iconClose.classList.add('hidden');
-        menuBtn.setAttribute('aria-expanded', 'false');
-        menuBtn.setAttribute('aria-label', 'Open menu');
-      } else {
-        // Open menu
-        mobileMenu.classList.remove('translate-x-full');
-        iconOpen.classList.add('hidden');
-        iconClose.classList.remove('hidden');
-        menuBtn.setAttribute('aria-expanded', 'true');
-        menuBtn.setAttribute('aria-label', 'Close menu');
-        // Stagger animate links in
-        requestAnimationFrame(() => {
-          mobileNavLinks.forEach((link) => {
-            link.classList.remove('opacity-0');
-          });
-        });
-      }
+      if (isMenuOpen) closeMenu({ returnFocus: false });
+      else openMenu();
+    }, { signal });
+
+    mobileNavLinks.forEach((link) => {
+      link.addEventListener('click', () => closeMenu({ returnFocus: false }), { signal });
     });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        if (isMenuOpen) closeMenu();
+        if (moreMenu instanceof HTMLDetailsElement) moreMenu.removeAttribute('open');
+      }
+      setFocusableTrap(e);
+    }, { signal });
+
+    document.addEventListener('click', (e) => {
+      if (
+        moreMenu instanceof HTMLDetailsElement &&
+        moreMenu.hasAttribute('open') &&
+        !moreMenu.contains(e.target)
+      ) {
+        moreMenu.removeAttribute('open');
+      }
+    }, { signal });
+
+    win.__headerCleanup = () => controller.abort();
   }
+
+  initHeader();
+  document.addEventListener('astro:page-load', initHeader);
 </script>

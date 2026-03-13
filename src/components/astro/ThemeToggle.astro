@@ -1,19 +1,18 @@
 ---
 /**
- * Theme toggle button — pure Astro, zero React.
- * Defaults to dark; reads `localStorage.theme` on the client.
- * The dark-mode FOUC script in BaseLayout already sets the class before paint,
- * so we just need to sync the button icon on load.
+ * Theme toggle button (Astro only).
+ * Uses <html class="dark"> as the source of truth and mirrors data-theme.
  */
 ---
 
 <button
   id="theme-toggle"
   data-theme-toggle
-  class="p-2 rounded-full transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary-500/50 hover:scale-110 bg-secondary-800 text-amber-400 hover:bg-secondary-700"
-  aria-label="Switch to light mode"
+  class="icon-btn theme-toggle bg-secondary-800 text-gold-400 hover:bg-secondary-700"
+  aria-label="Toggle theme (currently dark)"
+  aria-pressed="true"
 >
-  <!-- Sun icon (shown in dark mode → means "switch to light") -->
+  <!-- Sun icon (shown in dark mode, next action switches to light) -->
   <svg
     id="theme-icon-sun"
     xmlns="http://www.w3.org/2000/svg"
@@ -36,7 +35,7 @@
     <path d="m6.34 17.66-1.41 1.41"></path>
     <path d="m19.07 4.93-1.41 1.41"></path>
   </svg>
-  <!-- Moon icon (shown in light mode → means "switch to dark") -->
+  <!-- Moon icon (shown in light mode, next action switches to dark) -->
   <svg
     id="theme-icon-moon"
     xmlns="http://www.w3.org/2000/svg"
@@ -61,34 +60,36 @@
     const moonIcon = document.getElementById('theme-icon-moon');
     if (!btn || !sunIcon || !moonIcon) return;
 
-    function applyUI(isDark: boolean) {
+    function applyUI(isDark) {
       if (isDark) {
         sunIcon.style.display = '';
         moonIcon.style.display = 'none';
-        btn.className = 'p-2 rounded-full transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary-500/50 hover:scale-110 bg-secondary-800 text-amber-400 hover:bg-secondary-700';
-        btn.setAttribute('aria-label', 'Switch to light mode');
+        btn.className = 'icon-btn theme-toggle bg-secondary-800 text-gold-400 hover:bg-secondary-700';
+        btn.setAttribute('aria-label', 'Toggle theme (currently dark)');
+        btn.setAttribute('aria-pressed', 'true');
       } else {
         sunIcon.style.display = 'none';
         moonIcon.style.display = '';
-        btn.className = 'p-2 rounded-full transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary-500/50 hover:scale-110 bg-secondary-100 text-indigo-600 hover:bg-secondary-200';
-        btn.setAttribute('aria-label', 'Switch to dark mode');
+        btn.className = 'icon-btn theme-toggle bg-secondary-100 text-secondary-800 hover:bg-secondary-200';
+        btn.setAttribute('aria-label', 'Toggle theme (currently light)');
+        btn.setAttribute('aria-pressed', 'false');
       }
     }
 
-    // Sync icon with current state (class already set by BaseLayout inline script)
     const isDark = document.documentElement.classList.contains('dark');
     applyUI(isDark);
+
+    if (btn.dataset.initialized === 'true') return;
+    btn.dataset.initialized = 'true';
 
     btn.addEventListener('click', () => {
       const nowDark = document.documentElement.classList.toggle('dark');
       localStorage.setItem('theme', nowDark ? 'dark' : 'light');
+      document.documentElement.setAttribute('data-theme', nowDark ? 'dark' : 'light');
       applyUI(nowDark);
     });
   }
 
-  // Run on initial load
   initThemeToggle();
-
-  // Re-run after Astro view transitions (swaps DOM)
   document.addEventListener('astro:after-swap', initThemeToggle);
 </script>

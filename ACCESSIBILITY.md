@@ -52,18 +52,14 @@ This website implements the following accessibility features to meet WCAG 2.2 Le
 | `Enter`        | Activate links and buttons                     |
 | `Space`        | Activate buttons and checkboxes                |
 | `Escape`       | Close modals and dialogs                       |
-| `Cmd/Ctrl + K` | Open command palette                           |
-| `Cmd/Ctrl + /` | Show keyboard shortcuts help                   |
+| `Cmd/Ctrl + K` | Focus search input on the Search page          |
 | `T`            | Toggle theme (dark/light mode)                 |
 
 ### Skip Links
 
-Press `Tab` on page load to access skip links:
+Press `Tab` on page load to access the skip link:
 
 - Skip to main content
-- Skip to navigation
-- Skip to search
-- Skip to footer
 
 ### Navigation
 
@@ -133,7 +129,7 @@ Users who prefer reduced motion (via `prefers-reduced-motion: reduce`) will expe
 
 ## Known Issues
 
-Currently, there are no known accessibility issues. If you discover any problems, please [report them](https://github.com/M-F-Tushar/Blog-Website/issues).
+Known accessibility gaps are tracked and fixed continuously. If you discover any problems, please [report them](https://github.com/M-F-Tushar/Blog-Website/issues).
 
 ## Testing
 

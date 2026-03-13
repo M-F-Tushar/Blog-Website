@@ -74,7 +74,7 @@ const allTags = Object.entries(tagCounts).sort((a, b) => b[1] - a[1]).slice(0, 2
         <div class="lg:col-span-3">
           {posts.length > 0 ? (
             <>
-              <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+              <div class="grid gap-8 md:grid-cols-2">
                 {posts.map((post) => (
                   <BlogCard post={post} />
                 ))}

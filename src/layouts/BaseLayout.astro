@@ -3,7 +3,6 @@ import SEOHead from '../components/astro/SEOHead.astro';
 import Header from '../components/astro/Header.astro';
 import Footer from '../components/astro/Footer.astro';
 import StarryBackground from '../components/astro/StarryBackground.astro';
-import CursorGlow from '../components/astro/CursorGlow.astro';
 import { ViewTransitions } from 'astro:transitions';
 import '../styles/global.css';
 
@@ -74,13 +73,14 @@ const {
 
     <slot name="head" />
 
-    <!-- Dark mode: default to dark, prevent FOUC -->
+    <!-- Theme bootstrap: class + data-theme kept in sync before paint -->
     <script is:inline>
       (function () {
-        const theme = localStorage.getItem('theme');
-        if (theme === 'light') {
-          document.documentElement.classList.remove('dark');
-        }
+        var stored = localStorage.getItem('theme');
+        var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        var useDark = stored ? stored === 'dark' : prefersDark;
+        document.documentElement.classList.toggle('dark', useDark);
+        document.documentElement.setAttribute('data-theme', useDark ? 'dark' : 'light');
       })();
     </script>
 
@@ -96,7 +96,6 @@ const {
   </head>
   <body class="flex flex-col min-h-screen noise-overlay">
     <StarryBackground density="sparse" />
-    <CursorGlow />
 
     <a
       href="#main-content"

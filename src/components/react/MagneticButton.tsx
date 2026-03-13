@@ -5,6 +5,8 @@ import {
   useEffect,
   type ReactNode,
   type MouseEvent,
+  type CSSProperties,
+  type Ref,
   type ComponentPropsWithoutRef,
 } from 'react';
 
@@ -66,7 +68,7 @@ export default function MagneticButton({
     setOffset({ x: 0, y: 0 });
   }, []);
 
-  const style: React.CSSProperties = {
+  const style: CSSProperties = {
     display: 'inline-block',
     transform:
       !prefersReducedMotion && isInside
@@ -79,7 +81,7 @@ export default function MagneticButton({
   };
 
   const sharedProps = {
-    ref: ref as React.Ref<HTMLAnchorElement & HTMLButtonElement>,
+    ref: ref as Ref<HTMLAnchorElement & HTMLButtonElement>,
     className,
     style,
     onMouseMove: handleMouseMove,
