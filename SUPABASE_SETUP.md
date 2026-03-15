@@ -144,12 +144,14 @@ CREATE INDEX idx_recommendations_created_at ON recommendations(created_at DESC);
 1. In your project root, create or update `.env` file:
 
 ```bash
-VITE_SUPABASE_URL=your_project_url_here
-VITE_SUPABASE_ANON_KEY=your_anon_key_here
+PUBLIC_SUPABASE_URL=your_project_url_here
+PUBLIC_SUPABASE_ANON_KEY=your_anon_key_here
 ```
 
 2. Replace the placeholder values with your actual Supabase credentials
 3. Save the file
+
+`PUBLIC_*` is the canonical naming. `VITE_*` is still accepted as a legacy fallback if you already have it in CI or local tooling.
 
 **Important:** Never commit your `.env` file to Git! It's already in `.gitignore`.
 
@@ -164,6 +166,13 @@ VITE_SUPABASE_ANON_KEY=your_anon_key_here
    - **Auto Confirm User**: ✅ **Check this box**
 5. Click "Create user"
 6. Save your email and password - you'll use these to log into the admin dashboard
+7. Copy the new user's UUID and run this in the Supabase SQL editor:
+
+```sql
+insert into public.admin_users (user_id, email)
+values ('YOUR_AUTH_USER_UUID', 'your-admin-email@example.com')
+on conflict (user_id) do update set email = excluded.email;
+```
 
 ### Step 8: Configure GitHub Secrets (for deployment)
 
@@ -171,11 +180,13 @@ VITE_SUPABASE_ANON_KEY=your_anon_key_here
 2. Click "Settings" → "Secrets and variables" → "Actions"
 3. Click "New repository secret" and add these two secrets:
 
-   - Name: `VITE_SUPABASE_URL`  
+   - Name: `PUBLIC_SUPABASE_URL`  
      Value: Your Supabase project URL
    
-   - Name: `VITE_SUPABASE_ANON_KEY`  
+   - Name: `PUBLIC_SUPABASE_ANON_KEY`  
      Value: Your Supabase anon key
+
+You can also keep the legacy `VITE_*` secrets during rollout. The workflows now accept either naming convention.
 
 ### Step 9: Run Data Migration
 

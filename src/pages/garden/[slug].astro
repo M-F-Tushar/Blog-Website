@@ -1,0 +1,102 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { getPublishedPosts } from '@/lib/supabase';
+import { unified } from 'unified';
+import remarkParse from 'remark-parse';
+import remarkGfm from 'remark-gfm';
+import remarkMath from 'remark-math';
+import remarkRehype from 'remark-rehype';
+import rehypeKatex from 'rehype-katex';
+import rehypeSlug from 'rehype-slug';
+import rehypeSanitize, { defaultSchema } from 'rehype-sanitize';
+import rehypeStringify from 'rehype-stringify';
+
+export async function getStaticPaths() {
+  const posts = await getPublishedPosts();
+  return posts.map((post) => ({ params: { slug: post.slug }, props: { post } }));
+}
+
+const { post } = Astro.props;
+const allPosts = await getPublishedPosts();
+const relatedPosts = allPosts
+  .filter((candidate) => candidate.id !== post.id)
+  .filter((candidate) => candidate.category === post.category || candidate.tags.some((tag) => post.tags.includes(tag)))
+  .slice(0, 2);
+
+const schema = structuredClone(defaultSchema);
+if (schema.attributes) {
+  schema.attributes.code = [...(schema.attributes.code || []), ['className']];
+  schema.attributes.span = [...(schema.attributes.span || []), ['className']];
+}
+
+const file = await unified()
+  .use(remarkParse)
+  .use(remarkGfm)
+  .use(remarkMath)
+  .use(remarkRehype)
+  .use(rehypeKatex)
+  .use(rehypeSlug)
+  .use(rehypeSanitize, schema)
+  .use(rehypeStringify)
+  .process(post.content);
+
+const contentHtml = String(file);
+const formattedDate = new Date(post.date).toLocaleDateString(undefined, {
+  month: 'long',
+  day: 'numeric',
+  year: 'numeric',
+});
+---
+
+<BaseLayout title={post.title} description={post.excerpt} image={post.coverImage} type="article">
+  <link
+    slot="head"
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/katex@0.16.25/dist/katex.min.css"
+    integrity="sha384-BHmjR5PJgPMBjUWvJh6xEEj3GIKam2V3Y0RHfrq3LNpCR7LKsCkFmMCqV6U5BOA"
+    crossorigin="anonymous"
+  />
+  <article class="pb-20">
+    <header class="page-hero pb-14">
+      <div class="container mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+        <div class="mx-auto max-w-3xl text-center">
+          <span class="section-eyebrow mx-auto">{post.category}</span>
+          <h1 class="mt-6 font-serif text-4xl leading-[1.05] text-secondary-50 sm:text-5xl lg:text-6xl">{post.title}</h1>
+          <p class="mx-auto mt-6 max-w-2xl text-lg leading-8 text-secondary-300">{post.excerpt}</p>
+          <div class="mt-8 flex flex-wrap items-center justify-center gap-3 text-sm text-secondary-400">
+            <time datetime={post.date}>{formattedDate}</time>
+            {post.tags.map((tag) => <span class="badge-pill">#{tag}</span>)}
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <section class="section-shell">
+      <div class="container mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
+        <div class="surface-panel p-6 sm:p-8 lg:p-10">
+          <div class="prose prose-lg max-w-none prose-invert prose-headings:font-serif prose-headings:text-secondary-50 prose-p:text-secondary-200 prose-p:leading-8 prose-a:text-primary-200 prose-code:text-primary-100 prose-code:before:content-none prose-code:after:content-none prose-pre:border prose-pre:border-white/10 prose-pre:bg-[#060b16] prose-blockquote:border-l-primary-400 prose-blockquote:text-secondary-200 prose-li:text-secondary-200" set:html={contentHtml}></div>
+        </div>
+      </div>
+    </section>
+
+    {relatedPosts.length > 0 && (
+      <section class="section-shell pt-0">
+        <div class="container mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+          <div class="mb-6">
+            <p class="editorial-kicker">Continue in the garden</p>
+            <h2 class="mt-2 font-serif text-3xl text-secondary-50">Related notes</h2>
+          </div>
+          <div class="grid gap-5 md:grid-cols-2">
+            {relatedPosts.map((related) => (
+              <a href={`/garden/${related.slug}`} class="surface-subtle p-6 transition-colors hover:border-primary-500/30">
+                <span class="text-xs uppercase tracking-[0.18em] text-primary-200">{related.category}</span>
+                <h3 class="mt-3 font-serif text-2xl text-secondary-50">{related.title}</h3>
+                <p class="mt-3 text-sm leading-7 text-secondary-300">{related.excerpt}</p>
+              </a>
+            ))}
+          </div>
+        </div>
+      </section>
+    )}
+  </article>
+</BaseLayout>

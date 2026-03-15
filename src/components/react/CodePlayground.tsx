@@ -5,6 +5,16 @@ interface Props {
   packages?: string[];
 }
 
+interface PyodidePackageInstaller {
+  install: (pkg: string) => Promise<void>;
+}
+
+interface PyodideRuntime {
+  loadPackage: (pkg: string | string[]) => Promise<void>;
+  pyimport: (name: string) => PyodidePackageInstaller;
+  runPython: (code: string) => string;
+}
+
 const CodePlayground: React.FC<Props> = ({
   initialCode = '# Write Python code here\nprint("Hello from Pyodide!")\n\nimport sys\nprint(f"Python version: {sys.version}")',
   packages = [],
@@ -13,7 +23,7 @@ const CodePlayground: React.FC<Props> = ({
   const [output, setOutput] = useState('');
   const [isRunning, setIsRunning] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [pyodide, setPyodide] = useState<any>(null);
+  const [pyodide, setPyodide] = useState<PyodideRuntime | null>(null);
   const [error, setError] = useState<string | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -34,9 +44,9 @@ const CodePlayground: React.FC<Props> = ({
         script.onerror = () => reject(new Error('Failed to load Pyodide'));
       });
 
-      const py = await window.loadPyodide({
+      const py = (await window.loadPyodide({
         indexURL: 'https://cdn.jsdelivr.net/pyodide/v0.26.4/full/',
-      });
+      })) as unknown as PyodideRuntime;
 
       // Install requested packages
       if (packages.length > 0) {
@@ -81,8 +91,9 @@ sys.stderr = StringIO()
         const stdout = py.runPython('sys.stdout.getvalue()');
         const stderr = py.runPython('sys.stderr.getvalue()');
         setOutput(stdout + (stderr ? `\n[stderr] ${stderr}` : ''));
-      } catch (pyErr: any) {
-        setOutput(pyErr.message || String(pyErr));
+      } catch (pyErr) {
+        const errorMessage = pyErr instanceof Error ? pyErr.message : String(pyErr);
+        setOutput(errorMessage);
         setError('Execution error');
       }
 

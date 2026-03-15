@@ -7,29 +7,16 @@ import {
   subscribeToProjectsUpdates,
 } from '../services/supabaseProjectsService';
 import { FALLBACK_PROJECTS } from '../data/fallback';
+import type { Project } from '../types/types';
 
-export interface Project {
-  id: string;
-  title: string;
-  description: string;
-  long_description?: string;
-  github_url?: string;
-  demo_url?: string;
-  image_url?: string;
-  tags: string[];
-  status: 'active' | 'completed' | 'archived';
-  featured: boolean;
-  sort_order: number;
-  created_at?: string;
-  updated_at?: string;
-}
+export type { Project } from '../types/types';
 
 interface ProjectsContextType {
   projects: Project[];
-  addProject: (projectData: Omit<Project, 'id' | 'created_at' | 'updated_at'>) => Promise<Project>;
+  addProject: (projectData: Omit<Project, 'id' | 'createdAt' | 'updatedAt'>) => Promise<Project>;
   updateProject: (
     projectId: string,
-    projectData: Partial<Omit<Project, 'id' | 'created_at' | 'updated_at'>>
+    projectData: Partial<Omit<Project, 'id' | 'createdAt' | 'updatedAt'>>
   ) => Promise<Project | undefined>;
   deleteProject: (projectId: string) => Promise<void>;
   loading: boolean;
@@ -107,7 +94,7 @@ export const ProjectsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   }, [useSupabase]);
 
   const addProject = useCallback(
-    async (projectData: Omit<Project, 'id' | 'created_at' | 'updated_at'>): Promise<Project> => {
+    async (projectData: Omit<Project, 'id' | 'createdAt' | 'updatedAt'>): Promise<Project> => {
       if (useSupabase) {
         try {
           const createdProject = await createProjectSupabase(projectData);
@@ -127,8 +114,9 @@ export const ProjectsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
             .replace(/[^\w\s]/gi, '')
             .replace(/\s+/g, '-')
             .slice(0, 50)}-${Date.now()}`,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
+          slug: projectData.slug || projectData.title.toLowerCase().replace(/[^\w\s]/gi, '').replace(/\s+/g, '-'),
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
         };
 
         const currentUserProjects = getUserProjectsFromStorage();
@@ -145,7 +133,7 @@ export const ProjectsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const updateProject = useCallback(
     async (
       projectId: string,
-      projectData: Partial<Omit<Project, 'id' | 'created_at' | 'updated_at'>>
+      projectData: Partial<Omit<Project, 'id' | 'createdAt' | 'updatedAt'>>
     ): Promise<Project | undefined> => {
       if (useSupabase) {
         try {
@@ -168,7 +156,7 @@ export const ProjectsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         const updatedProject: Project = {
           ...originalProject,
           ...projectData,
-          updated_at: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
         };
 
         currentUserProjects[projectIndex] = updatedProject;

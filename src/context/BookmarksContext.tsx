@@ -77,7 +77,7 @@ export const BookmarksProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       } else {
         const { error } = await client
           .from('bookmarks')
-          .insert({ user_id: user.id, post_id: postId });
+          .insert({ user_id: user.id, post_id: postId } as never);
 
         if (error) {
           // Ignore unique constraint violation (race condition)

@@ -1,4 +1,5 @@
-import { supabase, isSupabaseConfigured } from '../supabase/client';
+import { getSupabaseClient, supabase, isSupabaseConfigured } from '../supabase/client';
+import type { Database } from '../types/database';
 
 export interface PostViewStats {
   postId: string;
@@ -33,6 +34,8 @@ export async function recordPageView(postId: string): Promise<void> {
   }
 
   try {
+    const client = getSupabaseClient();
+
     // Generate a session ID for this browser session
     let sessionId = sessionStorage.getItem('analytics_session_id');
     if (!sessionId) {
@@ -41,12 +44,14 @@ export async function recordPageView(postId: string): Promise<void> {
     }
 
     // Use the Supabase function to record the view
-    await supabase.rpc('record_page_view', {
+    const args: Database['public']['Functions']['record_page_view']['Args'] = {
       p_post_id: postId,
       p_session_id: sessionId,
       p_referrer: document.referrer || null,
       p_user_agent: navigator.userAgent || null,
-    });
+    };
+
+    await client.rpc('record_page_view', args as never);
   } catch (error) {
     console.error('Error recording page view:', error);
     // Silently fail - don't break the user experience for analytics
@@ -63,14 +68,17 @@ export async function getPostViewStats(): Promise<PostViewStats[]> {
   }
 
   try {
-    const { data, error } = await supabase.from('post_statistics').select('*');
+    const client = getSupabaseClient();
+    const { data, error } = await client.from('post_statistics').select('*');
 
     if (error) {
       console.error('Error fetching post statistics:', error);
       return [];
     }
 
-    return (data || []).map((row) => ({
+    const rows = (data || []) as Database['public']['Views']['post_statistics']['Row'][];
+
+    return rows.map((row) => ({
       postId: row.post_id,
       title: row.title,
       category: row.category || 'Uncategorized',

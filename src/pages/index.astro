@@ -1,366 +1,373 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import BlogCard from '../components/astro/BlogCard.astro';
-import Reveal from '../components/astro/Reveal.astro';
-import { getPublishedPosts, getSiteSettings, getPageSection, isPageVisible } from '@/lib/supabase';
-import { generateWebSiteSchema } from '@/lib/structured-data';
-import TypewriterEffect from '@/components/react/TypewriterEffect';
-import AnimatedCounter from '@/components/react/AnimatedCounter';
-import MagneticButton from '@/components/react/MagneticButton';
-import CanvasStarfield from '@/components/astro/CanvasStarfield.astro';
-import NebulaGradient from '@/components/astro/NebulaGradient.astro';
+import AnimatedSection from '../components/astro/AnimatedSection.astro';
+import LeadStoryCard from '../components/astro/LeadStoryCard.astro';
+import ReaderStartHere from '../components/astro/ReaderStartHere.astro';
+import SectionRail from '../components/astro/SectionRail.astro';
+import {
+  getBookshelfEntries,
+  getContactLinks,
+  getPageSections,
+  getProjects,
+  getPublishedPosts,
+  getSiteSettings,
+  getStoryChapters,
+} from '@/lib/supabase';
+import {
+  getKickerClass,
+  getMetadataText,
+  selectSectionItems,
+} from '@/lib/pageSections';
+import { getContactLinkDisplayValue, getContactLinkHref, isContactLinkExternal } from '@/lib/contactLinks';
 
 const settings = await getSiteSettings();
-const uiText = (settings as any).ui_text?.home || {};
+const pageSections = await getPageSections('home');
 const posts = await getPublishedPosts();
+const projects = await getProjects();
+const storyChapters = await getStoryChapters();
+const bookshelfEntries = await getBookshelfEntries();
+const contactLinks = await getContactLinks();
 
-const heroSection = await getPageSection('home', 'hero');
-const heroTaglines = heroSection?.content?.taglines || ['AI/ML Enthusiast', 'CS Student', 'Open Source Contributor', 'Tech Blogger'];
+const heroSection = pageSections.find((section) => section.sectionKey === 'hero');
+const focusSection = pageSections.find((section) => section.sectionKey === 'current-focus');
+const featuredProjectSection = pageSections.find((section) => section.sectionKey === 'featured-project');
+const latestNotesSection = pageSections.find((section) => section.sectionKey === 'latest-notes');
+const storySection = pageSections.find((section) => section.sectionKey === 'story-preview');
+const bookshelfSection = pageSections.find((section) => section.sectionKey === 'bookshelf-preview');
+const connectSection = pageSections.find((section) => section.sectionKey === 'connect');
 
-// Homepage layout config
-const layout = (settings as any).homepage_layout || {};
-const showHero = layout.showHero !== false;
-const showStats = layout.showStats !== false;
-const showFeatured = layout.showFeaturedPost !== false;
-const showTrending = layout.showTrendingTopics !== false;
-const showArticles = layout.showLatestArticles !== false;
-const showNewsletter = layout.showNewsletter !== false;
+const storyPreview = storyChapters[0];
+const heroPortraitUrl = settings.author_image?.trim() || '';
+const authorInitials =
+  settings.author_name
+    ?.split(' ')
+    .filter(Boolean)
+    .map((part) => part[0]?.toUpperCase())
+    .slice(0, 2)
+    .join('') || 'MF';
 
-// Section ordering via CSS order
-const DEFAULT_ORDER = ['hero', 'stats', 'featured', 'trending', 'articles', 'newsletter'];
-const sectionOrder: string[] = layout.sectionOrder || DEFAULT_ORDER;
-const orderMap: Record<string, number> = {};
-sectionOrder.forEach((id: string, i: number) => { orderMap[id] = i; });
-// Fill in defaults for any sections not in the array
-DEFAULT_ORDER.forEach((id, i) => { if (!(id in orderMap)) orderMap[id] = DEFAULT_ORDER.length + i; });
+const getProjectItems = (section: NonNullable<typeof featuredProjectSection>) =>
+  selectSectionItems(projects, section, {
+    isFeatured: (project) => project.isFeatured,
+  });
 
-// Section config
-const sectionConfig = layout.sectionConfig || {};
-const maxArticles = (sectionConfig.articles?.count as number) || 6;
-const maxTags = (sectionConfig.trending?.maxTags as number) || 8;
+const getPostItems = (section: NonNullable<typeof latestNotesSection>) =>
+  selectSectionItems(posts, section, {
+    fallbackFeaturedId: settings.featured_post_id,
+  });
 
-const featuredPost = settings.featured_post_id
-  ? posts.find((p) => p.id === settings.featured_post_id) || posts[0]
-  : posts[0];
-
-const recentPosts = featuredPost
-  ? posts.filter((p) => p.id !== featuredPost.id).slice(0, maxArticles)
-  : posts.slice(0, maxArticles);
-
-// Popular tags
-const tagCounts: Record<string, number> = {};
-posts.forEach((p) => p.tags?.forEach((tag) => { tagCounts[tag] = (tagCounts[tag] || 0) + 1; }));
-const popularTags = Object.entries(tagCounts)
-  .sort((a, b) => b[1] - a[1])
-  .slice(0, maxTags)
-  .map(([tag]) => tag);
-
-const structuredData = generateWebSiteSchema(
-  settings.site_name,
-  'https://mahirfaysaltusherblog.is-a.dev',
-  settings.site_description,
-  { name: settings.author_name }
-);
-
-// Page visibility checks for home page links
-const blogVisible = isPageVisible(settings, '/blog');
-const aboutVisible = isPageVisible(settings, '/about');
-
-// Stats computations
-const totalWords = posts.reduce((sum, p) => sum + (p.content ? p.content.split(/\s+/).length : 0), 0);
-const uniqueCategories = new Set(posts.flatMap((p) => p.tags || []));
-const postDates = posts.map((p) => new Date(p.date).getFullYear()).filter(Boolean);
-const yearsActive = postDates.length > 0 ? new Date().getFullYear() - Math.min(...postDates) + 1 : 1;
-const newsletterEndpoint = import.meta.env.PUBLIC_NEWSLETTER_ENDPOINT || '';
-const hasNewsletterEndpoint = Boolean(newsletterEndpoint);
+const spotlightProject = featuredProjectSection ? getProjectItems(featuredProjectSection)[0] : undefined;
+const noteItems = latestNotesSection ? getPostItems(latestNotesSection) : [];
+const leadNote = noteItems[0];
+const supportingNotes = noteItems.slice(1, Math.min(noteItems.length, 4));
+const spotlightBookshelf = bookshelfSection
+  ? selectSectionItems(bookshelfEntries, bookshelfSection, {
+      isFeatured: (entry) => entry.isFeatured,
+      isPinned: (entry) => entry.isPinned,
+    })[0]
+  : undefined;
+const visibleLinks = contactLinks
+  .filter((link) => link.visible)
+  .slice(0, connectSection?.maxItems || 3);
 ---
 
-<BaseLayout structuredData={structuredData}>
-  <div class="flex flex-col gap-20 lg:gap-24 pb-16">
-
-    <!-- ======================== HERO SECTION ======================== -->
-    {showHero && (
-      <section class="relative min-h-screen flex items-center justify-center -mt-20 pt-20 overflow-hidden" style={`order: ${orderMap.hero ?? 0}`}>
-        <!-- Cosmic background -->
-        <CanvasStarfield
-          starCount={1600}
-          speed={0.2}
-          class="z-0"
-        />
-        <NebulaGradient variant="hero" />
-
-        <!-- Aurora gradient overlay -->
-        <div class="absolute inset-0 aurora-bg opacity-[0.15] z-0"></div>
-
-        <!-- Content -->
-        <div class="container mx-auto max-w-5xl text-center relative z-10 px-4">
-          <!-- Welcome badge -->
-          <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-surface/50 backdrop-blur-sm border border-white/10 mb-8">
-            <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gold-400">
-              <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"></path>
-              <path d="M5 3v4"></path>
-              <path d="M19 17v4"></path>
-              <path d="M3 5h4"></path>
-              <path d="M17 19h4"></path>
-            </svg>
-            <span class="text-sm font-medium text-secondary-300">
-              {uiText.welcomeBadge || 'Welcome to my research blog'}
-            </span>
-          </div>
-
-          <!-- Name -->
-          <h1 class="text-5xl md:text-7xl font-bold font-serif text-secondary-50 mb-4 tracking-tight leading-tight">
-            Hi, I&apos;m <span class="text-gradient-cyan">{settings.author_name}</span>
-          </h1>
-
-          <!-- Typewriter effect -->
-          <div class="mb-6">
-            <TypewriterEffect
-              client:visible
-              texts={heroTaglines}
-              speed={80}
-              deleteSpeed={40}
-              pauseDuration={2000}
-              className="text-xl md:text-2xl text-secondary-300 mb-10"
-              cursorColor="#06b6d4"
-            />
-          </div>
-
-          <!-- Tagline -->
-          <p class="text-xl md:text-2xl text-secondary-400 mb-10 max-w-2xl mx-auto leading-relaxed">
-            {settings.author_tagline}
-          </p>
-
-          <!-- CTA buttons -->
-          <div class="flex flex-col sm:flex-row justify-center gap-4">
-            {blogVisible && (
-            <MagneticButton
-              client:visible
-              href="/blog"
-              className="btn-primary"
-            >
-              {uiText.startReading || 'Start Reading'}
-              <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
-            </MagneticButton>
-            )}
-            {aboutVisible && (
-            <MagneticButton
-              client:visible
-              href="/about"
-              className="btn-secondary"
-            >
-              {uiText.moreAboutMe || 'About me'}
-            </MagneticButton>
-            )}
-          </div>
-          <p class="mt-4 text-sm text-secondary-500">
-            New research notes every week. No spam.
-          </p>
-        </div>
-
-        <!-- Scroll indicator -->
-        <div class="absolute bottom-8 left-1/2 -translate-x-1/2 z-10">
-          <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="animate-bounce text-secondary-500">
-            <path d="m6 9 6 6 6-6"></path>
-          </svg>
-        </div>
-      </section>
-    )}
-
-    <!-- ======================== STATS BAR ======================== -->
-    {showStats && (
-      <section class="container mx-auto px-4 sm:px-6 lg:px-8 relative z-10" style={`order: ${orderMap.stats ?? 1}`}>
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <!-- Articles -->
-          <div class="glass-cosmic rounded-xl p-6 text-center hover:shadow-cosmic-card transition-all">
-            <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mx-auto mb-2 text-primary-400">
-              <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"></path>
-            </svg>
-            <div class="text-2xl md:text-3xl font-bold text-secondary-50">
-              <AnimatedCounter client:visible end={posts.length} duration={2000} />
-            </div>
-            <p class="text-sm text-secondary-400 font-medium">Articles</p>
-          </div>
-
-          <!-- Total Words -->
-          <div class="glass-cosmic rounded-xl p-6 text-center hover:shadow-cosmic-card transition-all">
-            <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mx-auto mb-2 text-gold-400">
-              <path d="M17 6.1H3"></path>
-              <path d="M21 12.1H3"></path>
-              <path d="M15.1 18H3"></path>
-            </svg>
-            <div class="text-2xl md:text-3xl font-bold text-secondary-50">
-              <AnimatedCounter client:visible end={Math.round(totalWords / 1000)} duration={2000} suffix="k" />
-            </div>
-            <p class="text-sm text-secondary-400 font-medium">Total Words</p>
-          </div>
-
-          <!-- Years Active -->
-          <div class="glass-cosmic rounded-xl p-6 text-center hover:shadow-cosmic-card transition-all">
-            <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mx-auto mb-2 text-accent-400">
-              <circle cx="12" cy="12" r="10"></circle>
-              <polyline points="12 6 12 12 16 14"></polyline>
-            </svg>
-            <div class="text-2xl md:text-3xl font-bold text-secondary-50">
-              <AnimatedCounter client:visible end={yearsActive} duration={2000} suffix="+" />
-            </div>
-            <p class="text-sm text-secondary-400 font-medium">Years Active</p>
-          </div>
-
-          <!-- Topics -->
-          <div class="glass-cosmic rounded-xl p-6 text-center hover:shadow-cosmic-card transition-all">
-            <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mx-auto mb-2 text-primary-400">
-              <path d="M12 2H2v10l9.29 9.29c.94.94 2.48.94 3.42 0l6.58-6.58c.94-.94.94-2.48 0-3.42L12 2Z"></path>
-              <path d="M7 7h.01"></path>
-            </svg>
-            <div class="text-2xl md:text-3xl font-bold text-secondary-50">
-              <AnimatedCounter client:visible end={uniqueCategories.size} duration={2000} />
-            </div>
-            <p class="text-sm text-secondary-400 font-medium">Topics</p>
-          </div>
-        </div>
-      </section>
-    )}
-
-    <!-- ======================== FEATURED POST ======================== -->
-    {showFeatured && blogVisible && featuredPost && (
-      <Reveal direction="up">
-        <section class="container mx-auto px-4 sm:px-6 lg:px-8" style={`order: ${orderMap.featured ?? 2}`}>
-          <div class="flex items-center gap-3 mb-8">
-            <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-gold-400">
-              <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"></path>
-              <path d="M5 3v4"></path>
-              <path d="M19 17v4"></path>
-              <path d="M3 5h4"></path>
-              <path d="M17 19h4"></path>
-            </svg>
-            <h2 class="text-3xl font-bold font-serif text-secondary-50">{uiText.featuredStory || 'Featured Story'}</h2>
-            <span class="text-sm font-semibold text-gold-400 bg-gold-400/10 px-3 py-1 rounded-full">Featured</span>
-          </div>
-          <BlogCard post={featuredPost} featured />
-        </section>
-      </Reveal>
-    )}
-
-    <!-- ======================== POPULAR TAGS ======================== -->
-    {showTrending && blogVisible && popularTags.length > 0 && (
-      <Reveal direction="up">
-        <section class="container mx-auto px-4 sm:px-6 lg:px-8" style={`order: ${orderMap.trending ?? 3}`}>
-          <div class="flex items-center gap-2 mb-6">
-            <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-primary-400">
-              <path d="M12 2H2v10l9.29 9.29c.94.94 2.48.94 3.42 0l6.58-6.58c.94-.94.94-2.48 0-3.42L12 2Z"></path>
-              <path d="M7 7h.01"></path>
-            </svg>
-            <h2 class="text-2xl font-bold font-serif text-secondary-50">{uiText.trendingTopics || 'Trending Topics'}</h2>
-          </div>
-          <div class="flex gap-3 flex-wrap">
-            {popularTags.map((tag) => (
-              <a
-                href={`/blog/tags/${tag}`}
-                class="bg-surface border border-white/10 text-secondary-300 hover:border-primary-500/30 hover:text-primary-300 rounded-full px-4 py-2 transition-all duration-200 hover:scale-105"
-              >
-                #{tag}
-              </a>
-            ))}
-          </div>
-        </section>
-      </Reveal>
-    )}
-
-    <!-- ======================== RECENT POSTS ======================== -->
-    {showArticles && blogVisible && recentPosts.length > 0 && (
-      <Reveal direction="up">
-        <section class="container mx-auto px-4 sm:px-6 lg:px-8" style={`order: ${orderMap.articles ?? 4}`}>
-          <div class="flex items-center justify-between mb-8">
-            <div class="flex items-center gap-2">
-              <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-primary-400">
-                <polyline points="22 7 13.5 15.5 8.5 10.5 2 17"></polyline>
-                <polyline points="16 7 22 7 22 13"></polyline>
-              </svg>
-              <h2 class="text-3xl font-bold font-serif text-secondary-50">{uiText.latestArticles || 'Latest Articles'}</h2>
-            </div>
-            <a href="/blog" class="hidden md:flex items-center gap-1 text-primary-400 hover:text-primary-300 font-medium transition-colors">
-              View all
-              <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
-            </a>
-          </div>
-
-          <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-            {recentPosts.map((post) => (
-              <BlogCard post={post} />
-            ))}
-          </div>
-
-          <div class="mt-12 text-center md:hidden">
-            <a href="/blog" class="inline-flex items-center gap-2 px-6 py-3 bg-surface text-secondary-200 border border-white/10 rounded-full font-medium hover:border-primary-500/30 transition-all duration-200">
-              View all articles
-              <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
-            </a>
-          </div>
-        </section>
-      </Reveal>
-    )}
-
-    <!-- ======================== NEWSLETTER CTA ======================== -->
-    {showNewsletter && (
-      <Reveal direction="up">
-        <section class="container mx-auto px-4 sm:px-6 lg:px-8" style={`order: ${orderMap.newsletter ?? 5}`}>
-          <div class="relative rounded-3xl overflow-hidden bg-abyss px-6 py-16 md:px-16 md:py-20 text-center border border-white/[0.06]">
-            <!-- Dot pattern overlay -->
-            <div class="absolute inset-0 opacity-10 star-pattern"></div>
-
-            <!-- Gradient border glow at top -->
-            <div class="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-primary-500/30 to-transparent"></div>
-
-            <div class="relative z-10 max-w-2xl mx-auto space-y-8">
-              <!-- Mail icon -->
-              <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-primary-500/20 text-primary-400 mb-4">
-                <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <rect width="20" height="16" x="2" y="4" rx="2"></rect>
-                  <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
-                </svg>
+<BaseLayout title={settings.site_name} description={settings.site_description}>
+  <div class="scroll-progress" id="scroll-progress" aria-hidden="true"></div>
+  <div class="pb-16">
+    {heroSection && (
+      <section class="page-hero section-shell">
+        <div class="mx-auto max-w-6xl pt-4 pb-10 md:pt-6 md:pb-16 lg:pt-8 lg:pb-20">
+          <div class="grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-end">
+            <AnimatedSection preset={heroSection.animationPreset || 'hero-rise'} class="space-y-6">
+              {heroSection.eyebrow && <span class="section-eyebrow">{heroSection.eyebrow}</span>}
+              <h1 class="max-w-5xl font-serif text-5xl font-bold tracking-[-0.05em] text-secondary-50 md:text-7xl md:leading-[0.95]">
+                {heroSection.title}
+              </h1>
+              {heroSection.subtitle && <p class="max-w-2xl text-lg text-secondary-300 md:text-xl">{heroSection.subtitle}</p>}
+              {heroSection.body && <p class="max-w-2xl text-base leading-8 text-secondary-300">{heroSection.body}</p>}
+              <div class="flex flex-col gap-4 sm:flex-row">
+                {heroSection.primaryCtaLabel && heroSection.primaryCtaUrl && (
+                  <a href={heroSection.primaryCtaUrl} class="btn-primary rounded-2xl">
+                    {heroSection.primaryCtaLabel}
+                  </a>
+                )}
+                {heroSection.secondaryCtaLabel && heroSection.secondaryCtaUrl && (
+                  <a href={heroSection.secondaryCtaUrl} class="btn-secondary rounded-2xl">
+                    {heroSection.secondaryCtaLabel}
+                  </a>
+                )}
               </div>
+            </AnimatedSection>
 
-              <!-- Title -->
-              <h2 class="text-3xl md:text-4xl font-bold font-serif text-secondary-50" set:html={uiText.newsletterTitle || 'Subscribe to my <span class="text-gradient-gold">newsletter</span>'} />
-
-              <!-- Description -->
-              <p class="text-lg text-secondary-300">
-                {uiText.newsletterDescription || 'Get the latest articles, tutorials, and research insights delivered straight to your inbox. No spam, just quality content.'}
-              </p>
-
-              <!-- Form -->
-              {hasNewsletterEndpoint ? (
-                <>
-                  <form class="flex flex-col sm:flex-row gap-4 max-w-md mx-auto" action={newsletterEndpoint} method="POST">
-                    <input
-                      type="email"
-                      name="email"
-                      aria-label="Email for newsletter"
-                      placeholder="Enter your email"
-                      class="input-cosmic rounded-full px-6 py-3.5 flex-1"
-                      required
-                    />
-                    <button type="submit" class="btn-primary px-8 py-3.5">
-                      {uiText.subscribeButton || 'Subscribe'}
-                    </button>
-                  </form>
-                  <p class="text-xs text-secondary-500">By subscribing, you agree to receive occasional email updates.</p>
-                </>
-              ) : (
-                <div class="max-w-md mx-auto space-y-4">
-                  <p class="text-sm text-secondary-400">Newsletter signup is coming soon. For now, follow updates through RSS.</p>
-                  <div class="flex flex-col sm:flex-row justify-center gap-3">
-                    <a class="btn-primary" href="/rss.xml">Follow via RSS</a>
-                    <a class="btn-secondary" href="/contact">Contact Me</a>
+            <div class="space-y-6">
+              <AnimatedSection preset={heroSection.animationPreset || 'hero-rise'} index={1}>
+                <div class="hero-portrait-card">
+                  <div class="hero-portrait-shell">
+                    {heroPortraitUrl ? (
+                      <img
+                        src={heroPortraitUrl}
+                        alt={`${settings.author_name} portrait`}
+                        class="hero-portrait-image"
+                        loading="eager"
+                      />
+                    ) : (
+                      <span class="hero-portrait-monogram">{authorInitials}</span>
+                    )}
+                  </div>
+                  <div class="space-y-2 text-center lg:text-left">
+                    <p class="editorial-kicker">Builder in public</p>
+                    <h2 class="font-serif text-2xl text-secondary-50 md:text-3xl">
+                      {settings.author_name}
+                    </h2>
+                    {settings.author_tagline && (
+                      <p class="text-sm leading-7 text-secondary-300 md:text-base">
+                        {settings.author_tagline}
+                      </p>
+                    )}
                   </div>
                 </div>
-              )}
+              </AnimatedSection>
+
+              <AnimatedSection preset={heroSection.animationPreset || 'hero-rise'} index={2}>
+                <div class="surface-panel-strong p-6 md:p-7">
+                  <p class="editorial-kicker mb-3">Mission</p>
+                  <p class="text-base leading-8 text-secondary-200">{settings.author_bio}</p>
+                </div>
+              </AnimatedSection>
             </div>
           </div>
-        </section>
-      </Reveal>
+        </div>
+
+        <AnimatedSection preset="cascade" index={3}>
+          <div class="mt-10 grid gap-4 md:grid-cols-3">
+            <div class="editorial-metric">
+              <span class="text-xs uppercase tracking-[0.2em] text-secondary-500">Notes</span>
+              <strong class="mt-2 block text-3xl font-semibold text-secondary-50">
+                <span class="count-up" data-count={posts.length}>{posts.length}</span>
+              </strong>
+            </div>
+            <div class="editorial-metric">
+              <span class="text-xs uppercase tracking-[0.2em] text-secondary-500">Projects</span>
+              <strong class="mt-2 block text-3xl font-semibold text-secondary-50">
+                <span class="count-up" data-count={projects.length}>{projects.length}</span>
+              </strong>
+            </div>
+            <div class="editorial-metric">
+              <span class="text-xs uppercase tracking-[0.2em] text-secondary-500">Chapters</span>
+              <strong class="mt-2 block text-3xl font-semibold text-secondary-50">
+                <span class="count-up" data-count={storyChapters.length}>{storyChapters.length}</span>
+              </strong>
+            </div>
+          </div>
+        </AnimatedSection>
+      </section>
     )}
 
+    {focusSection && (
+      <ReaderStartHere
+        title={focusSection.title || 'If you are new, start with what is being learned now.'}
+        body={focusSection.body}
+        eyebrow={focusSection.eyebrow || 'Start here'}
+        items={[
+          'Begin with one project to understand the practical direction.',
+          'Read one Garden note to see how the learning is happening in public.',
+          'Use Story and Bookshelf next if you want the person behind the work.',
+        ]}
+        href={heroSection?.primaryCtaUrl || '/garden'}
+        label={heroSection?.primaryCtaLabel || 'Enter the garden'}
+        animationPreset={focusSection.animationPreset || 'quiet-fade'}
+      />
+    )}
+
+    <SectionRail
+      eyebrow="Proof in motion"
+      title="Start with one build and one note."
+      body="The best way into the site is to see one system being built and one idea being worked through."
+      weight="framed"
+      frame="strong"
+      tone="editorial"
+      dividerBefore="star"
+      role="proof"
+    >
+      <div class="grid gap-6 xl:grid-cols-2">
+        {spotlightProject && (
+          <LeadStoryCard
+            eyebrow={`${featuredProjectSection?.eyebrow || 'Active build'} / ${spotlightProject.status}`}
+            title={spotlightProject.title}
+            summary={spotlightProject.description}
+            href={`/lab/${spotlightProject.slug}`}
+            ctaLabel="Read case study"
+            meta={(spotlightProject.tags || spotlightProject.techStack).slice(0, 3)}
+            tags={spotlightProject.techStack.slice(0, 3)}
+            panelKicker={getMetadataText(featuredProjectSection || {}, 'panelKicker') || 'Why it matters'}
+            panelBody={
+              spotlightProject.motivation ||
+              getMetadataText(featuredProjectSection || {}, 'panelBody') ||
+              'This project shows the current intersection of product thinking, technical learning, and execution.'
+            }
+            accent="technical"
+            animationPreset={featuredProjectSection?.animationPreset || 'rail-slide'}
+          />
+        )}
+
+        {leadNote && (
+          <LeadStoryCard
+            eyebrow={`${latestNotesSection?.eyebrow || 'Lead note'} / ${leadNote.category}`}
+            title={leadNote.title}
+            summary={leadNote.excerpt}
+            href={`/garden/${leadNote.slug}`}
+            ctaLabel="Read note"
+            meta={[leadNote.date]}
+            tags={leadNote.tags.slice(0, 3)}
+            panelKicker="Currently learning"
+            panelBody="This note is the quickest way to understand what I am studying or clarifying right now."
+            accent="editorial"
+            animationPreset={latestNotesSection?.animationPreset || 'rail-slide'}
+            index={1}
+          />
+        )}
+      </div>
+
+      {supportingNotes.length > 0 && (
+        <div class="mt-6 grid gap-5 lg:grid-cols-3">
+          {supportingNotes.map((post, index) => (
+            <AnimatedSection preset={latestNotesSection?.animationPreset || 'stagger-cards'} index={index}>
+              <BlogCard post={post} hrefBase="/garden" compact />
+            </AnimatedSection>
+          ))}
+        </div>
+      )}
+    </SectionRail>
+
+    <SectionRail
+      eyebrow="Explore next"
+      title="Three good doors deeper into the platform."
+      dividerBefore="constellation"
+      role="guide"
+    >
+      <div class="grid gap-6 xl:grid-cols-3">
+        {storySection && storyPreview && (
+          <LeadStoryCard
+            eyebrow={storySection.eyebrow || 'My Story'}
+            title={storyPreview.title}
+            summary={storyPreview.subtitle || storySection.body}
+            href={storySection.primaryCtaUrl || '/story'}
+            ctaLabel={storySection.primaryCtaLabel || 'Read my story'}
+            panelKicker={getMetadataText(storySection, 'panelKicker') || storyPreview.periodLabel}
+            panelBody={getMetadataText(storySection, 'panelBody') || 'Use Story when you want the narrative behind the work.'}
+            accent="quiet"
+            panelLayout="stacked"
+            animationPreset={storySection.animationPreset || 'scale-reveal'}
+          />
+        )}
+
+        {bookshelfSection && spotlightBookshelf && (
+          <LeadStoryCard
+            eyebrow={bookshelfSection.eyebrow || 'Bookshelf'}
+            title={spotlightBookshelf.title}
+            summary={spotlightBookshelf.summary}
+            href={`/bookshelf/${spotlightBookshelf.slug}`}
+            ctaLabel="Read reflection"
+            meta={[spotlightBookshelf.bookTitle]}
+            tags={spotlightBookshelf.tags.slice(0, 3)}
+            panelKicker="Reading life"
+            panelBody="Bookshelf is the quieter room of the site: reflection, narrative, and the books shaping how I think."
+            accent="warm"
+            panelLayout="stacked"
+            animationPreset={bookshelfSection.animationPreset || 'scale-reveal'}
+            index={1}
+          />
+        )}
+
+        {connectSection && (
+          <AnimatedSection preset={connectSection.animationPreset || 'scale-reveal'} index={2}>
+            <article class="lead-story-card lead-story-card-warm lead-story-card-stacked">
+              <div class="min-w-0">
+                {connectSection.eyebrow && <p class:list={[getKickerClass(connectSection), 'mb-3']}>{connectSection.eyebrow}</p>}
+                <h3 class="font-serif text-3xl text-secondary-50 md:text-4xl">{connectSection.title}</h3>
+                {connectSection.body && <p class="mt-5 text-secondary-300">{connectSection.body}</p>}
+                {connectSection.primaryCtaUrl && connectSection.primaryCtaLabel && (
+                  <a href={connectSection.primaryCtaUrl} class="btn-primary mt-8 rounded-2xl">
+                    {connectSection.primaryCtaLabel}
+                  </a>
+                )}
+              </div>
+
+              <aside class="surface-subtle min-w-0 p-6">
+                <p class="editorial-kicker mb-3">Keep in touch</p>
+                <div class="grid gap-3">
+                  {visibleLinks.map((link) => (
+                    <a
+                      href={getContactLinkHref(link)}
+                      target={isContactLinkExternal(link) ? '_blank' : undefined}
+                      rel={isContactLinkExternal(link) ? 'noopener noreferrer' : undefined}
+                      class="reader-start-note"
+                    >
+                      <span class="block font-semibold text-secondary-50">{link.label}</span>
+                      <span class="mt-1 block text-sm text-secondary-400">
+                        {link.description || getContactLinkDisplayValue(link)}
+                      </span>
+                    </a>
+                  ))}
+                </div>
+              </aside>
+            </article>
+          </AnimatedSection>
+        )}
+      </div>
+    </SectionRail>
   </div>
 </BaseLayout>
+
+<script>
+  function initHomePage() {
+    // Scroll progress bar
+    const progressBar = document.getElementById('scroll-progress');
+    if (progressBar) {
+      const updateProgress = () => {
+        const scrollTop = window.scrollY;
+        const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+        const progress = docHeight > 0 ? (scrollTop / docHeight) * 100 : 0;
+        progressBar.style.width = `${progress}%`;
+      };
+      window.addEventListener('scroll', updateProgress, { passive: true });
+      updateProgress();
+    }
+
+    // Count-up animation
+    const countElements = document.querySelectorAll<HTMLElement>('.count-up[data-count]');
+    if (countElements.length === 0) return;
+
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (prefersReducedMotion) return;
+
+    const countObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          const el = entry.target as HTMLElement;
+          const target = parseInt(el.dataset.count || '0', 10);
+          if (isNaN(target) || target === 0) return;
+
+          let current = 0;
+          const duration = 1200;
+          const step = Math.max(1, Math.ceil(target / (duration / 16)));
+          const animate = () => {
+            current = Math.min(current + step, target);
+            el.textContent = current.toString();
+            if (current < target) requestAnimationFrame(animate);
+          };
+          requestAnimationFrame(animate);
+          countObserver.unobserve(el);
+        });
+      },
+      { threshold: 0.3 }
+    );
+
+    countElements.forEach((el) => countObserver.observe(el));
+  }
+
+  initHomePage();
+  document.addEventListener('astro:page-load', initHomePage);
+</script>

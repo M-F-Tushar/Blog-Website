@@ -5,8 +5,9 @@
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '../types/database';
 
-const supabaseUrl = import.meta.env.PUBLIC_SUPABASE_URL;
-const supabaseAnonKey = import.meta.env.PUBLIC_SUPABASE_ANON_KEY;
+const supabaseUrl = import.meta.env.PUBLIC_SUPABASE_URL || import.meta.env.VITE_SUPABASE_URL;
+const supabaseAnonKey =
+  import.meta.env.PUBLIC_SUPABASE_ANON_KEY || import.meta.env.VITE_SUPABASE_ANON_KEY;
 
 export const isSupabaseConfigured = (): boolean => {
   return Boolean(supabaseUrl && supabaseAnonKey);
@@ -29,3 +30,11 @@ if (isSupabaseConfigured()) {
 }
 
 export const supabase = _supabase;
+
+export const getSupabaseClient = (): SupabaseClient<Database> => {
+  if (!supabase) {
+    throw new Error('Supabase is not initialized');
+  }
+
+  return supabase;
+};

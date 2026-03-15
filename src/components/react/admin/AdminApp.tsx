@@ -15,6 +15,11 @@ import { PublicationsProvider } from '@/hooks/usePublications';
 import { CVDataProvider } from '@/hooks/useCVData';
 import { PageContentProvider } from '@/hooks/usePageContent';
 import { CustomPagesProvider } from '@/hooks/useCustomPages';
+import { PageSectionsProvider } from '@/hooks/usePageSections';
+import { StoryProvider } from '@/hooks/useStory';
+import { BookshelfProvider } from '@/hooks/useBookshelf';
+import { NavigationItemsProvider } from '@/hooks/useNavigationItems';
+import { ContactLinksProvider } from '@/hooks/useContactLinks';
 
 // Lazy-loaded admin components
 const AdminLogin = lazy(() => import('@/components/admin/AdminLogin'));
@@ -43,6 +48,14 @@ const AdminPageContent = lazy(() => import('@/components/admin/AdminPageContent'
 const AdminMediaLibrary = lazy(() => import('@/components/admin/AdminMediaLibrary'));
 const AdminInbox = lazy(() => import('@/components/admin/AdminInbox'));
 const AdminCustomPages = lazy(() => import('@/components/admin/AdminCustomPages'));
+const AdminPages = lazy(() => import('@/components/admin/AdminPages'));
+const AdminStory = lazy(() => import('@/components/admin/AdminStory'));
+const AdminBookshelf = lazy(() => import('@/components/admin/AdminBookshelf'));
+const AdminGarden = lazy(() => import('@/components/admin/AdminGarden'));
+const BookshelfForm = lazy(() => import('@/components/admin/BookshelfForm'));
+const AdminSiteConfiguration = lazy(() => import('@/components/admin/AdminSiteConfiguration'));
+const AdminContactLinks = lazy(() => import('@/components/admin/AdminContactLinks'));
+const AdminTopics = lazy(() => import('@/components/admin/AdminTopics'));
 
 const LoadingFallback: React.FC = () => (
   <div className="flex justify-center items-center min-h-screen bg-void">
@@ -74,78 +87,66 @@ const AdminApp: React.FC = () => {
                     <CVDataProvider>
                       <PageContentProvider>
                         <CustomPagesProvider>
-                          <BrowserRouter basename="/admin">
-                            <Suspense fallback={<LoadingFallback />}>
-                              <Routes>
-                                <Route path="/login" element={<AdminLogin />} />
-                                <Route path="/" element={<AdminLayout />}>
-                                  <Route element={<AdminRootLayout />}>
-                                    <Route path="dashboard" element={<AdminDashboard />} />
-                                    <Route path="posts/create" element={<CreatePost />} />
-                                    <Route path="posts/edit/:postId" element={<CreatePost />} />
-                                    <Route
-                                      path="recommendations"
-                                      element={<AdminRecommendationsDashboard />}
-                                    />
-                                    <Route
-                                      path="recommendations/create"
-                                      element={<RecommendationForm />}
-                                    />
-                                    <Route
-                                      path="recommendations/edit/:recId"
-                                      element={<RecommendationForm />}
-                                    />
-                                    <Route path="projects" element={<AdminProjects />} />
-                                    <Route path="projects/create" element={<ProjectForm />} />
-                                    <Route
-                                      path="projects/edit/:projectId"
-                                      element={<ProjectForm />}
-                                    />
-                                    <Route path="publications" element={<AdminPublications />} />
-                                    <Route
-                                      path="publications/create"
-                                      element={<PublicationForm />}
-                                    />
-                                    <Route
-                                      path="publications/edit/:pubId"
-                                      element={<PublicationForm />}
-                                    />
-                                    <Route path="cv" element={<AdminCV />} />
-                                    <Route path="pages" element={<AdminPageContent />} />
-                                    <Route path="settings/site" element={<AdminSiteSettings />} />
-                                    <Route
-                                      path="settings/profile"
-                                      element={<AdminProfileSettings />}
-                                    />
-                                    <Route
-                                      path="settings/appearance"
-                                      element={<AdminAppearanceSettings />}
-                                    />
-                                    <Route path="settings/seo" element={<AdminSEOSettings />} />
-                                    <Route
-                                      path="settings/ui-text"
-                                      element={<AdminUITextSettings />}
-                                    />
-                                    <Route
-                                      path="settings/navigation"
-                                      element={<AdminNavigationSettings />}
-                                    />
-                                    <Route
-                                      path="settings/homepage"
-                                      element={<AdminHomepageLayout />}
-                                    />
-                                    <Route path="media" element={<AdminMediaLibrary />} />
-                                    <Route path="inbox" element={<AdminInbox />} />
-                                    <Route path="migrate" element={<DataMigration />} />
-                                    <Route path="custom-pages" element={<AdminCustomPages />} />
-                                    {/* Default redirect */}
-                                    <Route index element={<AdminDashboard />} />
-                                  </Route>
-                                </Route>
-                              </Routes>
-                            </Suspense>
-                          </BrowserRouter>
-                          <ToastContainerWrapper />
+                          <PageSectionsProvider>
+                            <StoryProvider>
+                              <BookshelfProvider>
+                                <NavigationItemsProvider>
+                                  <ContactLinksProvider>
+                                    <BrowserRouter basename="/admin">
+                                      <Suspense fallback={<LoadingFallback />}>
+                                        <Routes>
+                                          <Route path="/login" element={<AdminLogin />} />
+                                          <Route path="/" element={<AdminLayout />}>
+                                            <Route element={<AdminRootLayout />}>
+                                              <Route path="dashboard" element={<AdminDashboard />} />
+                                              <Route path="site-config" element={<AdminSiteConfiguration />} />
+                                              <Route path="pages" element={<AdminPages />} />
+                                              <Route path="story" element={<AdminStory />} />
+                                              <Route path="garden" element={<AdminGarden />} />
+                                              <Route path="garden/create" element={<CreatePost />} />
+                                              <Route path="garden/edit/:postId" element={<CreatePost />} />
+                                              <Route path="projects" element={<AdminProjects />} />
+                                              <Route path="projects/create" element={<ProjectForm />} />
+                                              <Route path="projects/edit/:projectId" element={<ProjectForm />} />
+                                              <Route path="bookshelf" element={<AdminBookshelf />} />
+                                              <Route path="bookshelf/create" element={<BookshelfForm />} />
+                                              <Route path="bookshelf/edit/:entryId" element={<BookshelfForm />} />
+                                              <Route path="topics" element={<AdminTopics />} />
+                                              <Route path="contact-links" element={<AdminContactLinks />} />
+                                              <Route path="media" element={<AdminMediaLibrary />} />
+                                              <Route path="inbox" element={<AdminInbox />} />
+
+                                              <Route path="posts/create" element={<CreatePost />} />
+                                              <Route path="posts/edit/:postId" element={<CreatePost />} />
+                                              <Route path="recommendations" element={<AdminRecommendationsDashboard />} />
+                                              <Route path="recommendations/create" element={<RecommendationForm />} />
+                                              <Route path="recommendations/edit/:recId" element={<RecommendationForm />} />
+                                              <Route path="publications" element={<AdminPublications />} />
+                                              <Route path="publications/create" element={<PublicationForm />} />
+                                              <Route path="publications/edit/:pubId" element={<PublicationForm />} />
+                                              <Route path="cv" element={<AdminCV />} />
+                                              <Route path="legacy/page-content" element={<AdminPageContent />} />
+                                              <Route path="legacy/site-settings" element={<AdminSiteSettings />} />
+                                              <Route path="legacy/profile" element={<AdminProfileSettings />} />
+                                              <Route path="legacy/appearance" element={<AdminAppearanceSettings />} />
+                                              <Route path="legacy/seo" element={<AdminSEOSettings />} />
+                                              <Route path="legacy/ui-text" element={<AdminUITextSettings />} />
+                                              <Route path="legacy/navigation" element={<AdminNavigationSettings />} />
+                                              <Route path="legacy/homepage" element={<AdminHomepageLayout />} />
+                                              <Route path="migrate" element={<DataMigration />} />
+                                              <Route path="custom-pages" element={<AdminCustomPages />} />
+                                              <Route index element={<AdminDashboard />} />
+                                            </Route>
+                                          </Route>
+                                        </Routes>
+                                      </Suspense>
+                                    </BrowserRouter>
+                                    <ToastContainerWrapper />
+                                  </ContactLinksProvider>
+                                </NavigationItemsProvider>
+                              </BookshelfProvider>
+                            </StoryProvider>
+                          </PageSectionsProvider>
                         </CustomPagesProvider>
                       </PageContentProvider>
                     </CVDataProvider>

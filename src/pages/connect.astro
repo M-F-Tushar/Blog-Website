@@ -1,0 +1,188 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import AnimatedSection from '@/components/astro/AnimatedSection.astro';
+import ContactIcon from '@/components/astro/ContactIcon.astro';
+import CosmicDivider from '@/components/astro/CosmicDivider.astro';
+import PageIntro from '@/components/astro/PageIntro.astro';
+import SectionRail from '@/components/astro/SectionRail.astro';
+import {
+  getContactLinkDisplayValue,
+  getContactLinkHref,
+  getContactLinkMeta,
+  isContactLinkExternal,
+  normalizeContactLinkType,
+} from '@/lib/contactLinks';
+import { getContactLinks, getPageSections, getSiteSettings } from '@/lib/supabase';
+import {
+  getKickerClass,
+  getMetadataText,
+  selectSectionItems,
+} from '@/lib/pageSections';
+
+const settings = await getSiteSettings();
+const links = await getContactLinks();
+const pageSections = await getPageSections('connect');
+const heroSection = pageSections.find((section) => section.sectionKey === 'hero');
+const linksSection = pageSections.find((section) => section.sectionKey === 'links');
+const visibleLinks = links.filter((link) => link.visible);
+const displayedLinks = linksSection ? selectSectionItems(visibleLinks, linksSection) : visibleLinks;
+const primaryLink =
+  displayedLinks.find((link) => normalizeContactLinkType(link.linkType) === 'email') || displayedLinks[0];
+const secondaryLinks = displayedLinks.filter((link) => link.id !== primaryLink?.id);
+const emailLink = displayedLinks.find((link) => normalizeContactLinkType(link.linkType) === 'email');
+---
+
+<BaseLayout title={`Connect | ${settings.author_name}`} description="Contact links and ways to reach me for thoughtful conversation, collaboration, or feedback.">
+  <div class="pb-16">
+    {heroSection && (
+      <PageIntro
+        eyebrow={heroSection.eyebrow}
+        title={heroSection.title || 'Connect'}
+        subtitle={heroSection.subtitle}
+        body={heroSection.body}
+        panelKicker={getMetadataText(heroSection, 'panelKicker') || 'Preferred contact'}
+        panelBody={
+          getMetadataText(heroSection, 'panelBody') ||
+          'Email is the best default. GitHub is the best place to see my work in motion.'
+        }
+        frameClass="section-frame section-frame-gradient section-tone-editorial"
+        kickerClass="editorial-kicker editorial-kicker-strong"
+        animationPreset={heroSection.animationPreset || 'hero-rise'}
+      />
+    )}
+
+    {linksSection && (
+      <div class="section-shell">
+        <CosmicDivider variant="star" class="contact-links-divider" />
+      </div>
+    )}
+
+    {linksSection && (
+      <SectionRail
+        eyebrow={linksSection.eyebrow}
+        title={linksSection.title}
+        body={linksSection.body}
+        weight="framed"
+        frame="panel"
+        tone="editorial"
+        role="guide"
+        class="contact-links-rail"
+      >
+        <div class="contact-board">
+          {primaryLink && (
+            <AnimatedSection preset={linksSection.animationPreset || 'scale-reveal'}>
+              <article class:list={[
+                'contact-primary-card',
+                `contact-primary-card-${getContactLinkMeta(primaryLink.linkType).accent}`,
+              ]}>
+                <div class="flex flex-col gap-6 md:flex-row md:items-start md:justify-between">
+                  <div class="max-w-2xl">
+                    <p class="contact-link-tag">Best first step</p>
+                    <h3 class="mt-4 font-serif text-4xl text-secondary-50 md:text-5xl">
+                      {primaryLink.label}
+                    </h3>
+                    <p class="mt-4 text-lg text-secondary-300">
+                      {primaryLink.description || getContactLinkMeta(primaryLink.linkType).helperText}
+                    </p>
+                    <div class="mt-6 flex flex-wrap gap-3">
+                      <span class="contact-link-chip">{getContactLinkMeta(primaryLink.linkType).channelLabel}</span>
+                      <span class="contact-link-chip">{getContactLinkDisplayValue(primaryLink)}</span>
+                    </div>
+                  </div>
+
+                  <div class="contact-link-icon-shell shrink-0">
+                    <ContactIcon type={primaryLink.linkType} class="h-8 w-8" />
+                  </div>
+                </div>
+
+                <div class="mt-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                  <p class="text-sm uppercase tracking-[0.18em] text-secondary-500">
+                    {getContactLinkMeta(primaryLink.linkType).label}
+                  </p>
+                  <a
+                    href={getContactLinkHref(primaryLink)}
+                    target={isContactLinkExternal(primaryLink) ? '_blank' : undefined}
+                    rel={isContactLinkExternal(primaryLink) ? 'noopener noreferrer' : undefined}
+                    class="btn-primary rounded-2xl"
+                  >
+                    {getContactLinkMeta(primaryLink.linkType).actionLabel}
+                  </a>
+                </div>
+              </article>
+            </AnimatedSection>
+          )}
+
+          <div class="contact-link-grid">
+            {(primaryLink ? secondaryLinks : displayedLinks).map((link, index) => (
+              <AnimatedSection preset={linksSection.animationPreset || 'stagger-cards'} index={index + 1}>
+                <a
+                  href={getContactLinkHref(link)}
+                  target={isContactLinkExternal(link) ? '_blank' : undefined}
+                  rel={isContactLinkExternal(link) ? 'noopener noreferrer' : undefined}
+                  class:list={[
+                    'contact-link-card magnetic-hover',
+                    `contact-link-card-${getContactLinkMeta(link.linkType).accent}`,
+                  ]}
+                >
+                  <div class="flex items-start justify-between gap-4">
+                    <div>
+                      <p class:list={[getKickerClass(linksSection), 'mb-2']}>
+                        {getContactLinkMeta(link.linkType).channelLabel}
+                      </p>
+                      <h3 class="text-2xl font-semibold text-secondary-50">{link.label}</h3>
+                    </div>
+                    <div class="contact-link-mini-icon">
+                      <ContactIcon type={link.linkType} class="h-5 w-5" />
+                    </div>
+                  </div>
+
+                  <div class="mt-5 space-y-3">
+                    <p class="contact-link-value">{getContactLinkDisplayValue(link)}</p>
+                    <p class="text-sm leading-7 text-secondary-400">
+                      {link.description || getContactLinkMeta(link.linkType).helperText}
+                    </p>
+                  </div>
+
+                  <div class="mt-6 flex items-center justify-between gap-4">
+                    <span class="contact-link-chip">{getContactLinkMeta(link.linkType).label}</span>
+                    <span class="text-sm font-semibold text-primary-300">
+                      {getContactLinkMeta(link.linkType).actionLabel}
+                    </span>
+                  </div>
+                </a>
+              </AnimatedSection>
+            ))}
+          </div>
+        </div>
+      </SectionRail>
+    )}
+
+    <div class="section-shell">
+      <CosmicDivider variant="line" class="contact-follow-up-divider" />
+    </div>
+
+    <section class="section-shell contact-follow-up">
+      <AnimatedSection preset="scale-reveal">
+        <div class="reader-start">
+          <p class="editorial-kicker editorial-kicker-strong mb-3">One clear next step</p>
+          <h2 class="font-serif text-3xl text-secondary-50 md:text-4xl">
+            Start with the contact path that matches the kind of conversation you want.
+          </h2>
+          <p class="mt-4 max-w-2xl text-secondary-300">
+            Email works best for thoughtful messages. The rest of the links are there for quick follow-ups, public conversation, and seeing the work in motion.
+          </p>
+          {(emailLink || primaryLink) && (
+            <a
+              href={getContactLinkHref(emailLink || primaryLink!)}
+              target={isContactLinkExternal(emailLink || primaryLink!) ? '_blank' : undefined}
+              rel={isContactLinkExternal(emailLink || primaryLink!) ? 'noopener noreferrer' : undefined}
+              class="btn-primary mt-8 rounded-2xl"
+            >
+              {emailLink ? 'Say hello by email' : getContactLinkMeta(primaryLink!.linkType).actionLabel}
+            </a>
+          )}
+        </div>
+      </AnimatedSection>
+    </section>
+  </div>
+</BaseLayout>

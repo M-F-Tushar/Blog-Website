@@ -49,6 +49,7 @@ import { uploadFile, generateUniqueFilename } from '../services/storageService';
 import MarkdownRenderer from './markdown/MarkdownRenderer';
 import { DEFAULT_AVATAR } from '../constants/constants';
 import { cosmic } from './admin/ui/cosmicClassNames';
+import { slugify } from '../types/converters';
 
 interface ToolbarButton {
   icon: React.FC<{ size?: number; className?: string }>;
@@ -457,6 +458,7 @@ const CreatePost: React.FC = () => {
 
     const postData = {
       title,
+      slug: slugify(title),
       content,
       category,
       tags: tags
@@ -498,7 +500,7 @@ const CreatePost: React.FC = () => {
       <div className="flex justify-between items-center p-4 border-b border-white/[0.06]">
         <div className="flex items-center gap-4">
           <h1 className="text-2xl font-bold font-serif admin-text-gradient">
-            {isEditMode ? 'Edit Post' : 'New Post'}
+            {isEditMode ? 'Edit Garden Entry' : 'New Garden Entry'}
           </h1>
           <div className="flex items-center gap-2 text-sm text-secondary-400">
             <Clock size={14} />
@@ -563,7 +565,7 @@ const CreatePost: React.FC = () => {
               ['Ctrl+B', 'Bold'],
               ['Ctrl+I', 'Italic'],
               ['Ctrl+K', 'Insert link'],
-              ['Ctrl+S', 'Save post'],
+              ['Ctrl+S', 'Save entry'],
               ['Ctrl+Z', 'Undo'],
               ['Ctrl+Y', 'Redo'],
               ['Ctrl+Shift+P', 'Toggle preview'],
@@ -588,7 +590,7 @@ const CreatePost: React.FC = () => {
               type="text"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder="Post title..."
+              placeholder="Entry title..."
               className="w-full text-3xl font-bold font-serif bg-transparent border-none focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500/50 focus-visible:rounded text-secondary-50 placeholder-secondary-600"
               required
             />
@@ -949,12 +951,12 @@ const CreatePost: React.FC = () => {
               <Search size={14} /> SEO Preview
             </label>
             <div className="text-sm">
-              <p className="text-primary-400 truncate font-medium">{title || 'Post Title'}</p>
+              <p className="text-primary-400 truncate font-medium">{title || 'Entry Title'}</p>
               <p className="text-success-400 text-xs truncate">
-                yoursite.com/blog/{title ? title.toLowerCase().replace(/\s+/g, '-') : 'post-slug'}
+                yoursite.com/garden/{title ? title.toLowerCase().replace(/\s+/g, '-') : 'entry-slug'}
               </p>
               <p className="text-secondary-400 text-xs line-clamp-2 mt-1">
-                {content.substring(0, 160) || 'Post description will appear here...'}
+                {content.substring(0, 160) || 'Entry description will appear here...'}
               </p>
             </div>
           </div>
@@ -987,11 +989,11 @@ const CreatePost: React.FC = () => {
               className={`w-full flex items-center justify-center gap-2 ${cosmic.buttonPrimary}`}
             >
               <Save size={18} />
-              {isSaving ? 'Saving...' : isEditMode ? 'Update Post' : 'Publish Post'}
+              {isSaving ? 'Saving...' : isEditMode ? 'Update Entry' : 'Publish Entry'}
             </button>
             <button
               type="button"
-              onClick={() => navigate('/admin/dashboard')}
+              onClick={() => navigate('/garden')}
               disabled={isSaving}
               className={`w-full flex items-center justify-center gap-2 ${cosmic.buttonSecondary}`}
             >

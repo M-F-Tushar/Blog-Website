@@ -1,0 +1,19 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import BlogCard from '@/components/astro/BlogCard.astro';
+import { getPublishedPosts } from '@/lib/supabase';
+
+const posts = (await getPublishedPosts()).filter((post) => post.category === 'Thinking Notes');
+---
+<BaseLayout title="Thinking Notes | The Garden" description="Reflections on ideas, tools, methods, and broader technical thought.">
+  <div class="section-shell py-28">
+    <div class="mb-8 max-w-3xl">
+      <span class="section-eyebrow">The Garden</span>
+      <h1 class="section-heading mt-6">Thinking Notes</h1>
+      <p class="section-copy mt-6">Reflections on tools, habits, concepts, and the broader shape of technical life.</p>
+    </div>
+    <div class="grid gap-5 lg:grid-cols-3">
+      {posts.map((post) => <BlogCard post={post} hrefBase="/garden" compact />)}
+    </div>
+  </div>
+</BaseLayout>

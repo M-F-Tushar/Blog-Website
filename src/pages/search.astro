@@ -5,79 +5,108 @@ import { getPublishedPosts } from '@/lib/supabase';
 
 const posts = await getPublishedPosts();
 
-// Pre-build search index as JSON
-const searchIndex = posts.map((p) => ({
-  slug: p.slug,
-  title: p.title,
-  excerpt: p.excerpt,
-  category: p.category,
-  tags: p.tags,
-  date: p.date,
-  coverImage: p.coverImage || '',
-  content: p.content.slice(0, 500),
+const searchIndex = posts.map((post) => ({
+  slug: post.slug,
+  title: post.title,
+  excerpt: post.excerpt,
+  category: post.category,
+  tags: post.tags,
+  date: post.date,
+  content: post.content.slice(0, 600),
 }));
 ---
 
-<BaseLayout title="Search" description="Search articles by title, content, tags, or category.">
-  <div class="pb-12">
-    <section class="relative py-12 md:py-16 bg-abyss/80 -mt-20 pt-32 px-4 text-center">
-      <div class="max-w-3xl mx-auto relative z-10">
-        <h1 class="text-4xl md:text-5xl font-bold font-serif text-secondary-50 mb-6">
-          Search <span class="text-gradient-cyan">Articles</span>
-        </h1>
-        <div class="relative max-w-xl mx-auto">
-          <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="absolute left-4 top-1/2 -translate-y-1/2 text-secondary-400 pointer-events-none"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
-          <input
-            id="search-input"
-            type="search"
-            aria-label="Search articles"
-            placeholder="Search by title, tag, or keyword..."
-            class="w-full pl-12 pr-4 py-4 rounded-2xl bg-surface border border-white/10 text-secondary-200 placeholder-secondary-500 focus:outline-none focus:border-primary-500/50 focus:shadow-glow-cyan shadow-lg text-lg"
-            autocomplete="off"
-          />
-          <kbd class="hidden sm:flex items-center absolute right-4 top-1/2 -translate-y-1/2 px-2 py-1 text-xs text-secondary-500 bg-surface rounded border border-white/10">
-            Esc
-          </kbd>
-        </div>
-        <div class="mt-4 flex flex-wrap justify-center gap-2" role="group" aria-label="Search scope">
-          <button type="button" data-search-scope="all" aria-pressed="true" class="search-scope-btn px-3 py-1.5 rounded-full text-sm font-medium bg-primary-500/20 text-primary-300 border border-primary-500/30">
-            All
-          </button>
-          <button type="button" data-search-scope="title" aria-pressed="false" class="search-scope-btn px-3 py-1.5 rounded-full text-sm font-medium bg-white/5 text-secondary-400 border border-white/10 hover:border-primary-500/20 hover:text-secondary-200">
-            Title
-          </button>
-          <button type="button" data-search-scope="tags" aria-pressed="false" class="search-scope-btn px-3 py-1.5 rounded-full text-sm font-medium bg-white/5 text-secondary-400 border border-white/10 hover:border-primary-500/20 hover:text-secondary-200">
-            Tags
-          </button>
-          <button type="button" data-search-scope="content" aria-pressed="false" class="search-scope-btn px-3 py-1.5 rounded-full text-sm font-medium bg-white/5 text-secondary-400 border border-white/10 hover:border-primary-500/20 hover:text-secondary-200">
-            Content
-          </button>
+<BaseLayout title="Search the Journal" description="Search essays, categories, tags, and topics across the journal.">
+  <div class="pb-16">
+    <section class="page-hero">
+      <div class="container mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+        <div class="grid gap-10 lg:grid-cols-[minmax(0,1fr)_20rem] lg:items-end">
+          <div class="max-w-3xl">
+            <span class="section-eyebrow">Search</span>
+            <h1 class="section-heading mt-6">
+              Find a concept, essay, or topic thread without digging through the archive manually.
+            </h1>
+            <p class="section-copy mt-6 max-w-2xl">
+              Search works best when you think in topics: terms, models, categories, or questions you want answered.
+            </p>
+          </div>
+          <div class="surface-panel p-6">
+            <p class="editorial-kicker">Search scope</p>
+            <div class="mt-4 space-y-3 text-sm leading-7 text-secondary-300">
+              <p>{posts.length} indexed essays</p>
+              <p>Search across title, tags, content, or everything at once</p>
+              <p>Use <span class="font-semibold text-secondary-100">Esc</span> to clear and <span class="font-semibold text-secondary-100">Ctrl/Cmd+K</span> to focus</p>
+            </div>
+          </div>
         </div>
       </div>
     </section>
 
-    <div class="container mx-auto px-4 sm:px-6 lg:px-8 max-w-6xl mt-12">
-      <div id="search-status" role="status" aria-live="polite" class="text-center text-secondary-400 mb-8">
-        Start typing to search across {posts.length} articles
-      </div>
-      <div id="search-intent" class="text-center py-16">
-        <p class="text-secondary-400">Try a topic, tag, or keyword to find relevant posts quickly.</p>
-      </div>
-      <div id="search-results" class="hidden grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-        {posts.map((post) => (
-          <div class="search-result-item" data-search-item>
-            <BlogCard post={post} />
+    <section class="section-shell section-break-sm">
+      <div class="container mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+        <div class="surface-panel-strong p-5 sm:p-6">
+          <div class="grid gap-5 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
+            <div class="relative">
+              <input
+                id="search-input"
+                type="search"
+                aria-label="Search articles"
+                placeholder="Search topics, categories, tags, or keywords"
+                class="input-cosmic w-full pl-4 pr-14 py-4 text-base"
+                autocomplete="off"
+              />
+              <kbd class="absolute right-4 top-1/2 hidden -translate-y-1/2 rounded-lg border border-white/10 bg-white/5 px-2 py-1 text-xs text-secondary-500 sm:inline-flex">
+                Esc
+              </kbd>
+            </div>
+
+            <div class="flex flex-wrap gap-2" role="group" aria-label="Search scope">
+              <button type="button" data-search-scope="all" aria-pressed="true" class="search-scope-btn rounded-full border border-primary-500/30 bg-primary-500/20 px-4 py-2 text-sm font-medium text-primary-100">
+                All
+              </button>
+              <button type="button" data-search-scope="title" aria-pressed="false" class="search-scope-btn rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-secondary-300 hover:border-primary-500/20 hover:text-primary-100">
+                Title
+              </button>
+              <button type="button" data-search-scope="tags" aria-pressed="false" class="search-scope-btn rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-secondary-300 hover:border-primary-500/20 hover:text-primary-100">
+                Tags
+              </button>
+              <button type="button" data-search-scope="content" aria-pressed="false" class="search-scope-btn rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-secondary-300 hover:border-primary-500/20 hover:text-primary-100">
+                Content
+              </button>
+            </div>
           </div>
-        ))}
-      </div>
-      <div id="no-results" class="text-center py-20 hidden">
-        <div class="text-6xl mb-6">
-          <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="mx-auto text-secondary-600"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path><path d="M8 11h6"></path></svg>
         </div>
-        <h2 class="text-2xl font-bold text-secondary-50 mb-4">No results found</h2>
-        <p class="text-secondary-400">Try searching with different keywords.</p>
+
+        <div class="mt-8 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+          <p id="search-status" role="status" aria-live="polite" class="text-sm text-secondary-400">
+            Start typing to search across {posts.length} indexed essays
+          </p>
+        </div>
+
+        <div id="search-intent" class="surface-panel mt-8 p-8 text-center sm:p-12">
+          <p class="editorial-kicker">Intent-first search</p>
+          <h2 class="mt-3 font-serif text-3xl text-secondary-50">Start with a concept, not a page title</h2>
+          <p class="mx-auto mt-4 max-w-2xl text-secondary-400">
+            Try queries like <span class="text-secondary-200">machine learning</span>, <span class="text-secondary-200">artificial intelligence</span>, or a tag you remember from a previous essay.
+          </p>
+        </div>
+
+        <div id="search-results" class="mt-8 hidden grid gap-6 md:grid-cols-2">
+          {posts.map((post) => (
+            <div class="search-result-item card-lift" data-search-item>
+              <BlogCard post={post} compact={true} />
+            </div>
+          ))}
+        </div>
+
+        <div id="no-results" class="surface-panel mt-8 hidden p-8 text-center sm:p-12">
+          <h2 class="font-serif text-3xl text-secondary-50">No matching essays</h2>
+          <p class="mt-4 text-secondary-400">
+            Try broadening the query, switching the scope, or searching by category or tag.
+          </p>
+        </div>
       </div>
-    </div>
+    </section>
   </div>
 </BaseLayout>
 
@@ -96,12 +125,15 @@ const searchIndex = posts.map((p) => ({
     const q = query.toLowerCase().trim();
 
     if (!q) {
-      items.forEach((item) => (item.style.display = ''));
-      items.forEach((item) => (item.style.order = '0'));
+      items.forEach((item) => {
+        item.style.display = '';
+        item.style.order = '0';
+        item.classList.remove('search-result-enter');
+      });
       resultsContainer.classList.add('hidden');
       intentState.classList.remove('hidden');
       noResults.classList.add('hidden');
-      statusEl.textContent = `Start typing to search across ${totalCount} articles`;
+      statusEl.textContent = `Start typing to search across ${totalCount} indexed essays`;
       return;
     }
 
@@ -109,7 +141,7 @@ const searchIndex = posts.map((p) => ({
     intentState.classList.add('hidden');
 
     let visibleCount = 0;
-    searchIndex.forEach((entry, i) => {
+    searchIndex.forEach((entry, index) => {
       const title = entry.title.toLowerCase();
       const excerpt = entry.excerpt.toLowerCase();
       const category = entry.category.toLowerCase();
@@ -125,16 +157,24 @@ const searchIndex = posts.map((p) => ({
 
       const haystack = scopeMap[currentScope] ?? scopeMap.all;
       const matches = haystack.includes(q);
+
       let score = 0;
       if (matches) {
-        if (title.includes(q)) score += 3;
-        if (tags.includes(q)) score += 2;
+        if (title.includes(q)) score += 4;
+        if (tags.includes(q)) score += 3;
+        if (category.includes(q)) score += 2;
         if (excerpt.includes(q) || content.includes(q)) score += 1;
       }
 
-      items[i].style.display = matches ? '' : 'none';
-      items[i].style.order = `${Math.max(0, 100 - score)}`;
-      if (matches) visibleCount++;
+      items[index].style.display = matches ? '' : 'none';
+      items[index].style.order = `${Math.max(0, 100 - score)}`;
+      if (matches) {
+        items[index].classList.add('search-result-enter');
+        items[index].style.animationDelay = `${visibleCount * 50}ms`;
+        visibleCount++;
+      } else {
+        items[index].classList.remove('search-result-enter');
+      }
     });
 
     statusEl.textContent = `${visibleCount} ${visibleCount === 1 ? 'result' : 'results'} in ${currentScope} for "${query}"`;
@@ -142,43 +182,40 @@ const searchIndex = posts.map((p) => ({
     resultsContainer.classList.toggle('hidden', visibleCount === 0);
   }
 
-  input.addEventListener('input', (e) => performSearch(e.target.value));
+  input?.addEventListener('input', (event) => performSearch((event.target as HTMLInputElement).value));
 
-  scopeButtons.forEach((btn) => {
-    btn.addEventListener('click', () => {
-      currentScope = btn.getAttribute('data-search-scope') || 'all';
-      scopeButtons.forEach((b) => {
-        const active = (b.getAttribute('data-search-scope') || 'all') === currentScope;
-        b.setAttribute('aria-pressed', active ? 'true' : 'false');
-        b.className = active
-          ? 'search-scope-btn px-3 py-1.5 rounded-full text-sm font-medium bg-primary-500/20 text-primary-300 border border-primary-500/30'
-          : 'search-scope-btn px-3 py-1.5 rounded-full text-sm font-medium bg-white/5 text-secondary-400 border border-white/10 hover:border-primary-500/20 hover:text-secondary-200';
+  scopeButtons.forEach((button) => {
+    button.addEventListener('click', () => {
+      currentScope = button.getAttribute('data-search-scope') || 'all';
+      scopeButtons.forEach((candidate) => {
+        const active = (candidate.getAttribute('data-search-scope') || 'all') === currentScope;
+        candidate.setAttribute('aria-pressed', active ? 'true' : 'false');
+        candidate.className = active
+          ? 'search-scope-btn rounded-full border border-primary-500/30 bg-primary-500/20 px-4 py-2 text-sm font-medium text-primary-100'
+          : 'search-scope-btn rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm font-medium text-secondary-300 hover:border-primary-500/20 hover:text-primary-100';
       });
-      performSearch(input.value);
+      performSearch((input as HTMLInputElement).value);
     });
   });
 
-  // Keyboard shortcut: Escape clears search
-  input.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') {
-      e.target.value = '';
+  input?.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape') {
+      (event.target as HTMLInputElement).value = '';
       performSearch('');
     }
   });
 
-  // Focus search input on Cmd/Ctrl+K
-  document.addEventListener('keydown', (e) => {
-    if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
-      e.preventDefault();
-      input.focus();
-      input.select();
+  document.addEventListener('keydown', (event) => {
+    if ((event.metaKey || event.ctrlKey) && event.key === 'k') {
+      event.preventDefault();
+      input?.focus();
+      input?.select();
     }
   });
 
-  // Check URL params for initial query
   const params = new URL(window.location.href).searchParams;
   const initialQuery = params.get('q');
-  if (initialQuery) {
+  if (initialQuery && input) {
     input.value = initialQuery;
     performSearch(initialQuery);
   }

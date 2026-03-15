@@ -1,6 +1,6 @@
 ---
 interface Props {
-  direction?: 'up' | 'down' | 'left' | 'right';
+  direction?: 'up' | 'down' | 'left' | 'right' | 'scale' | 'cascade';
   delay?: number;
   class?: string;
 }
@@ -16,6 +16,8 @@ const directionClassMap: Record<string, string> = {
   down: 'reveal-down',
   left: 'reveal-left',
   right: 'reveal-right',
+  scale: 'reveal-scale',
+  cascade: 'reveal-cascade',
 };
 
 const revealClass = directionClassMap[direction] || 'reveal';

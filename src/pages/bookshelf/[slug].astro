@@ -1,0 +1,48 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { getBookshelfEntries, getBookshelfEntryBySlug } from '@/lib/supabase';
+import { unified } from 'unified';
+import remarkParse from 'remark-parse';
+import remarkGfm from 'remark-gfm';
+import remarkRehype from 'remark-rehype';
+import rehypeStringify from 'rehype-stringify';
+
+export async function getStaticPaths() {
+  const entries = await getBookshelfEntries();
+  return entries.map((entry) => ({ params: { slug: entry.slug } }));
+}
+
+const { slug } = Astro.params;
+const entry = await getBookshelfEntryBySlug(slug!);
+if (!entry) return Astro.redirect('/bookshelf');
+
+const file = await unified().use(remarkParse).use(remarkGfm).use(remarkRehype).use(rehypeStringify).process(entry.body);
+const contentHtml = String(file);
+---
+
+<BaseLayout title={entry.title} description={entry.summary}>
+  <article class="pb-20">
+    <header class="page-hero pb-14">
+      <div class="container mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+        <div class="mx-auto max-w-3xl text-center">
+          <span class="section-eyebrow mx-auto">Bookshelf</span>
+          <h1 class="mt-6 font-serif text-4xl leading-[1.05] text-secondary-50 sm:text-5xl lg:text-6xl">{entry.title}</h1>
+          <p class="mx-auto mt-4 text-secondary-400">{entry.bookTitle}{entry.author ? ` — ${entry.author}` : ''}</p>
+          {entry.summary && <p class="mx-auto mt-6 max-w-2xl text-lg leading-8 text-secondary-300">{entry.summary}</p>}
+        </div>
+      </div>
+    </header>
+
+    <section class="section-shell">
+      <div class="container mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
+        <div class="surface-panel p-6 sm:p-8 lg:p-10">
+          <div class="mb-8 flex flex-wrap gap-2">
+            <span class="badge-pill">{entry.entryType}</span>
+            {entry.tags.map((tag) => <span class="badge-pill">{tag}</span>)}
+          </div>
+          <div class="prose prose-lg max-w-none prose-invert prose-headings:font-serif prose-headings:text-secondary-50 prose-p:text-secondary-200 prose-p:leading-8 prose-a:text-primary-200 prose-li:text-secondary-200" set:html={contentHtml}></div>
+        </div>
+      </div>
+    </section>
+  </article>
+</BaseLayout>

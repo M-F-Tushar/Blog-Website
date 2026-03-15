@@ -1,4 +1,4 @@
-import { supabase } from '../supabase/client';
+import { getSupabaseClient, supabase } from '../supabase/client';
 import type {
   DatabaseCVEducation,
   DatabaseCVExperience,
@@ -388,7 +388,8 @@ export const subscribeToCVUpdates = (
   };
 
   // Subscribe to changes on all three CV tables
-  const educationChannel = supabase
+  const client = getSupabaseClient();
+  const educationChannel = client
     .channel('cv-education-changes')
     .on(
       'postgres_changes',
@@ -401,7 +402,7 @@ export const subscribeToCVUpdates = (
     )
     .subscribe();
 
-  const experienceChannel = supabase
+  const experienceChannel = client
     .channel('cv-experience-changes')
     .on(
       'postgres_changes',
@@ -414,7 +415,7 @@ export const subscribeToCVUpdates = (
     )
     .subscribe();
 
-  const certificationsChannel = supabase
+  const certificationsChannel = client
     .channel('cv-certifications-changes')
     .on(
       'postgres_changes',
@@ -429,8 +430,8 @@ export const subscribeToCVUpdates = (
 
   // Return unsubscribe function that cleans up all three channels
   return () => {
-    supabase.removeChannel(educationChannel);
-    supabase.removeChannel(experienceChannel);
-    supabase.removeChannel(certificationsChannel);
+    client.removeChannel(educationChannel);
+    client.removeChannel(experienceChannel);
+    client.removeChannel(certificationsChannel);
   };
 };

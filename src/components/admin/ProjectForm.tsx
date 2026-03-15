@@ -1,15 +1,22 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useProjects, type Project } from '../../hooks/useProjects';
+import { slugify } from '../../types/converters';
 import { cosmic } from './ui/cosmicClassNames';
 
 type ProjectStatus = Project['status'];
 
 const PROJECT_STATUSES: { value: ProjectStatus; label: string }[] = [
   { value: 'active', label: 'Active' },
-  { value: 'completed', label: 'Completed' },
-  { value: 'archived', label: 'Archived' },
+  { value: 'shipped', label: 'Shipped' },
+  { value: 'tinkering', label: 'Tinkering' },
 ];
+
+const parseCommaSeparatedList = (value: string): string[] =>
+  value
+    .split(',')
+    .map((item) => item.trim())
+    .filter(Boolean);
 
 const ProjectForm: React.FC = () => {
   const { projectId } = useParams<{ projectId?: string }>();
@@ -18,61 +25,81 @@ const ProjectForm: React.FC = () => {
   const navigate = useNavigate();
 
   const [title, setTitle] = useState('');
+  const [slug, setSlug] = useState('');
   const [description, setDescription] = useState('');
-  const [longDescription, setLongDescription] = useState('');
-  const [githubUrl, setGithubUrl] = useState('');
-  const [demoUrl, setDemoUrl] = useState('');
-  const [imageUrl, setImageUrl] = useState('');
+  const [techStackText, setTechStackText] = useState('');
   const [tagsText, setTagsText] = useState('');
+  const [githubUrl, setGithubUrl] = useState('');
+  const [liveUrl, setLiveUrl] = useState('');
+  const [imageUrl, setImageUrl] = useState('');
+  const [problem, setProblem] = useState('');
+  const [motivation, setMotivation] = useState('');
+  const [approach, setApproach] = useState('');
+  const [architecture, setArchitecture] = useState('');
+  const [implementation, setImplementation] = useState('');
+  const [challenges, setChallenges] = useState('');
+  const [lessonsLearned, setLessonsLearned] = useState('');
+  const [futureImprovements, setFutureImprovements] = useState('');
   const [status, setStatus] = useState<ProjectStatus>('active');
-  const [featured, setFeatured] = useState(false);
+  const [isFeatured, setIsFeatured] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
-    if (isEditMode && projectId) {
-      const projectToEdit = projects.find((p) => p.id === projectId);
-      if (projectToEdit) {
-        setTitle(projectToEdit.title);
-        setDescription(projectToEdit.description);
-        setLongDescription(projectToEdit.long_description || '');
-        setGithubUrl(projectToEdit.github_url || '');
-        setDemoUrl(projectToEdit.demo_url || '');
-        setImageUrl(projectToEdit.image_url || '');
-        setTagsText(projectToEdit.tags.join(', '));
-        setStatus(projectToEdit.status);
-        setFeatured(projectToEdit.featured);
-      }
-    }
-  }, [projectId, isEditMode, projects]);
+    if (!isEditMode || !projectId) return;
 
-  const parseTags = (text: string): string[] => {
-    return text
-      .split(',')
-      .map((t) => t.trim())
-      .filter((t) => t.length > 0);
-  };
+    const projectToEdit = projects.find((project) => project.id === projectId);
+    if (!projectToEdit) return;
+
+    setTitle(projectToEdit.title);
+    setSlug(projectToEdit.slug);
+    setDescription(projectToEdit.description);
+    setTechStackText(projectToEdit.techStack.join(', '));
+    setTagsText((projectToEdit.tags || []).join(', '));
+    setGithubUrl(projectToEdit.githubUrl || '');
+    setLiveUrl(projectToEdit.liveUrl || '');
+    setImageUrl(projectToEdit.imageUrl || '');
+    setProblem(projectToEdit.problem || '');
+    setMotivation(projectToEdit.motivation || '');
+    setApproach(projectToEdit.approach || '');
+    setArchitecture(projectToEdit.architecture || '');
+    setImplementation(projectToEdit.implementation || '');
+    setChallenges(projectToEdit.challenges || '');
+    setLessonsLearned(projectToEdit.lessonsLearned || '');
+    setFutureImprovements(projectToEdit.futureImprovements || '');
+    setStatus(projectToEdit.status);
+    setIsFeatured(projectToEdit.isFeatured);
+  }, [isEditMode, projectId, projects]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!title || !description) {
-      alert('Please fill in all required fields (Title, Description).');
+      alert('Please fill in all required fields (Title and Summary).');
       return;
     }
 
-    const tags = parseTags(tagsText);
+    const existingProject = projects.find((project) => project.id === projectId);
 
     const projectData = {
       title,
+      slug: slug || slugify(title),
       description,
-      long_description: longDescription || undefined,
-      github_url: githubUrl || undefined,
-      demo_url: demoUrl || undefined,
-      image_url: imageUrl || undefined,
-      tags,
+      techStack: parseCommaSeparatedList(techStackText),
+      tags: parseCommaSeparatedList(tagsText),
+      githubUrl: githubUrl || undefined,
+      liveUrl: liveUrl || undefined,
+      imageUrl: imageUrl || undefined,
+      problem: problem || undefined,
+      motivation: motivation || undefined,
+      approach: approach || undefined,
+      architecture: architecture || undefined,
+      implementation: implementation || undefined,
+      challenges: challenges || undefined,
+      lessonsLearned: lessonsLearned || undefined,
+      futureImprovements: futureImprovements || undefined,
       status,
-      featured,
-      sort_order: 0,
+      isFeatured,
+      sortOrder: existingProject?.sortOrder ?? projects.length,
     };
 
     try {
@@ -93,169 +120,287 @@ const ProjectForm: React.FC = () => {
 
   return (
     <div className={cosmic.containerSm}>
-      <h1 className={`${cosmic.pageTitle} text-center mb-6`}>
+      <h1 className={`${cosmic.pageTitle} mb-6 text-center`}>
         {isEditMode ? 'Edit Project' : 'Add New Project'}
       </h1>
       <form onSubmit={handleSubmit} className="space-y-6">
-        {/* Title */}
-        <div>
-          <label htmlFor="title" className={cosmic.label}>
-            Title <span className="text-red-500">*</span>
-          </label>
-          <input
-            type="text"
-            id="title"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            className={cosmic.input}
-            placeholder="Project title"
-            required
-          />
-        </div>
+        <section className={cosmic.card}>
+          <h2 className={cosmic.sectionTitle}>Project Identity</h2>
+          <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2">
+            <div>
+              <label htmlFor="title" className={cosmic.label}>
+                Title <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                id="title"
+                value={title}
+                onChange={(e) => {
+                  const nextTitle = e.target.value;
+                  setTitle(nextTitle);
+                  if (!isEditMode || slug === '' || slug === slugify(title)) {
+                    setSlug(slugify(nextTitle));
+                  }
+                }}
+                className={cosmic.input}
+                placeholder="Universal AI Chatbot"
+                required
+              />
+            </div>
+            <div>
+              <label htmlFor="slug" className={cosmic.label}>
+                Slug
+              </label>
+              <input
+                type="text"
+                id="slug"
+                value={slug}
+                onChange={(e) => setSlug(slugify(e.target.value))}
+                className={cosmic.input}
+                placeholder="universal-ai-chatbot"
+                required
+              />
+            </div>
+          </div>
+          <div className="mt-4">
+            <label htmlFor="description" className={cosmic.label}>
+              Summary <span className="text-red-500">*</span>
+            </label>
+            <textarea
+              id="description"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              className={`${cosmic.textarea} h-24`}
+              placeholder="A concise summary for the Lab overview and project hero."
+              required
+            />
+          </div>
+        </section>
 
-        {/* Description */}
-        <div>
-          <label htmlFor="description" className={cosmic.label}>
-            Description <span className="text-red-500">*</span>
-          </label>
-          <textarea
-            id="description"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            className={`${cosmic.textarea} h-24`}
-            placeholder="Short project description"
-            required
-          />
-        </div>
-
-        {/* Long Description */}
-        <div>
-          <label htmlFor="long_description" className={cosmic.label}>
-            Long Description
-          </label>
-          <textarea
-            id="long_description"
-            value={longDescription}
-            onChange={(e) => setLongDescription(e.target.value)}
-            className={`${cosmic.textarea} h-40`}
-            placeholder="Detailed project description..."
-          />
-          <p className="mt-1 text-xs text-secondary-400">Supports markdown</p>
-        </div>
-
-        {/* GitHub URL and Demo URL row */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label htmlFor="github_url" className={cosmic.label}>
-              GitHub URL
+        <section className={cosmic.card}>
+          <h2 className={cosmic.sectionTitle}>Links and Metadata</h2>
+          <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2">
+            <div>
+              <label htmlFor="github_url" className={cosmic.label}>
+                GitHub URL
+              </label>
+              <input
+                type="text"
+                id="github_url"
+                value={githubUrl}
+                onChange={(e) => setGithubUrl(e.target.value)}
+                className={cosmic.input}
+                placeholder="https://github.com/..."
+              />
+            </div>
+            <div>
+              <label htmlFor="live_url" className={cosmic.label}>
+                Demo URL
+              </label>
+              <input
+                type="text"
+                id="live_url"
+                value={liveUrl}
+                onChange={(e) => setLiveUrl(e.target.value)}
+                className={cosmic.input}
+                placeholder="https://example.com/demo"
+              />
+            </div>
+          </div>
+          <div className="mt-4">
+            <label htmlFor="image_url" className={cosmic.label}>
+              Cover Image URL
             </label>
             <input
               type="text"
-              id="github_url"
-              value={githubUrl}
-              onChange={(e) => setGithubUrl(e.target.value)}
+              id="image_url"
+              value={imageUrl}
+              onChange={(e) => setImageUrl(e.target.value)}
               className={cosmic.input}
-              placeholder="https://github.com/..."
+              placeholder="https://example.com/project-cover.png"
             />
           </div>
-          <div>
-            <label htmlFor="demo_url" className={cosmic.label}>
-              Demo URL
-            </label>
+          <div className="mt-4 grid grid-cols-1 gap-4 md:grid-cols-3">
+            <div>
+              <label htmlFor="tech_stack" className={cosmic.label}>
+                Tech Stack
+              </label>
+              <input
+                type="text"
+                id="tech_stack"
+                value={techStackText}
+                onChange={(e) => setTechStackText(e.target.value)}
+                className={cosmic.input}
+                placeholder="Astro, React, Supabase"
+              />
+              <p className="mt-1 text-xs text-secondary-400">Separate multiple items with commas</p>
+            </div>
+            <div>
+              <label htmlFor="tags" className={cosmic.label}>
+                Tags
+              </label>
+              <input
+                type="text"
+                id="tags"
+                value={tagsText}
+                onChange={(e) => setTagsText(e.target.value)}
+                className={cosmic.input}
+                placeholder="LLM, chat UX, student tools"
+              />
+              <p className="mt-1 text-xs text-secondary-400">Separate multiple tags with commas</p>
+            </div>
+            <div>
+              <label htmlFor="status" className={cosmic.label}>
+                Status <span className="text-red-500">*</span>
+              </label>
+              <select
+                id="status"
+                value={status}
+                onChange={(e) => setStatus(e.target.value as ProjectStatus)}
+                className={cosmic.select}
+                required
+              >
+                {PROJECT_STATUSES.map((projectStatus) => (
+                  <option key={projectStatus.value} value={projectStatus.value}>
+                    {projectStatus.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+          <div className="mt-4 flex items-center">
             <input
-              type="text"
-              id="demo_url"
-              value={demoUrl}
-              onChange={(e) => setDemoUrl(e.target.value)}
-              className={cosmic.input}
-              placeholder="https://example.com/demo"
+              type="checkbox"
+              id="featured"
+              checked={isFeatured}
+              onChange={(e) => setIsFeatured(e.target.checked)}
+              className="h-4 w-4 rounded border-white/10 accent-primary-500"
             />
+            <label htmlFor="featured" className="ml-2 text-sm text-secondary-300">
+              Feature this project on the site
+            </label>
           </div>
-        </div>
+        </section>
 
-        {/* Image URL */}
-        <div>
-          <label htmlFor="image_url" className={cosmic.label}>
-            Image URL
-          </label>
-          <input
-            type="text"
-            id="image_url"
-            value={imageUrl}
-            onChange={(e) => setImageUrl(e.target.value)}
-            className={cosmic.input}
-            placeholder="https://example.com/image.png"
-          />
-        </div>
+        <section className={cosmic.card}>
+          <h2 className={cosmic.sectionTitle}>Case Study</h2>
+          <div className="mt-6 space-y-4">
+            <div>
+              <label htmlFor="problem" className={cosmic.label}>
+                Problem
+              </label>
+              <textarea
+                id="problem"
+                value={problem}
+                onChange={(e) => setProblem(e.target.value)}
+                className={`${cosmic.textarea} h-28`}
+                placeholder="What problem was this project trying to solve?"
+              />
+            </div>
+            <div>
+              <label htmlFor="motivation" className={cosmic.label}>
+                Motivation
+              </label>
+              <textarea
+                id="motivation"
+                value={motivation}
+                onChange={(e) => setMotivation(e.target.value)}
+                className={`${cosmic.textarea} h-28`}
+                placeholder="Why this project mattered to you at this stage."
+              />
+            </div>
+            <div>
+              <label htmlFor="approach" className={cosmic.label}>
+                Approach
+              </label>
+              <textarea
+                id="approach"
+                value={approach}
+                onChange={(e) => setApproach(e.target.value)}
+                className={`${cosmic.textarea} h-28`}
+                placeholder="How you framed the solution."
+              />
+            </div>
+            <div>
+              <label htmlFor="architecture" className={cosmic.label}>
+                Architecture
+              </label>
+              <textarea
+                id="architecture"
+                value={architecture}
+                onChange={(e) => setArchitecture(e.target.value)}
+                className={`${cosmic.textarea} h-28`}
+                placeholder="System architecture, components, and data flow."
+              />
+            </div>
+            <div>
+              <label htmlFor="implementation" className={cosmic.label}>
+                Implementation
+              </label>
+              <textarea
+                id="implementation"
+                value={implementation}
+                onChange={(e) => setImplementation(e.target.value)}
+                className={`${cosmic.textarea} h-32`}
+                placeholder="How you actually implemented the project."
+              />
+            </div>
+            <div>
+              <label htmlFor="challenges" className={cosmic.label}>
+                Challenges
+              </label>
+              <textarea
+                id="challenges"
+                value={challenges}
+                onChange={(e) => setChallenges(e.target.value)}
+                className={`${cosmic.textarea} h-28`}
+                placeholder="What was difficult, messy, or surprising."
+              />
+            </div>
+            <div>
+              <label htmlFor="lessons_learned" className={cosmic.label}>
+                Lessons Learned
+              </label>
+              <textarea
+                id="lessons_learned"
+                value={lessonsLearned}
+                onChange={(e) => setLessonsLearned(e.target.value)}
+                className={`${cosmic.textarea} h-28`}
+                placeholder="What this project taught you."
+              />
+            </div>
+            <div>
+              <label htmlFor="future_improvements" className={cosmic.label}>
+                Future Improvements
+              </label>
+              <textarea
+                id="future_improvements"
+                value={futureImprovements}
+                onChange={(e) => setFutureImprovements(e.target.value)}
+                className={`${cosmic.textarea} h-28`}
+                placeholder="What you would improve or explore next."
+              />
+            </div>
+          </div>
+        </section>
 
-        {/* Tags */}
-        <div>
-          <label htmlFor="tags" className={cosmic.label}>
-            Tags
-          </label>
-          <input
-            type="text"
-            id="tags"
-            value={tagsText}
-            onChange={(e) => setTagsText(e.target.value)}
-            className={cosmic.input}
-            placeholder="React, TypeScript, Firebase"
-          />
-          <p className="mt-1 text-xs text-secondary-400">Separate multiple tags with commas</p>
-        </div>
-
-        {/* Status */}
-        <div>
-          <label htmlFor="status" className={cosmic.label}>
-            Status <span className="text-red-500">*</span>
-          </label>
-          <select
-            id="status"
-            value={status}
-            onChange={(e) => setStatus(e.target.value as ProjectStatus)}
-            className={cosmic.select}
-            required
-          >
-            {PROJECT_STATUSES.map((s) => (
-              <option key={s.value} value={s.value}>
-                {s.label}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        {/* Featured */}
-        <div className="flex items-center">
-          <input
-            type="checkbox"
-            id="featured"
-            checked={featured}
-            onChange={(e) => setFeatured(e.target.checked)}
-            className="h-4 w-4 border-white/10 rounded accent-primary-500"
-          />
-          <label htmlFor="featured" className="ml-2 text-sm text-secondary-300">
-            Featured project
-          </label>
-        </div>
-
-        {/* Form Actions */}
         <div className="flex justify-end space-x-4">
           <button
             type="button"
             onClick={() => navigate('/projects')}
             disabled={isSaving}
-            className={`${cosmic.buttonSecondary} disabled:opacity-50 disabled:cursor-not-allowed`}
+            className={`${cosmic.buttonSecondary} disabled:cursor-not-allowed disabled:opacity-50`}
           >
             Cancel
           </button>
           <button
             type="submit"
             disabled={isSaving}
-            className={`${cosmic.buttonPrimary} flex items-center disabled:opacity-50 disabled:cursor-not-allowed`}
+            className={`${cosmic.buttonPrimary} flex items-center disabled:cursor-not-allowed disabled:opacity-50`}
           >
             {isSaving && (
               <svg
-                className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                className="-ml-1 mr-3 h-5 w-5 animate-spin text-white"
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
                 viewBox="0 0 24 24"

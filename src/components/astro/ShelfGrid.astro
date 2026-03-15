@@ -1,0 +1,40 @@
+---
+import AnimatedSection from './AnimatedSection.astro';
+import type { BookshelfEntry } from '@/types/types';
+
+interface ShelfGroup {
+  key: string;
+  label: string;
+  items: BookshelfEntry[];
+}
+
+interface Props {
+  groups: ShelfGroup[];
+}
+
+const { groups } = Astro.props;
+---
+
+<div class="space-y-10">
+  {groups.map((group, index) => (
+    <AnimatedSection preset="quiet-fade" index={index}>
+      <section class="shelf-grid">
+        <div class="archive-group-head">
+          <p class="editorial-kicker editorial-kicker-soft">{group.label}</p>
+          <span class="archive-group-count">{group.items.length} entries</span>
+        </div>
+        <div class="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+          {group.items.map((entry) => (
+            <article class="archive-card archive-card-bookshelf">
+              <p class="editorial-kicker">{entry.bookTitle}</p>
+              <h3 class="mt-4 font-serif text-2xl text-secondary-50">{entry.title}</h3>
+              {entry.author && <p class="mt-2 text-sm text-secondary-400">{entry.author}</p>}
+              {entry.summary && <p class="mt-4 flex-1 text-sm leading-7 text-secondary-300">{entry.summary}</p>}
+              <a href={`/bookshelf/${entry.slug}`} class="link-subtle mt-6">Read entry</a>
+            </article>
+          ))}
+        </div>
+      </section>
+    </AnimatedSection>
+  ))}
+</div>

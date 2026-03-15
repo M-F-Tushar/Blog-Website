@@ -1,4 +1,5 @@
-import { supabase } from '../supabase/client';
+import { getSupabaseClient, supabase } from '../supabase/client';
+import type { Database } from '../types/database';
 
 export interface Message {
   id: string;
@@ -27,24 +28,24 @@ export const messageService = {
   // --- Public Methods (Unauthenticated) ---
 
   async sendMessage(data: MessageFormData): Promise<void> {
-    if (!supabase) throw new Error('Supabase client not initialized');
+    const client = getSupabaseClient();
+    const payload: Database['public']['Tables']['contact_messages']['Insert'] = {
+      name: data.name,
+      email: data.email,
+      subject: data.subject,
+      message: data.message,
+    };
 
-    const { error } = await supabase.from('contact_messages').insert([
-      {
-        name: data.name,
-        email: data.email,
-        subject: data.subject,
-        message: data.message,
-      },
-    ]);
+    const { error } = await client.from('contact_messages').insert([payload] as never);
 
     if (error) throw error;
   },
 
   async subscribeToNewsletter(email: string): Promise<void> {
-    if (!supabase) throw new Error('Supabase client not initialized');
+    const client = getSupabaseClient();
+    const payload: Database['public']['Tables']['newsletter_subscribers']['Insert'] = { email };
 
-    const { error } = await supabase.from('newsletter_subscribers').insert([{ email }]);
+    const { error } = await client.from('newsletter_subscribers').insert([payload] as never);
 
     if (error) {
       // Ignore unique constraint violation (already subscribed)
@@ -58,21 +59,36 @@ export const messageService = {
   async getMessages(): Promise<Message[]> {
     if (!supabase) return [];
 
-    const { data, error } = await supabase
+    const client = getSupabaseClient();
+    const { data, error } = await client
       .from('contact_messages')
       .select('*')
       .order('created_at', { ascending: false });
 
     if (error) throw error;
-    return data || [];
+    return ((data || []) as Database['public']['Tables']['contact_messages']['Row'][]).map(
+      (message) => ({
+        id: message.id,
+        name: message.name,
+        email: message.email,
+        subject: message.subject || '',
+        message: message.message,
+        read: message.is_read,
+        created_at: message.created_at,
+      })
+    );
   },
 
   async markAsRead(id: string): Promise<void> {
     if (!supabase) return;
 
-    const { error } = await supabase
+    const client = getSupabaseClient();
+    const payload: Database['public']['Tables']['contact_messages']['Update'] = {
+      is_read: true,
+    };
+    const { error } = await client
       .from('contact_messages')
-      .update({ is_read: true })
+      .update(payload as never)
       .eq('id', id);
 
     if (error) throw error;
@@ -89,13 +105,20 @@ export const messageService = {
   async getSubscribers(): Promise<Subscriber[]> {
     if (!supabase) return [];
 
-    const { data, error } = await supabase
+    const client = getSupabaseClient();
+    const { data, error } = await client
       .from('newsletter_subscribers')
       .select('*')
       .order('subscribed_at', { ascending: false });
 
     if (error) throw error;
-    return data || [];
+    return ((data || []) as Database['public']['Tables']['newsletter_subscribers']['Row'][]).map(
+      (subscriber) => ({
+        id: subscriber.id,
+        email: subscriber.email,
+        subscribed_at: subscriber.subscribed_at,
+      })
+    );
   },
 
   async deleteSubscriber(id: string): Promise<void> {

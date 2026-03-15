@@ -308,8 +308,8 @@ CREATE POLICY "Allow auth write" ON posts FOR INSERT TO authenticated;
 Sensitive data stored in environment variables:
 
 ```env
-VITE_SUPABASE_URL=***
-VITE_SUPABASE_ANON_KEY=***
+PUBLIC_SUPABASE_URL=***
+PUBLIC_SUPABASE_ANON_KEY=***
 ```
 
 ---

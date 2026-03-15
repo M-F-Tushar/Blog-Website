@@ -1,0 +1,68 @@
+---
+import AnimatedSection from './AnimatedSection.astro';
+import type { PageSectionAnimationPreset } from '@/types/types';
+
+interface Props {
+  eyebrow?: string;
+  title: string;
+  summary?: string;
+  href: string;
+  ctaLabel?: string;
+  meta?: string[];
+  tags?: string[];
+  panelKicker?: string;
+  panelBody?: string;
+  accent?: 'editorial' | 'technical' | 'quiet' | 'warm';
+  panelLayout?: 'side' | 'stacked';
+  animationPreset?: PageSectionAnimationPreset;
+  index?: number;
+}
+
+const {
+  eyebrow,
+  title,
+  summary,
+  href,
+  ctaLabel = 'Read more',
+  meta = [],
+  tags = [],
+  panelKicker,
+  panelBody,
+  accent = 'editorial',
+  panelLayout = 'side',
+  animationPreset = 'rail-slide',
+  index = 0,
+} = Astro.props;
+---
+
+<AnimatedSection preset={animationPreset} index={index}>
+  <article class:list={['lead-story-card', `lead-story-card-${accent}`, `lead-story-card-${panelLayout}`]}>
+    <div class="min-w-0">
+      {eyebrow && <p class="editorial-kicker editorial-kicker-strong mb-3">{eyebrow}</p>}
+      <h3 class="font-serif text-3xl text-secondary-50 md:text-4xl">{title}</h3>
+      {meta.length > 0 && (
+        <div class="mt-4 flex flex-wrap gap-2">
+          {meta.map((item) => (
+            <span class="badge-pill">{item}</span>
+          ))}
+        </div>
+      )}
+      {summary && <p class="mt-5 max-w-2xl text-secondary-300">{summary}</p>}
+      {tags.length > 0 && (
+        <div class="mt-5 flex flex-wrap gap-2">
+          {tags.map((tag) => (
+            <span class="badge-pill">#{tag}</span>
+          ))}
+        </div>
+      )}
+      <a href={href} class="btn-primary mt-8 rounded-2xl">{ctaLabel}</a>
+    </div>
+
+    {(panelKicker || panelBody) && (
+      <aside class="surface-subtle min-w-0 p-6">
+        {panelKicker && <p class="editorial-kicker mb-3">{panelKicker}</p>}
+        {panelBody && <p class="text-sm leading-7 text-secondary-300">{panelBody}</p>}
+      </aside>
+    )}
+  </article>
+</AnimatedSection>

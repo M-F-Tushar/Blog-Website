@@ -1,0 +1,156 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import AnimatedSection from '@/components/astro/AnimatedSection.astro';
+import BlogCard from '@/components/astro/BlogCard.astro';
+import GroupedArchive from '@/components/astro/GroupedArchive.astro';
+import LeadStoryCard from '@/components/astro/LeadStoryCard.astro';
+import PageIntro from '@/components/astro/PageIntro.astro';
+import ReaderStartHere from '@/components/astro/ReaderStartHere.astro';
+import SectionRail from '@/components/astro/SectionRail.astro';
+import { getPageSections, getProjects, getPublishedPosts, getSiteSettings } from '@/lib/supabase';
+import {
+  getMetadataItems,
+  getMetadataText,
+  groupProjectsByStatus,
+  selectSectionItems,
+} from '@/lib/pageSections';
+
+const settings = await getSiteSettings();
+const projects = await getProjects();
+const posts = await getPublishedPosts();
+const pageSections = await getPageSections('lab');
+const heroSection = pageSections.find((section) => section.sectionKey === 'hero');
+const featuredSection = pageSections.find((section) => section.sectionKey === 'featured');
+const archiveSection = pageSections.find((section) => section.sectionKey === 'archive');
+const featuredProjects = featuredSection
+  ? selectSectionItems(projects, featuredSection, {
+      isFeatured: (project) => project.isFeatured,
+    })
+  : projects.filter((project) => project.isFeatured);
+const featuredIds = new Set(featuredProjects.map((project) => project.id));
+const archiveProjects = projects.filter((project) => !featuredIds.has(project.id));
+const groupedArchive =
+  archiveSection?.contentGrouping === 'status'
+    ? groupProjectsByStatus(archiveProjects)
+    : archiveProjects.length > 0
+      ? [{ key: 'archive', label: archiveSection?.title || 'Archive', items: archiveProjects }]
+      : [];
+
+const relatedPosts = (() => {
+  const tagPool = new Set(
+    featuredProjects.flatMap((project) => [...(project.tags || []), ...project.techStack]).map((value) => value.toLowerCase())
+  );
+
+  const matched = posts.filter((post) =>
+    post.tags.some((tag) => tagPool.has(tag.toLowerCase()))
+  );
+
+  return (matched.length > 0 ? matched : posts).slice(0, 3);
+})();
+---
+
+<BaseLayout title={`The Lab | ${settings.author_name}`} description="Project case studies documenting what I build, how I build it, and what I learn along the way.">
+  <div class="pb-16">
+    {heroSection && (
+      <PageIntro
+        eyebrow={heroSection.eyebrow}
+        title={heroSection.title || 'The Lab'}
+        subtitle={heroSection.subtitle}
+        body={heroSection.body}
+        panelKicker={getMetadataText(heroSection, 'panelKicker') || 'Project signals'}
+        panelBody={getMetadataText(heroSection, 'panelBody')}
+        panelItems={
+          getMetadataItems(heroSection, 'panelItems').length > 0
+            ? getMetadataItems(heroSection, 'panelItems')
+            : [
+                `${projects.length} total projects`,
+                `${featuredProjects.length} featured case studies`,
+                'Statuses reflect the real state of the work: Active, Shipped, or Tinkering.',
+              ]
+        }
+        frameClass="section-frame section-frame-gradient section-tone-technical"
+        kickerClass="editorial-kicker editorial-kicker-strong"
+        animationPreset={heroSection.animationPreset || 'hero-rise'}
+      />
+    )}
+
+    <ReaderStartHere
+      title="Start with the signature build, then browse by status."
+      body="The Lab is easiest to read when you begin with the most representative case study and then move through the archive by how alive the work is."
+      items={[
+        'Featured builds are the clearest signal of current direction.',
+        'Archive projects stay denser so they are faster to scan.',
+        'Garden notes below show the learning that feeds the build process.',
+      ]}
+      href={featuredProjects[0] ? `/lab/${featuredProjects[0].slug}` : '/lab'}
+      label="Open the signature build"
+      animationPreset="quiet-fade"
+    />
+
+    {featuredProjects.length > 0 && (
+      <SectionRail
+        eyebrow={featuredSection?.eyebrow || 'Featured builds'}
+        title={featuredSection?.title || 'Selected case studies'}
+        body={featuredSection?.body || 'These are the strongest entry points into what I am building right now.'}
+        weight="framed"
+        frame="strong"
+        tone="technical"
+        dividerBefore="star"
+        role="proof"
+      >
+        <div class="grid gap-6">
+          {featuredProjects.map((project, index) => (
+            <LeadStoryCard
+              eyebrow={`Case study / ${project.status}`}
+              title={project.title}
+              summary={project.description}
+              href={`/lab/${project.slug}`}
+              ctaLabel="Read case study"
+              meta={(project.tags || project.techStack).slice(0, 3)}
+              tags={project.techStack.slice(0, 3)}
+              panelKicker="Build logic"
+              panelBody={
+                project.motivation ||
+                'Each case study documents the problem, approach, implementation, and lessons learned.'
+              }
+              accent="technical"
+              animationPreset={featuredSection?.animationPreset || 'rail-slide'}
+              index={index}
+            />
+          ))}
+        </div>
+      </SectionRail>
+    )}
+
+    {groupedArchive.length > 0 && (
+      <SectionRail
+        eyebrow={archiveSection?.eyebrow || 'Archive'}
+        title={archiveSection?.title || 'Browse by project status'}
+        body={archiveSection?.body || 'The archive is grouped by how active the work is so the page is practical to scan.'}
+        dividerBefore="constellation"
+        role="archive"
+      >
+        <GroupedArchive groups={groupedArchive} type="project" />
+      </SectionRail>
+    )}
+
+    {relatedPosts.length > 0 && (
+      <SectionRail
+        eyebrow="Garden crossover"
+        title="Notes that feed the builds."
+        body="The Lab makes more sense when you also see the notes, explanations, and study logs growing alongside it."
+        dividerBefore="line"
+        tone="quiet"
+        role="reflection"
+      >
+        <div class="grid gap-5 lg:grid-cols-3">
+          {relatedPosts.map((post, index) => (
+            <AnimatedSection preset="stagger-cards" index={index}>
+              <BlogCard post={post} hrefBase="/garden" compact />
+            </AnimatedSection>
+          ))}
+        </div>
+      </SectionRail>
+    )}
+  </div>
+</BaseLayout>

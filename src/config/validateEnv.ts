@@ -2,8 +2,9 @@
  * Required environment variables for the application
  */
 const requiredEnvVars = {
-  VITE_SUPABASE_URL: import.meta.env.VITE_SUPABASE_URL,
-  VITE_SUPABASE_ANON_KEY: import.meta.env.VITE_SUPABASE_ANON_KEY,
+  PUBLIC_SUPABASE_URL: import.meta.env.PUBLIC_SUPABASE_URL || import.meta.env.VITE_SUPABASE_URL,
+  PUBLIC_SUPABASE_ANON_KEY:
+    import.meta.env.PUBLIC_SUPABASE_ANON_KEY || import.meta.env.VITE_SUPABASE_ANON_KEY,
 } as const;
 
 /**
@@ -34,6 +35,7 @@ export const validateEnv = (): void => {
       
       The app will run in development mode, but Supabase features will not work.
       Please create a .env file in the root directory with these variables.
+      PUBLIC_* is the canonical naming. VITE_* is still accepted as a legacy fallback.
       See .env.example for reference.
     `;
 

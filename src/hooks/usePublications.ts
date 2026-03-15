@@ -7,35 +7,18 @@ import {
   subscribeToPublicationsUpdates,
 } from '../services/supabasePublicationsService';
 import { FALLBACK_PUBLICATIONS } from '../data/fallback';
+import type { Publication } from '../types/types';
 
-export interface Publication {
-  id: string;
-  title: string;
-  authors: string[];
-  venue: string;
-  year: number;
-  type: 'journal' | 'conference' | 'preprint' | 'thesis' | 'book_chapter';
-  abstract?: string;
-  doi?: string;
-  arxiv_url?: string;
-  pdf_url?: string;
-  code_url?: string;
-  slides_url?: string;
-  bibtex?: string;
-  featured: boolean;
-  sort_order: number;
-  created_at?: string;
-  updated_at?: string;
-}
+export type { Publication } from '../types/types';
 
 interface PublicationsContextType {
   publications: Publication[];
   addPublication: (
-    pubData: Omit<Publication, 'id' | 'created_at' | 'updated_at'>
+    pubData: Omit<Publication, 'id' | 'createdAt'>
   ) => Promise<Publication>;
   updatePublication: (
     pubId: string,
-    pubData: Partial<Omit<Publication, 'id' | 'created_at' | 'updated_at'>>
+    pubData: Partial<Omit<Publication, 'id' | 'createdAt'>>
   ) => Promise<Publication | undefined>;
   deletePublication: (pubId: string) => Promise<void>;
   loading: boolean;
@@ -114,7 +97,7 @@ export const PublicationsProvider: React.FC<{ children: React.ReactNode }> = ({ 
 
   const addPublication = useCallback(
     async (
-      pubData: Omit<Publication, 'id' | 'created_at' | 'updated_at'>
+      pubData: Omit<Publication, 'id' | 'createdAt'>
     ): Promise<Publication> => {
       if (useSupabase) {
         try {
@@ -135,8 +118,7 @@ export const PublicationsProvider: React.FC<{ children: React.ReactNode }> = ({ 
             .replace(/[^\w\s]/gi, '')
             .replace(/\s+/g, '-')
             .slice(0, 50)}-${Date.now()}`,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
+          createdAt: new Date().toISOString(),
         };
 
         const currentUserPublications = getUserPublicationsFromStorage();
@@ -153,7 +135,7 @@ export const PublicationsProvider: React.FC<{ children: React.ReactNode }> = ({ 
   const updatePublication = useCallback(
     async (
       pubId: string,
-      pubData: Partial<Omit<Publication, 'id' | 'created_at' | 'updated_at'>>
+      pubData: Partial<Omit<Publication, 'id' | 'createdAt'>>
     ): Promise<Publication | undefined> => {
       if (useSupabase) {
         try {
@@ -176,7 +158,7 @@ export const PublicationsProvider: React.FC<{ children: React.ReactNode }> = ({ 
         const updatedPublication: Publication = {
           ...originalPublication,
           ...pubData,
-          updated_at: new Date().toISOString(),
+          createdAt: originalPublication.createdAt || new Date().toISOString(),
         };
 
         currentUserPublications[pubIndex] = updatedPublication;

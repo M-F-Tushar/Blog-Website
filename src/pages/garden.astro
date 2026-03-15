@@ -1,0 +1,151 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import AnimatedSection from '@/components/astro/AnimatedSection.astro';
+import GroupedArchive from '@/components/astro/GroupedArchive.astro';
+import LeadStoryCard from '@/components/astro/LeadStoryCard.astro';
+import PageIntro from '@/components/astro/PageIntro.astro';
+import ReaderStartHere from '@/components/astro/ReaderStartHere.astro';
+import SectionRail from '@/components/astro/SectionRail.astro';
+import { getPageSections, getPublishedPosts, getSiteSettings } from '@/lib/supabase';
+import {
+  getChannelLabel,
+  getMetadataItems,
+  getMetadataText,
+  groupPostsByChannel,
+  selectSectionItems,
+} from '@/lib/pageSections';
+
+const settings = await getSiteSettings();
+const posts = await getPublishedPosts();
+const pageSections = await getPageSections('garden');
+const heroSection = pageSections.find((section) => section.sectionKey === 'hero');
+const channelsSection = pageSections.find((section) => section.sectionKey === 'channels');
+const featuredSection = pageSections.find((section) => section.sectionKey === 'featured');
+const latestSection = pageSections.find((section) => section.sectionKey === 'latest');
+const lanes = [
+  { title: 'Active Learning', path: '/garden/active-learning', description: 'Raw notes from things I am currently studying.' },
+  { title: 'Knowledge Synthesized', path: '/garden/knowledge-synthesized', description: 'Clearer explanations of ideas I understand well enough to teach back.' },
+  { title: 'Thinking Notes', path: '/garden/thinking-notes', description: 'Reflections on tools, methods, habits, and broader technical ideas.' },
+];
+const featuredPosts = featuredSection
+  ? selectSectionItems(posts, featuredSection, {
+      fallbackFeaturedId: settings.featured_post_id,
+    })
+  : [];
+const featuredIds = new Set(featuredPosts.map((post) => post.id));
+const archivePool = posts.filter((post) => !featuredIds.has(post.id));
+const groupedArchive =
+  latestSection?.contentGrouping === 'channel'
+    ? groupPostsByChannel(archivePool).map((group) => ({
+        ...group,
+        items: group.items.slice(0, Math.max(2, Math.floor((latestSection?.maxItems || 6) / 3))),
+      }))
+    : archivePool.length > 0
+      ? [
+          {
+            key: 'latest',
+            label: latestSection?.title || 'Latest notes',
+            items: archivePool.slice(0, latestSection?.maxItems || 6),
+          },
+        ]
+      : [];
+---
+
+<BaseLayout title={`The Garden | ${settings.author_name}`} description="Learning notes, synthesized explanations, and thinking notes across AI, ML, and engineering growth.">
+  <div class="pb-16">
+    {heroSection && (
+      <PageIntro
+        eyebrow={heroSection.eyebrow}
+        title={heroSection.title || 'The Garden'}
+        subtitle={heroSection.subtitle}
+        body={heroSection.body}
+        panelKicker={getMetadataText(heroSection, 'panelKicker') || 'Channels'}
+        panelBody={getMetadataText(heroSection, 'panelBody')}
+        panelItems={
+          getMetadataItems(heroSection, 'panelItems').length > 0
+            ? getMetadataItems(heroSection, 'panelItems')
+            : lanes.map((lane) => lane.title)
+        }
+        frameClass="section-frame section-frame-gradient section-tone-editorial"
+        kickerClass="editorial-kicker editorial-kicker-strong"
+        animationPreset={heroSection.animationPreset || 'hero-rise'}
+      />
+    )}
+
+    <ReaderStartHere
+      title="Choose the kind of thinking you want before you choose a card."
+      body="The Garden works best when you decide whether you want raw study notes, clearer explanation, or broader reflection first."
+      items={[
+        'Active Learning is the rough edge of study.',
+        'Knowledge Synthesized is for clearer explanations.',
+        'Thinking Notes is for method, tools, and broader technical reflection.',
+      ]}
+      href="/garden/active-learning"
+      label="Start with active learning"
+      animationPreset="quiet-fade"
+    />
+
+    {channelsSection && (
+      <SectionRail
+        eyebrow={channelsSection.eyebrow}
+        title={channelsSection.title}
+        body={channelsSection.body}
+        weight="framed"
+        frame="panel"
+        tone="editorial"
+        dividerBefore="star"
+        role="guide"
+      >
+        <div class="grid gap-5 md:grid-cols-3">
+          {lanes.map((lane, index) => (
+            <AnimatedSection preset={channelsSection.animationPreset || 'stagger-cards'} index={index}>
+              <a href={lane.path} class="topic-lane card-lift block">
+                <h2 class="font-serif text-2xl text-secondary-50">{lane.title}</h2>
+                <p class="mt-3 text-sm leading-7 text-secondary-300">{lane.description}</p>
+              </a>
+            </AnimatedSection>
+          ))}
+        </div>
+      </SectionRail>
+    )}
+
+    {featuredPosts[0] && (
+      <SectionRail
+        eyebrow={featuredSection?.eyebrow || 'Lead note'}
+        title={featuredSection?.title || 'A note worth starting with'}
+        body={featuredSection?.body}
+        weight="framed"
+        frame="subtle"
+        tone="quiet"
+        dividerBefore="constellation"
+        role="proof"
+      >
+        <LeadStoryCard
+          eyebrow={`Lead note / ${getChannelLabel(featuredPosts[0].category)}`}
+          title={featuredPosts[0].title}
+          summary={featuredPosts[0].excerpt}
+          href={`/garden/${featuredPosts[0].slug}`}
+          ctaLabel="Read note"
+          meta={[featuredPosts[0].date]}
+          tags={featuredPosts[0].tags.slice(0, 3)}
+          panelKicker="Why start here"
+          panelBody="This note is the clearest current entry into the learning process."
+          accent="editorial"
+          animationPreset={featuredSection?.animationPreset || 'rail-slide'}
+        />
+      </SectionRail>
+    )}
+
+    {groupedArchive.length > 0 && (
+      <SectionRail
+        eyebrow={latestSection?.eyebrow || 'Curated streams'}
+        title={latestSection?.title || 'Browse the garden by channel'}
+        body={latestSection?.body || 'Each channel stays distinct so readers can enter from the mode of thinking they care about most.'}
+        dividerBefore="line"
+        role="archive"
+      >
+        <GroupedArchive groups={groupedArchive} type="post" />
+      </SectionRail>
+    )}
+  </div>
+</BaseLayout>

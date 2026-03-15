@@ -86,7 +86,7 @@ export const createPost = async (post: Omit<Post, 'id'>): Promise<Post> => {
       content: DOMPurify.sanitize(validatedPost.content),
       excerpt: validatedPost.excerpt
         ? DOMPurify.sanitize(validatedPost.excerpt, { ALLOWED_TAGS: [] })
-        : undefined,
+        : post.excerpt,
     };
 
     const dbPost = postToDatabase(sanitizedPost);

@@ -38,22 +38,29 @@ export interface EnvironmentConfig {
  */
 export const getEnvironmentConfig = (): EnvironmentConfig => {
   const env = import.meta.env;
-  const isSupabaseConfigured = Boolean(env.VITE_SUPABASE_URL && env.VITE_SUPABASE_ANON_KEY);
+  const supabaseUrl = env.PUBLIC_SUPABASE_URL || env.VITE_SUPABASE_URL || null;
+  const supabaseAnonKey = env.PUBLIC_SUPABASE_ANON_KEY || env.VITE_SUPABASE_ANON_KEY || null;
+  const formspreeEndpoint = env.PUBLIC_FORMSPREE_ENDPOINT || env.VITE_FORMSPREE_ENDPOINT || null;
+  const fallbackEmail = env.PUBLIC_CONTACT_EMAIL || env.VITE_CONTACT_EMAIL || null;
+  const analyticsEndpoint = env.PUBLIC_ANALYTICS_ENDPOINT || env.VITE_ANALYTICS_ENDPOINT || null;
+  const errorTrackingEnabled =
+    (env.PUBLIC_ERROR_TRACKING_ENABLED || env.VITE_ERROR_TRACKING_ENABLED) === 'true';
+  const isSupabaseConfigured = Boolean(supabaseUrl && supabaseAnonKey);
 
   return {
     supabase: {
-      url: env.VITE_SUPABASE_URL || null,
-      anonKey: env.VITE_SUPABASE_ANON_KEY || null,
+      url: supabaseUrl,
+      anonKey: supabaseAnonKey,
       isConfigured: isSupabaseConfigured,
     },
     contact: {
       useSupabase: isSupabaseConfigured,
-      formspreeEndpoint: env.VITE_FORMSPREE_ENDPOINT || null,
-      fallbackEmail: env.VITE_CONTACT_EMAIL || null,
+      formspreeEndpoint,
+      fallbackEmail,
     },
     tracking: {
-      analyticsEndpoint: env.VITE_ANALYTICS_ENDPOINT || null,
-      errorTrackingEnabled: env.VITE_ERROR_TRACKING_ENABLED === 'true',
+      analyticsEndpoint,
+      errorTrackingEnabled,
     },
     deployment: {
       baseUrl: env.BASE_URL || '/',
@@ -83,7 +90,7 @@ export const checkConfiguration = (): {
   if (!config.supabase.isConfigured) {
     warnings.push(
       'Supabase is not configured. The application will run in demo mode with fallback data. ' +
-        'To enable full features, set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY environment variables.'
+        'To enable full features, set PUBLIC_SUPABASE_URL and PUBLIC_SUPABASE_ANON_KEY environment variables.'
     );
   }
 
@@ -95,15 +102,15 @@ export const checkConfiguration = (): {
     !config.contact.fallbackEmail
   ) {
     warnings.push(
-      'Contact form is not fully configured. Configure Supabase, set VITE_FORMSPREE_ENDPOINT, ' +
-        'or VITE_CONTACT_EMAIL for mailto fallback.'
+      'Contact form is not fully configured. Configure Supabase, set PUBLIC_FORMSPREE_ENDPOINT, ' +
+        'or PUBLIC_CONTACT_EMAIL for mailto fallback.'
     );
   }
 
   // Check error tracking configuration
   if (config.tracking.errorTrackingEnabled && !config.tracking.analyticsEndpoint) {
     warnings.push(
-      'Error tracking is enabled but no VITE_ANALYTICS_ENDPOINT is configured. ' +
+      'Error tracking is enabled but no PUBLIC_ANALYTICS_ENDPOINT is configured. ' +
         'Errors will only be logged to console.'
     );
   }

@@ -149,7 +149,7 @@ export default function ContactForm({ formspreeEndpoint, contactEmail }: Props) 
       <button
         type="submit"
         disabled={!isValid || status === 'sending' || status === 'cooldown'}
-        className="w-full px-6 py-4 bg-primary-600 hover:bg-primary-700 text-white font-semibold rounded-xl shadow-lg shadow-primary-500/30 transition-all duration-300 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed hover:-translate-y-1"
+        className="btn-primary w-full justify-center disabled:cursor-not-allowed disabled:opacity-50"
       >
         {status === 'sending' ? (
           <>
@@ -178,7 +178,7 @@ export default function ContactForm({ formspreeEndpoint, contactEmail }: Props) 
       </button>
 
       {status === 'success' && (
-        <div role="alert" className="p-4 bg-green-500/10 border border-green-500/30 rounded-xl flex items-start gap-3 animate-fade-in">
+        <div role="alert" className="surface-subtle flex items-start gap-3 border-green-500/25 bg-green-500/10 p-4 animate-fade-in">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="20"
@@ -205,7 +205,7 @@ export default function ContactForm({ formspreeEndpoint, contactEmail }: Props) 
         </div>
       )}
       {status === 'error' && (
-        <div role="alert" className="p-4 bg-red-500/10 border border-red-500/30 rounded-xl flex items-start gap-3 animate-fade-in">
+        <div role="alert" className="surface-subtle flex items-start gap-3 border-red-500/25 bg-red-500/10 p-4 animate-fade-in">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="20"
@@ -231,7 +231,7 @@ export default function ContactForm({ formspreeEndpoint, contactEmail }: Props) 
         </div>
       )}
       {status === 'cooldown' && (
-        <div role="alert" className="p-4 bg-amber-500/10 border border-amber-500/30 rounded-xl text-sm text-amber-200 animate-fade-in">
+        <div role="alert" className="surface-subtle border-amber-500/25 bg-amber-500/10 p-4 text-sm text-amber-200 animate-fade-in">
           Please wait a moment before sending another message.
         </div>
       )}

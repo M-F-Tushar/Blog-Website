@@ -37,6 +37,7 @@ interface SiteSettings {
   authorName: string;
   authorTagline: string;
   authorBio: string;
+  authorImage: string;
   siteDescription: string;
   socialLinks: SocialLinks;
   categories: string[];
@@ -125,6 +126,7 @@ const getSettingsFromStorage = (): SiteSettings => {
     authorName: FALLBACK_SETTINGS.author_name,
     authorTagline: FALLBACK_SETTINGS.author_tagline,
     authorBio: FALLBACK_SETTINGS.author_bio,
+    authorImage: FALLBACK_SETTINGS.author_image || '',
     siteDescription: FALLBACK_SETTINGS.site_description,
     socialLinks: {
       github: FALLBACK_SETTINGS.social_github,
@@ -288,6 +290,7 @@ export const SiteSettingsProvider: React.FC<{ children: React.ReactNode }> = ({ 
             authorName: settingsData.author_name || FALLBACK_SETTINGS.author_name,
             authorTagline: settingsData.author_tagline || FALLBACK_SETTINGS.author_tagline,
             authorBio: settingsData.author_bio || FALLBACK_SETTINGS.author_bio,
+            authorImage: settingsData.author_image || FALLBACK_SETTINGS.author_image || '',
             socialLinks: {
               github: settingsData.social_github || FALLBACK_SETTINGS.social_github,
               linkedin: settingsData.social_linkedin || FALLBACK_SETTINGS.social_linkedin,
@@ -369,6 +372,7 @@ export const SiteSettingsProvider: React.FC<{ children: React.ReactNode }> = ({ 
       if (newSettings.authorTagline !== undefined)
         updateData.author_tagline = newSettings.authorTagline;
       if (newSettings.authorBio !== undefined) updateData.author_bio = newSettings.authorBio;
+      if (newSettings.authorImage !== undefined) updateData.author_image = newSettings.authorImage;
 
       if (newSettings.socialLinks) {
         if (newSettings.socialLinks.github !== undefined)

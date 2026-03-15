@@ -1,0 +1,38 @@
+---
+// Dedicated admin login entry so /admin/login works in Astro dev/build.
+import AdminApp from '@/components/react/admin/AdminApp';
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Admin Login | Mahir Faysal Tushar Blog</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Playfair+Display:wght@400;700&display=swap"
+    />
+
+    <script is:inline>
+      document.documentElement.classList.add('dark');
+    </script>
+
+    <style>
+      body {
+        margin: 0;
+        font-family: 'Inter', system-ui, -apple-system, sans-serif;
+        background: #030014;
+        color: #f1f5f9;
+      }
+    </style>
+  </head>
+  <body>
+    <AdminApp client:only="react" />
+  </body>
+</html>

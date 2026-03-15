@@ -10,7 +10,7 @@ import { cosmic } from './ui/cosmicClassNames';
 const DataMigration: React.FC = () => {
   const [migrationProgress, setMigrationProgress] = useState<MigrationProgress>({
     status: 'idle',
-    message: 'Ready to migrate data from constants.ts to Firebase',
+    message: 'Ready to migrate data from constants.ts to Supabase',
   });
   const [migrationStatus, setMigrationStatus] = useState<{
     isComplete: boolean;
@@ -69,9 +69,13 @@ const DataMigration: React.FC = () => {
           </p>
           <p className="mt-2">Required environment variables:</p>
           <ul className="list-disc list-inside mt-2 ml-4 space-y-1">
-            <li>VITE_SUPABASE_URL</li>
-            <li>VITE_SUPABASE_ANON_KEY</li>
+            <li>PUBLIC_SUPABASE_URL</li>
+            <li>PUBLIC_SUPABASE_ANON_KEY</li>
           </ul>
+          <p className="mt-2 text-sm text-secondary-400">
+            Legacy <code className="bg-elevated/80 px-2 py-1 rounded">VITE_*</code> variables are
+            still accepted as fallbacks.
+          </p>
           <p className="mt-4">
             See <code className="bg-elevated/80 px-2 py-1 rounded">SUPABASE_SETUP.md</code> for
             detailed setup instructions.

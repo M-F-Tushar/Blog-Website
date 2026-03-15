@@ -8,6 +8,10 @@ import { cosmic } from './ui/cosmicClassNames';
 
 const MAX_ATTEMPTS = 5;
 const BASE_DELAY_MS = 2000;
+const isLocalDevAdmin =
+  typeof window !== 'undefined' && ['localhost', '127.0.0.1'].includes(window.location.hostname);
+const localDevEmail = import.meta.env.PUBLIC_LOCAL_ADMIN_EMAIL || 'admin@local.dev';
+const localDevPassword = import.meta.env.PUBLIC_LOCAL_ADMIN_PASSWORD || 'admin12345';
 
 const AdminLogin: React.FC = () => {
   const [email, setEmail] = useState('');
@@ -18,13 +22,13 @@ const AdminLogin: React.FC = () => {
   const [now, setNow] = useState(() => Date.now());
   const attemptsRef = useRef(0);
   const navigate = useNavigate();
-  const { signIn, isAuthenticated } = useAuth();
+  const { signIn, isAuthenticated, isAdmin } = useAuth();
 
   useEffect(() => {
-    if (isAuthenticated) {
+    if (isAuthenticated && isAdmin) {
       navigate('/dashboard');
     }
-  }, [isAuthenticated, navigate]);
+  }, [isAuthenticated, isAdmin, navigate]);
 
   useEffect(() => {
     if (!lockedUntil) return;
@@ -80,6 +84,18 @@ const AdminLogin: React.FC = () => {
               Sign in to manage your website
             </p>
 
+            {isLocalDevAdmin && (
+              <div className="mb-6 rounded-xl border border-primary-500/20 bg-primary-500/10 p-4 text-sm text-secondary-300">
+                <p className="font-semibold text-secondary-100">Local dev credentials</p>
+                <p className="mt-2">
+                  Email: <span className="font-mono text-primary-300">{localDevEmail}</span>
+                </p>
+                <p className="mt-1">
+                  Password: <span className="font-mono text-primary-300">{localDevPassword}</span>
+                </p>
+              </div>
+            )}
+
             <form onSubmit={handleSubmit} className="space-y-6">
               <div>
                 <label htmlFor="email" className={cosmic.label}>
@@ -91,7 +107,7 @@ const AdminLogin: React.FC = () => {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className={cosmic.input}
-                  placeholder="admin@example.com"
+                  placeholder={isLocalDevAdmin ? localDevEmail : 'admin@example.com'}
                   required
                   disabled={loading || isLocked}
                 />
@@ -106,7 +122,7 @@ const AdminLogin: React.FC = () => {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   className={cosmic.input}
-                  placeholder="Enter your password"
+                  placeholder={isLocalDevAdmin ? localDevPassword : 'Enter your password'}
                   required
                   disabled={loading || isLocked}
                 />

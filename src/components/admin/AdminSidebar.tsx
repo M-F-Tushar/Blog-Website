@@ -30,76 +30,49 @@ const AdminSidebar: React.FC = () => {
       </div>
 
       <nav className="mt-4 flex-grow admin-scrollbar overflow-y-auto">
-        {/* Content */}
         <div className="px-4 pt-4 pb-2">
-          <span className={cosmic.sectionLabel}>Content</span>
+          <span className={cosmic.sectionLabel}>Workspace</span>
           <div className="admin-cosmic-divider mt-2" />
         </div>
         <NavLink to="/dashboard" className={navLinkClasses} end>
           Dashboard
         </NavLink>
-        <NavLink to="/posts/create" className={navLinkClasses}>
-          New Post
+        <NavLink to="/site-config" className={navLinkClasses}>
+          Site Configuration
         </NavLink>
-        <NavLink to="/recommendations" className={navLinkClasses}>
-          Recommendations
+        <NavLink to="/pages" className={navLinkClasses}>
+          Pages
         </NavLink>
-
-        {/* Research */}
         <div className="px-4 pt-6 pb-2">
-          <span className={cosmic.sectionLabel}>Research</span>
+          <span className={cosmic.sectionLabel}>Content</span>
           <div className="admin-cosmic-divider mt-2" />
         </div>
+        <NavLink to="/story" className={navLinkClasses}>
+          Story
+        </NavLink>
+        <NavLink to="/garden" className={navLinkClasses}>
+          Garden
+        </NavLink>
         <NavLink to="/projects" className={navLinkClasses}>
           Projects
         </NavLink>
-        <NavLink to="/publications" className={navLinkClasses}>
-          Publications
+        <NavLink to="/bookshelf" className={navLinkClasses}>
+          Bookshelf
         </NavLink>
-
-        {/* Pages */}
         <div className="px-4 pt-6 pb-2">
-          <span className={cosmic.sectionLabel}>Pages</span>
+          <span className={cosmic.sectionLabel}>Taxonomy</span>
           <div className="admin-cosmic-divider mt-2" />
         </div>
-        <NavLink to="/pages" className={navLinkClasses}>
-          Page Content
+        <NavLink to="/topics" className={navLinkClasses}>
+          Topics / Tags
         </NavLink>
-        <NavLink to="/cv" className={navLinkClasses}>
-          CV Manager
-        </NavLink>
-        <NavLink to="/settings/homepage" className={navLinkClasses}>
-          Homepage Layout
-        </NavLink>
-        <NavLink to="/custom-pages" className={navLinkClasses}>
-          Custom Pages
-        </NavLink>
-
-        {/* Settings */}
         <div className="px-4 pt-6 pb-2">
-          <span className={cosmic.sectionLabel}>Settings</span>
+          <span className={cosmic.sectionLabel}>Publishing</span>
           <div className="admin-cosmic-divider mt-2" />
         </div>
-        <NavLink to="/settings/site" className={navLinkClasses}>
-          Site Settings
+        <NavLink to="/contact-links" className={navLinkClasses}>
+          Contact Links
         </NavLink>
-        <NavLink to="/settings/profile" className={navLinkClasses}>
-          Profile Settings
-        </NavLink>
-        <NavLink to="/settings/appearance" className={navLinkClasses}>
-          Appearance
-        </NavLink>
-        <NavLink to="/settings/seo" className={navLinkClasses}>
-          SEO
-        </NavLink>
-        <NavLink to="/settings/ui-text" className={navLinkClasses}>
-          UI Text
-        </NavLink>
-        <NavLink to="/settings/navigation" className={navLinkClasses}>
-          Navigation
-        </NavLink>
-
-        {/* Tools */}
         <div className="px-4 pt-6 pb-2">
           <span className={cosmic.sectionLabel}>Tools</span>
           <div className="admin-cosmic-divider mt-2" />
@@ -109,6 +82,16 @@ const AdminSidebar: React.FC = () => {
         </NavLink>
         <NavLink to="/inbox" className={navLinkClasses}>
           Inbox
+        </NavLink>
+        <div className="px-4 pt-6 pb-2">
+          <span className={cosmic.sectionLabel}>Legacy</span>
+          <div className="admin-cosmic-divider mt-2" />
+        </div>
+        <NavLink to="/legacy/site-settings" className={navLinkClasses}>
+          Legacy Settings
+        </NavLink>
+        <NavLink to="/publications" className={navLinkClasses}>
+          Publications
         </NavLink>
       </nav>
 

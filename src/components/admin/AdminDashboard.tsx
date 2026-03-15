@@ -34,7 +34,7 @@ const AdminDashboard: React.FC = () => {
 
   return (
     <div className="space-y-10">
-      <h1 className={cosmic.pageTitle}>Admin Dashboard</h1>
+      <h1 className={cosmic.pageTitle}>Dashboard</h1>
 
       {error && (
         <div className={cosmic.alertError}>
@@ -47,9 +47,9 @@ const AdminDashboard: React.FC = () => {
 
       <div className={cosmic.container}>
         <div className="flex justify-between items-center mb-6 pb-4 border-b border-white/[0.06]">
-          <h2 className={cosmic.sectionTitle}>Manage Posts</h2>
-          <Link to="/posts/create" className={cosmic.buttonPrimary}>
-            Create New Post
+          <h2 className={cosmic.sectionTitle}>Garden Entries</h2>
+          <Link to="/garden/create" className={cosmic.buttonPrimary}>
+            Create New Entry
           </Link>
         </div>
 
@@ -105,7 +105,7 @@ const AdminDashboard: React.FC = () => {
                       </button>
                       {!post.isInitial ? (
                         <>
-                          <Link to={`/posts/edit/${post.id}`} className={cosmic.linkEdit}>
+                          <Link to={`/garden/edit/${post.id}`} className={cosmic.linkEdit}>
                             Edit
                           </Link>
                           <button

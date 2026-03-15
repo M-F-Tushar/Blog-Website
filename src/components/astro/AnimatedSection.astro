@@ -1,0 +1,40 @@
+---
+import Reveal from './Reveal.astro';
+import type { PageSectionAnimationPreset } from '@/types/types';
+
+interface Props {
+  preset?: PageSectionAnimationPreset;
+  index?: number;
+  class?: string;
+}
+
+const { preset = 'quiet-fade', index = 0, class: className = '' } = Astro.props;
+
+const directionMap: Record<PageSectionAnimationPreset, 'up' | 'down' | 'left' | 'right' | 'scale' | 'cascade'> = {
+  'hero-rise': 'up',
+  'stagger-cards': 'up',
+  'chapter-reveal': index % 2 === 0 ? 'left' : 'right',
+  'rail-slide': 'right',
+  'quiet-fade': 'up',
+  'scale-reveal': 'scale',
+  'cascade': 'cascade',
+};
+
+const delayMap: Record<PageSectionAnimationPreset, number> = {
+  'hero-rise': 80,
+  'stagger-cards': Math.min(index, 6) * 90,
+  'chapter-reveal': Math.min(index, 6) * 100,
+  'rail-slide': Math.min(index, 4) * 70,
+  'quiet-fade': Math.min(index, 4) * 50,
+  'scale-reveal': Math.min(index, 4) * 100,
+  'cascade': Math.min(index, 6) * 70,
+};
+---
+
+<Reveal
+  direction={directionMap[preset]}
+  delay={delayMap[preset]}
+  class:list={['motion-preset', `motion-${preset}`, className]}
+>
+  <slot />
+</Reveal>

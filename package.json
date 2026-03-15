@@ -66,6 +66,7 @@
     "@types/react-dom": "^19.1.0",
     "@typescript-eslint/eslint-plugin": "^8.48.1",
     "@typescript-eslint/parser": "^8.47.0",
+    "@vitejs/plugin-react": "^4.7.0",
     "@vitest/ui": "^4.0.15",
     "autoprefixer": "^10.4.22",
     "dotenv": "^17.2.3",

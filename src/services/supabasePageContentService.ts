@@ -1,4 +1,4 @@
-import { supabase } from '../supabase/client';
+import { getSupabaseClient, supabase } from '../supabase/client';
 import type { DatabasePageContent } from '../types/database';
 
 const PAGE_CONTENT_TABLE = 'page_content';
@@ -204,7 +204,8 @@ export const subscribeToPageContentUpdates = (
     });
 
   // Subscribe to changes
-  const channel = supabase
+  const client = getSupabaseClient();
+  const channel = client
     .channel('page-content-changes')
     .on(
       'postgres_changes',
@@ -229,6 +230,6 @@ export const subscribeToPageContentUpdates = (
 
   // Return unsubscribe function
   return () => {
-    supabase.removeChannel(channel);
+    client.removeChannel(channel);
   };
 };

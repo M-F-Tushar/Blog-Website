@@ -1,0 +1,75 @@
+---
+import CosmicDivider from './CosmicDivider.astro';
+
+interface Props {
+  eyebrow?: string;
+  title?: string;
+  body?: string;
+  class?: string;
+  weight?: 'full-bleed' | 'framed' | 'open';
+  frame?: 'panel' | 'strong' | 'gradient' | 'paper' | 'subtle';
+  tone?: 'editorial' | 'quiet' | 'technical' | 'warm';
+  bleedVariant?: 'surface' | 'gradient';
+  dividerBefore?: 'line' | 'star' | 'constellation' | false;
+  role?: 'entry' | 'proof' | 'guide' | 'archive' | 'reflection' | 'cta';
+}
+
+const {
+  eyebrow,
+  title,
+  body,
+  class: className = '',
+  weight = 'open',
+  frame,
+  tone,
+  bleedVariant,
+  dividerBefore = false,
+  role,
+} = Astro.props;
+
+const frameClass = frame ? `section-frame-${frame}` : '';
+const toneClass = tone ? `section-tone-${tone}` : '';
+const roleClass = role ? `section-role-${role}` : '';
+const isFullBleed = weight === 'full-bleed';
+const isFramed = weight === 'framed';
+const bleedClass = bleedVariant ? `section-full-bleed-${bleedVariant}` : '';
+
+const headerBlock = eyebrow || title || body;
+---
+
+{dividerBefore && (
+  <div class="section-shell">
+    <CosmicDivider variant={dividerBefore} />
+  </div>
+)}
+
+{isFullBleed ? (
+  <div class:list={['section-full-bleed section-break', bleedClass, roleClass, className]}>
+    <section class="section-shell">
+      {headerBlock && (
+        <div class="section-head mb-8 max-w-4xl">
+          {eyebrow && <p class="editorial-kicker mb-3">{eyebrow}</p>}
+          {title && <h2 class="section-heading">{title}</h2>}
+          {body && <p class="mt-4 section-copy">{body}</p>}
+        </div>
+      )}
+      <slot />
+    </section>
+  </div>
+) : (
+  <section class:list={[
+    'section-shell section-break',
+    isFramed && `section-frame ${frameClass} ${toneClass} p-6 md:p-8`,
+    roleClass,
+    className,
+  ]}>
+    {headerBlock && (
+      <div class="section-head mb-8 max-w-4xl">
+        {eyebrow && <p class="editorial-kicker mb-3">{eyebrow}</p>}
+        {title && <h2 class="section-heading">{title}</h2>}
+        {body && <p class="mt-4 section-copy">{body}</p>}
+      </div>
+    )}
+    <slot />
+  </section>
+)}

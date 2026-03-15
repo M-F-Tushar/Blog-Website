@@ -159,7 +159,7 @@ export default {
       },
       fontFamily: {
         sans: [
-          'Inter',
+          'Manrope',
           'Inter-fallback',
           'system-ui',
           '-apple-system',
@@ -168,7 +168,7 @@ export default {
           'Roboto',
           'sans-serif',
         ],
-        serif: ['Playfair Display', 'Georgia', 'serif'],
+        serif: ['Fraunces', 'Georgia', 'serif'],
         mono: ['JetBrains Mono', 'Fira Code', 'Consolas', 'monospace'],
       },
       animation: {

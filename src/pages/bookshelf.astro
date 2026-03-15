@@ -1,0 +1,139 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import LeadStoryCard from '@/components/astro/LeadStoryCard.astro';
+import PageIntro from '@/components/astro/PageIntro.astro';
+import ReaderStartHere from '@/components/astro/ReaderStartHere.astro';
+import SectionRail from '@/components/astro/SectionRail.astro';
+import ShelfGrid from '@/components/astro/ShelfGrid.astro';
+import { getBookshelfEntries, getPageSections, getSiteSettings, getStoryChapters } from '@/lib/supabase';
+import {
+  getMetadataItems,
+  getMetadataText,
+  groupBookshelfByType,
+  selectSectionItems,
+} from '@/lib/pageSections';
+
+const settings = await getSiteSettings();
+const entries = await getBookshelfEntries();
+const storyChapters = await getStoryChapters();
+const pageSections = await getPageSections('bookshelf');
+const heroSection = pageSections.find((section) => section.sectionKey === 'hero');
+const featuredSection = pageSections.find((section) => section.sectionKey === 'featured');
+const archiveSection = pageSections.find((section) => section.sectionKey === 'archive');
+const featured = featuredSection
+  ? selectSectionItems(entries, featuredSection, {
+      isFeatured: (entry) => entry.isFeatured,
+      isPinned: (entry) => entry.isPinned,
+    })
+  : entries.filter((entry) => entry.isFeatured);
+const featuredIds = new Set(featured.map((entry) => entry.id));
+const archiveEntries = entries.filter((entry) => !featuredIds.has(entry.id));
+const shelfGroups =
+  archiveSection?.contentGrouping === 'type'
+    ? groupBookshelfByType(archiveEntries)
+    : archiveEntries.length > 0
+      ? [{ key: 'shelf', label: archiveSection?.title || 'Shelf', items: archiveEntries }]
+      : [];
+const linkedStoryChapter = storyChapters[0];
+---
+
+<BaseLayout title={`Bookshelf | ${settings.author_name}`} description="Reflections, reading logs, and essays on books that shape how I think beyond pure technical work.">
+  <div class="pb-16">
+    {heroSection && (
+      <PageIntro
+        eyebrow={heroSection.eyebrow}
+        title={heroSection.title || 'Bookshelf'}
+        subtitle={heroSection.subtitle}
+        body={heroSection.body}
+        panelKicker={getMetadataText(heroSection, 'panelKicker') || 'What lives here'}
+        panelBody={getMetadataText(heroSection, 'panelBody')}
+        panelItems={
+          getMetadataItems(heroSection, 'panelItems').length > 0
+            ? getMetadataItems(heroSection, 'panelItems')
+            : ['Reflections', 'Reading logs', 'Reviews and essays']
+        }
+        frameClass="section-frame section-frame-paper section-tone-warm"
+        kickerClass="editorial-kicker editorial-kicker-soft"
+        animationPreset={heroSection.animationPreset || 'hero-rise'}
+      />
+    )}
+
+    <ReaderStartHere
+      title="Read this section as part of the same mind, not as a detached side page."
+      body="Bookshelf is where reading, imagination, and reflection connect back to the way I build, learn, and think."
+      items={[
+        'Begin with a featured reflection if you want the tone of the shelf.',
+        'Use the themed shelves when you want a more specific reading mode.',
+        'The linked story below shows how reading fits into the broader platform.',
+      ]}
+      href={featured[0] ? `/bookshelf/${featured[0].slug}` : '/bookshelf'}
+      label="Open a featured reflection"
+      animationPreset="quiet-fade"
+    />
+
+    {featured.length > 0 && (
+      <SectionRail
+        eyebrow={featuredSection?.eyebrow || 'Featured reflection'}
+        title={featuredSection?.title || 'A few entries to begin with'}
+        weight="framed"
+        frame="paper"
+        tone="warm"
+        dividerBefore="star"
+        role="proof"
+      >
+        <div class="grid gap-6">
+          {featured.map((entry, index) => (
+            <LeadStoryCard
+              eyebrow={`${entry.entryType} / ${entry.bookTitle}`}
+              title={entry.title}
+              summary={entry.summary}
+              href={`/bookshelf/${entry.slug}`}
+              ctaLabel="Read entry"
+              meta={entry.author ? [entry.author] : []}
+              tags={entry.tags.slice(0, 3)}
+              panelKicker="Why this belongs here"
+              panelBody="This reflection is part of the personal intellectual layer of the platform, not a separate entertainment shelf."
+              accent="warm"
+              animationPreset={featuredSection?.animationPreset || 'rail-slide'}
+              index={index}
+            />
+          ))}
+        </div>
+      </SectionRail>
+    )}
+
+    {shelfGroups.length > 0 && (
+      <SectionRail
+        eyebrow={archiveSection?.eyebrow || 'Shelf'}
+        title={archiveSection?.title || 'Browse by reading mode'}
+        body={archiveSection?.body || 'These shelves keep reflections, reviews, logs, favorites, and essays visually distinct.'}
+        dividerBefore="constellation"
+        role="archive"
+      >
+        <ShelfGrid groups={shelfGroups} />
+      </SectionRail>
+    )}
+
+    {linkedStoryChapter && (
+      <SectionRail
+        eyebrow="Story crossover"
+        title="How reading connects back to the broader journey."
+        dividerBefore="line"
+        tone="quiet"
+        role="reflection"
+      >
+        <LeadStoryCard
+          eyebrow={linkedStoryChapter.periodLabel || 'Story chapter'}
+          title={linkedStoryChapter.title}
+          summary={linkedStoryChapter.subtitle || linkedStoryChapter.body}
+          href="/story"
+          ctaLabel="Read the story"
+          panelKicker="Narrative layer"
+          panelBody="Story gives the broader personal arc that makes the bookshelf feel grounded inside the same platform."
+          accent="quiet"
+          animationPreset="scale-reveal"
+        />
+      </SectionRail>
+    )}
+  </div>
+</BaseLayout>

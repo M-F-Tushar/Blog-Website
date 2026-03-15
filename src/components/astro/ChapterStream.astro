@@ -1,0 +1,43 @@
+---
+import AnimatedSection from './AnimatedSection.astro';
+import MilestoneInsert from './MilestoneInsert.astro';
+import type { StoryChapter, StoryMilestone } from '@/types/types';
+
+interface Props {
+  chapters: StoryChapter[];
+  milestones: StoryMilestone[];
+}
+
+const { chapters, milestones } = Astro.props;
+---
+
+<div class="timeline-connector space-y-6">
+  {chapters.map((chapter, index) => {
+    const chapterMilestones = milestones.filter((milestone) => milestone.chapterId === chapter.id);
+    const isAlternate = index % 2 === 1;
+
+    return (
+      <AnimatedSection preset="chapter-reveal" index={index}>
+        <article class:list={['chapter-stream-card', isAlternate && 'chapter-stream-card-alt']}>
+          <div class="grid gap-6 lg:grid-cols-[16rem_minmax(0,1fr)]">
+            <div>
+              {chapter.periodLabel && <p class="editorial-kicker">{chapter.periodLabel}</p>}
+              <h2 class="mt-3 font-serif text-3xl text-secondary-50">{chapter.title}</h2>
+              {chapter.subtitle && <p class="mt-3 text-secondary-300">{chapter.subtitle}</p>}
+            </div>
+            <div>
+              <p class="text-base leading-8 text-secondary-200">{chapter.body}</p>
+              {chapterMilestones.length > 0 && (
+                <div class="mt-8 grid gap-4 sm:grid-cols-2">
+                  {chapterMilestones.map((milestone) => (
+                    <MilestoneInsert milestone={milestone} />
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        </article>
+      </AnimatedSection>
+    );
+  })}
+</div>

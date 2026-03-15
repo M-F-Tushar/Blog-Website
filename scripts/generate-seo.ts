@@ -3,18 +3,16 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import { createClient } from '@supabase/supabase-js';
 import dotenv from 'dotenv';
-import { generateRSS } from '../src/utils/generateRSS';
-import { siteConfig as seoConfig } from '../src/utils/seo';
+import { siteConfig as seoConfig } from '../src/config/site';
 
-// ES module equivalent of __dirname
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Load environment variables
 dotenv.config();
 
-const supabaseUrl = process.env.VITE_SUPABASE_URL;
-const supabaseKey = process.env.VITE_SUPABASE_ANON_KEY;
+const supabaseUrl = process.env.PUBLIC_SUPABASE_URL || process.env.VITE_SUPABASE_URL;
+const supabaseKey =
+  process.env.PUBLIC_SUPABASE_ANON_KEY || process.env.VITE_SUPABASE_ANON_KEY;
 
 if (
   !supabaseUrl ||
@@ -22,13 +20,13 @@ if (
   !supabaseKey ||
   supabaseKey.includes('your_supabase')
 ) {
-  console.warn('⚠️ Supabase credentials not found or invalid. Skipping dynamic SEO generation.');
+  console.warn('Supabase credentials not found or invalid. Skipping dynamic SEO generation.');
   process.exit(0);
 }
 
 const supabase = createClient(supabaseUrl, supabaseKey);
-
 const publicDir = path.resolve(__dirname, '../public');
+
 if (!fs.existsSync(publicDir)) {
   fs.mkdirSync(publicDir, { recursive: true });
 }
@@ -42,18 +40,31 @@ const staticPages = [
   { url: '/tags', changefreq: 'weekly', priority: 0.5 },
 ];
 
+interface SeoPostRow {
+  id: string;
+  title: string;
+  excerpt: string | null;
+  content: string;
+  date: string;
+  category: string;
+  tags: string[] | null;
+  cover_image: string | null;
+  status: string;
+}
+
 const generateSEO = async () => {
-  console.log('🔍 Fetching posts from Supabase...');
-  const { data: posts, error } = await supabase.from('posts').select('*').eq('status', 'published');
+  console.log('Fetching posts from Supabase...');
+  const { data, error } = await supabase.from('posts').select('*').eq('status', 'published');
 
   if (error) {
-    console.error('❌ Error fetching posts:', error);
+    console.error('Error fetching posts:', error);
     return;
   }
 
-  console.log(`✅ Found ${posts.length} published posts.`);
+  const posts = (data || []) as SeoPostRow[];
 
-  // 1. Generate Sitemap
+  console.log(`Found ${posts.length} published posts.`);
+
   const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
         xmlns:news="http://www.google.com/schemas/sitemap-news/0.9"
@@ -92,27 +103,34 @@ ${posts
 </urlset>`;
 
   fs.writeFileSync(path.join(publicDir, 'sitemap.xml'), sitemap);
-  console.log('✅ Sitemap generated at public/sitemap.xml');
+  console.log('Sitemap generated at public/sitemap.xml');
 
-  // 2. Generate RSS
-  // Map Supabase posts to the Post type expected by generateRSS
-  const mappedPosts = posts.map((p) => ({
-    id: p.id,
-    title: p.title,
-    excerpt: p.excerpt,
-    content: p.content,
-    date: p.date,
-    category: p.category,
-    tags: p.tags || [],
-    coverImage: p.cover_image,
-    status: p.status,
-  }));
+  const rss = `<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+  <channel>
+    <title>${seoConfig.name}</title>
+    <link>${seoConfig.url}</link>
+    <description>${seoConfig.description}</description>
+${posts
+  .map(
+    (post) => `    <item>
+      <title><![CDATA[${post.title}]]></title>
+      <link>${seoConfig.url}/blog/${post.id}</link>
+      <guid>${seoConfig.url}/blog/${post.id}</guid>
+      <pubDate>${new Date(post.date).toUTCString()}</pubDate>
+      <description><![CDATA[${post.excerpt || ''}]]></description>
+    </item>`
+  )
+  .join('\n')}
+  </channel>
+</rss>`;
 
-  generateRSS(mappedPosts as any, path.join(publicDir, 'rss.xml'));
-  console.log('✅ RSS feed generated at public/rss.xml');
+  fs.writeFileSync(path.join(publicDir, 'rss.xml'), rss);
+  console.log('RSS feed generated at public/rss.xml');
 };
 
-generateSEO().catch((err) => {
+generateSEO().catch((error) => {
+  const err = error instanceof Error ? error : new Error(String(error));
   console.error(err);
   fs.writeFileSync(path.join(__dirname, 'error.log'), `Error: ${err.message}\nStack: ${err.stack}`);
   process.exit(1);

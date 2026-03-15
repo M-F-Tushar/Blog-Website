@@ -1,8 +1,6 @@
 ---
 import BaseLayout from './BaseLayout.astro';
 import GiscusComments from '@/components/astro/GiscusComments.astro';
-import NebulaGradient from '@/components/astro/NebulaGradient.astro';
-import CosmicDivider from '@/components/astro/CosmicDivider.astro';
 import type { Post } from '@/lib/types';
 import { slugify, getSiteSettings } from '@/lib/supabase';
 import { calculateReadingTime, formatReadingTime } from '@/lib/reading-time';
@@ -19,6 +17,7 @@ interface Props {
 const { post, headings = [], relatedPosts = [], prevPost, nextPost } = Astro.props;
 const settings = await getSiteSettings();
 const readingTime = calculateReadingTime(post.content);
+const tocHeadings = headings.filter((heading) => heading.depth >= 2 && heading.depth <= 3);
 
 const structuredData = generateBlogPostingSchema(
   post,
@@ -32,8 +31,6 @@ const formattedDate = new Date(post.date).toLocaleDateString(undefined, {
   day: 'numeric',
   year: 'numeric',
 });
-
-const tocHeadings = headings.filter((h) => h.depth >= 2 && h.depth <= 3);
 ---
 
 <BaseLayout
@@ -50,162 +47,156 @@ const tocHeadings = headings.filter((h) => h.depth >= 2 && h.depth <= 3);
     integrity="sha384-BHmjR5PJgPMBjUWvJh6xEEj3GIKam2V3Y0RHfrq3LNpCR7LKsCkFmMCqV6U5BOA"
     crossorigin="anonymous"
   />
-  <!-- Reading progress bar -->
-  <div id="reading-progress" class="fixed top-0 left-0 right-0 z-[60] h-1 bg-transparent">
-    <div id="progress-bar" class="h-full bg-gradient-to-r from-primary-400 via-accent-400 to-gold-400 transition-all duration-150" style="width: 0%; box-shadow: 0 0 10px rgba(6,182,212,0.4);"></div>
+
+  <div id="reading-progress" class="pointer-events-none fixed left-0 right-0 top-0 z-[70] h-px bg-transparent">
+    <div id="progress-bar" class="h-full bg-gradient-to-r from-primary-400 via-accent-400 to-gold-400 transition-[width] duration-150" style="width: 0%"></div>
   </div>
 
-  <article class="pb-12">
-    <!-- Hero Header -->
-    <NebulaGradient variant="section" />
-    <header class="relative -mt-20 pt-32 pb-12 px-4 bg-abyss/80 backdrop-blur-sm">
-      <div class="container mx-auto max-w-4xl text-center">
-        <!-- Category badge -->
-        <a
-          href={`/blog/categories/${slugify(post.category)}`}
-          class="inline-flex items-center px-3 py-1 rounded-full bg-gold-500/10 text-gold-400 border border-gold-500/20 text-sm font-medium mb-6 hover:bg-gold-500/20 transition-colors"
-        >
-          {post.category}
-        </a>
+  <article class="pb-20">
+    <header class="page-hero pb-14">
+      <div class="container mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
+        <div class="mx-auto max-w-3xl text-center">
+          <a
+            href={`/blog/categories/${slugify(post.category)}`}
+            class="section-eyebrow mx-auto"
+          >
+            {post.category}
+          </a>
 
-        <h1 class="text-3xl md:text-5xl font-bold font-serif text-secondary-50 mb-6 leading-tight">
-          {post.title}
-        </h1>
+          <h1 class="mt-6 font-serif text-4xl leading-[1.05] text-secondary-50 sm:text-5xl lg:text-6xl">
+            {post.title}
+          </h1>
 
-        <p class="text-lg text-secondary-300 mb-8 max-w-2xl mx-auto">
-          {post.excerpt}
-        </p>
+          <p class="mx-auto mt-6 max-w-2xl text-lg leading-8 text-secondary-300">
+            {post.excerpt}
+          </p>
 
-        <!-- Meta -->
-        <div class="flex items-center justify-center flex-wrap gap-4 text-sm text-secondary-400">
-          <span class="flex items-center gap-1.5">
-            <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v4"></path><path d="M16 2v4"></path><rect width="18" height="18" x="3" y="4" rx="2"></rect><path d="M3 10h18"></path></svg>
+          <div class="mt-8 flex flex-wrap items-center justify-center gap-x-5 gap-y-3 text-sm text-secondary-400">
+            <span>{settings.author_name}</span>
+            <span class="hidden sm:inline text-secondary-600">•</span>
             <time datetime={post.date}>{formattedDate}</time>
-          </span>
-          <span class="flex items-center gap-1.5">
-            <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-            {formatReadingTime(readingTime)}
-          </span>
-          <span class="flex items-center gap-1.5">
-            <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-            {settings.author_name}
-          </span>
+            <span class="hidden sm:inline text-secondary-600">•</span>
+            <span class="text-gold-300/90">{formatReadingTime(readingTime)}</span>
+          </div>
         </div>
       </div>
     </header>
 
-    <!-- Cover Image -->
     {post.coverImage && (
-      <div class="container mx-auto max-w-5xl px-4 -mt-6">
-        <div class="border border-white/[0.06] rounded-2xl overflow-hidden">
-          <img
-            src={post.coverImage}
-            alt={`Cover image for ${post.title}`}
-            class="w-full rounded-2xl shadow-2xl shadow-black/40 object-cover max-h-[500px]"
-            loading="eager"
-            width="1200"
-            height="600"
-          />
+      <section class="-mt-8 px-4 sm:px-6 lg:px-8">
+        <div class="container mx-auto max-w-6xl">
+          <div class="surface-panel overflow-hidden p-2">
+            <img
+              src={post.coverImage}
+              alt={`Cover image for ${post.title}`}
+              class="max-h-[34rem] w-full rounded-[1.35rem] object-cover"
+              loading="eager"
+              width="1600"
+              height="900"
+            />
+          </div>
         </div>
-      </div>
+      </section>
     )}
 
-    <!-- Content with sidebar -->
-    <div class="container mx-auto max-w-7xl px-4 mt-12">
-      <div class="grid lg:grid-cols-[1fr_250px] gap-12">
-        <!-- Main content -->
-        <div class="min-w-0 max-w-3xl w-full">
-          <div class="prose prose-lg max-w-none prose-headings:scroll-mt-24 prose-headings:text-secondary-50 prose-a:text-primary-400 prose-img:rounded-xl prose-pre:bg-[#0a0e1a] prose-pre:border prose-pre:border-white/[0.06]">
-            <slot />
-          </div>
-
-          <!-- Tags -->
-          {post.tags && post.tags.length > 0 && (
-            <div class="mt-12 pt-8 border-t border-white/[0.06]">
-              <div class="flex flex-wrap gap-2">
-                {post.tags.map((tag) => (
+    <section class="section-shell">
+      <div class="container mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+        <div class="grid gap-10 lg:grid-cols-[minmax(0,1fr)_18rem]">
+          <div class="min-w-0">
+            <div class="surface-panel p-6 sm:p-8 lg:p-10">
+              <div class="mb-8 flex flex-wrap gap-2">
+                {post.tags?.map((tag) => (
                   <a
                     href={`/blog/tags/${tag}`}
-                    class="px-4 py-2 bg-surface text-secondary-300 border border-white/10 rounded-full text-sm hover:border-primary-500/30 hover:text-primary-300 transition-colors"
+                    class="inline-flex items-center rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs font-medium text-secondary-300 transition-colors hover:border-primary-500/30 hover:text-primary-100"
                   >
                     #{tag}
                   </a>
                 ))}
               </div>
-            </div>
-          )}
 
-          <!-- Post navigation -->
-          <nav class="mt-12 pt-8 border-t border-white/[0.06] grid md:grid-cols-2 gap-6" aria-label="Post navigation">
-            {prevPost && (
-              <a href={`/blog/${prevPost.slug}`} class="group p-4 bg-surface rounded-xl border border-white/[0.06] hover:border-primary-500/30 transition-colors">
-                <span class="text-xs text-secondary-500 uppercase tracking-wider">&larr; Previous</span>
-                <p class="font-semibold text-secondary-50 mt-1 group-hover:text-primary-400 line-clamp-2">{prevPost.title}</p>
-              </a>
-            )}
-            {nextPost && (
-              <a href={`/blog/${nextPost.slug}`} class="group p-4 bg-surface rounded-xl border border-white/[0.06] hover:border-primary-500/30 transition-colors text-right md:col-start-2">
-                <span class="text-xs text-secondary-500 uppercase tracking-wider">Next &rarr;</span>
-                <p class="font-semibold text-secondary-50 mt-1 group-hover:text-primary-400 line-clamp-2">{nextPost.title}</p>
-              </a>
-            )}
-          </nav>
-
-          <!-- Giscus Comments -->
-          <GiscusComments />
-
-          <!-- Related posts -->
-          <CosmicDivider variant="line" />
-          {relatedPosts.length > 0 && (
-            <section class="mt-16">
-              <h2 class="text-2xl font-bold font-serif text-secondary-50 mb-8">Related Articles</h2>
-              <div class="grid md:grid-cols-2 gap-6">
-                {relatedPosts.slice(0, 2).map((related) => (
-                  <a href={`/blog/${related.slug}`} class="group p-6 bg-surface rounded-xl border border-white/[0.06] hover:border-primary-500/30 transition-all hover:-translate-y-1">
-                    <span class="text-xs text-accent-400 font-medium">{related.category}</span>
-                    <h3 class="font-bold text-secondary-50 mt-2 mb-2 group-hover:text-primary-400 line-clamp-2">{related.title}</h3>
-                    <p class="text-sm text-secondary-400 line-clamp-2">{related.excerpt}</p>
-                  </a>
-                ))}
+              <div
+                class="prose prose-lg max-w-none prose-invert prose-headings:font-serif prose-headings:text-secondary-50 prose-headings:scroll-mt-28 prose-p:text-secondary-200 prose-p:leading-8 prose-a:text-primary-200 prose-a:no-underline hover:prose-a:text-primary-100 prose-strong:text-secondary-50 prose-code:text-primary-100 prose-code:before:content-none prose-code:after:content-none prose-pre:border prose-pre:border-white/10 prose-pre:bg-[#060b16] prose-pre:shadow-none prose-blockquote:border-l-primary-400 prose-blockquote:text-secondary-200 prose-hr:border-white/10 prose-li:text-secondary-200 prose-img:rounded-[1.35rem] prose-img:border prose-img:border-white/10 prose-table:block prose-table:w-full prose-table:overflow-x-auto"
+              >
+                <slot />
               </div>
-            </section>
+            </div>
+
+            <nav class="mt-10 grid gap-4 md:grid-cols-2" aria-label="Post navigation">
+              {prevPost ? (
+                <a href={`/blog/${prevPost.slug}`} class="surface-subtle p-5 transition-colors hover:border-primary-500/30">
+                  <span class="text-xs uppercase tracking-[0.18em] text-secondary-500">Previous essay</span>
+                  <p class="mt-3 font-serif text-xl text-secondary-50">{prevPost.title}</p>
+                </a>
+              ) : (
+                <div></div>
+              )}
+              {nextPost && (
+                <a href={`/blog/${nextPost.slug}`} class="surface-subtle p-5 text-left transition-colors hover:border-primary-500/30 md:text-right">
+                  <span class="text-xs uppercase tracking-[0.18em] text-secondary-500">Next essay</span>
+                  <p class="mt-3 font-serif text-xl text-secondary-50">{nextPost.title}</p>
+                </a>
+              )}
+            </nav>
+
+            {relatedPosts.length > 0 && (
+              <section class="mt-14">
+                <div class="mb-6 flex items-end justify-between gap-4">
+                  <div>
+                    <p class="editorial-kicker">Continue exploring</p>
+                    <h2 class="mt-2 font-serif text-3xl text-secondary-50">Related essays</h2>
+                  </div>
+                </div>
+                <div class="grid gap-5 md:grid-cols-2">
+                  {relatedPosts.slice(0, 2).map((related) => (
+                    <a href={`/blog/${related.slug}`} class="surface-subtle p-6 transition-colors hover:border-primary-500/30">
+                      <span class="text-xs uppercase tracking-[0.18em] text-primary-200">{related.category}</span>
+                      <h3 class="mt-3 font-serif text-2xl text-secondary-50">{related.title}</h3>
+                      <p class="mt-3 text-sm leading-7 text-secondary-300">{related.excerpt}</p>
+                    </a>
+                  ))}
+                </div>
+              </section>
+            )}
+
+            <div class="mt-14">
+              <GiscusComments />
+            </div>
+          </div>
+
+          {tocHeadings.length > 0 && (
+            <aside class="hidden lg:block">
+              <div class="sticky top-28 surface-panel p-5">
+                <p class="editorial-kicker">On this page</p>
+                <nav aria-label="Table of contents" class="mt-5">
+                  <ul class="space-y-2">
+                    {tocHeadings.map((heading) => (
+                      <li>
+                        <a
+                          href={`#${heading.slug}`}
+                          class:list={[
+                            'toc-link block rounded-xl border border-transparent px-3 py-2 text-sm leading-6 text-secondary-400 transition-colors hover:text-primary-100',
+                            heading.depth === 3 ? 'ml-4 text-[0.9rem]' : '',
+                          ]}
+                          data-toc-link
+                          data-heading-id={heading.slug}
+                        >
+                          {heading.text}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </nav>
+              </div>
+            </aside>
           )}
         </div>
-
-        <!-- Sidebar / Table of Contents -->
-        {tocHeadings.length > 0 && (
-          <aside class="hidden lg:block">
-            <div class="sticky top-24 glass-cosmic rounded-xl p-4">
-              <h3 class="text-sm font-bold text-secondary-50 uppercase tracking-wider mb-4">On This Page</h3>
-              <nav aria-label="Table of contents">
-                <ul class="space-y-2 text-sm border-l-2 border-white/10">
-                  {tocHeadings.map((heading) => (
-                    <li>
-                      <a
-                        href={`#${heading.slug}`}
-                        class:list={[
-                          'block py-1 text-secondary-400 hover:text-primary-400 transition-colors border-l-2 -ml-[2px]',
-                          heading.depth === 2 ? 'pl-4 border-transparent' : 'pl-8 border-transparent text-xs',
-                        ]}
-                        data-toc-link
-                        data-heading-id={heading.slug}
-                      >
-                        {heading.text}
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-              </nav>
-            </div>
-          </aside>
-        )}
       </div>
-    </div>
+    </section>
   </article>
 </BaseLayout>
 
 <script>
-  // Reading progress bar
   const progressBar = document.getElementById('progress-bar');
   if (progressBar) {
     window.addEventListener('scroll', () => {
@@ -216,31 +207,31 @@ const tocHeadings = headings.filter((h) => h.depth >= 2 && h.depth <= 3);
     });
   }
 
-  // Active TOC heading tracking
   const tocLinks = document.querySelectorAll('[data-toc-link]');
   if (tocLinks.length > 0) {
-    const headingIds = Array.from(tocLinks).map((link) => link.getAttribute('data-heading-id')!);
-    const headingElements = headingIds.map((id) => document.getElementById(id)).filter(Boolean) as HTMLElement[];
+    const headingIds = Array.from(tocLinks).map((link) => link.getAttribute('data-heading-id') || '');
+    const headingElements = headingIds
+      .map((id) => document.getElementById(id))
+      .filter(Boolean) as HTMLElement[];
 
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            tocLinks.forEach((link) => {
-              link.classList.remove('border-primary-500', 'text-primary-400', 'font-medium', '[text-shadow:_0_0_10px_rgba(6,182,212,0.3)]');
-              link.classList.add('border-transparent');
-            });
-            const activeLink = document.querySelector(`[data-heading-id="${entry.target.id}"]`);
-            if (activeLink) {
-              activeLink.classList.add('border-primary-500', 'text-primary-400', 'font-medium', '[text-shadow:_0_0_10px_rgba(6,182,212,0.3)]');
-              activeLink.classList.remove('border-transparent');
-            }
+          if (!entry.isIntersecting) return;
+
+          tocLinks.forEach((link) => {
+            link.classList.remove('bg-white/5', 'border-white/10', 'text-primary-100');
+          });
+
+          const activeLink = document.querySelector(`[data-heading-id="${entry.target.id}"]`);
+          if (activeLink) {
+            activeLink.classList.add('bg-white/5', 'border-white/10', 'text-primary-100');
           }
         });
       },
-      { rootMargin: '-80px 0px -80% 0px', threshold: 0 }
+      { rootMargin: '-96px 0px -70% 0px', threshold: 0 }
     );
 
-    headingElements.forEach((el) => observer.observe(el));
+    headingElements.forEach((element) => observer.observe(element));
   }
 </script>

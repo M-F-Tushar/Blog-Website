@@ -1,0 +1,60 @@
+---
+import AnimatedSection from './AnimatedSection.astro';
+import type { PageSectionAnimationPreset } from '@/types/types';
+
+interface Props {
+  eyebrow?: string;
+  title: string;
+  subtitle?: string;
+  body?: string;
+  panelKicker?: string;
+  panelTitle?: string;
+  panelBody?: string;
+  panelItems?: string[];
+  frameClass?: string;
+  kickerClass?: string;
+  animationPreset?: PageSectionAnimationPreset;
+}
+
+const {
+  eyebrow,
+  title,
+  subtitle,
+  body,
+  panelKicker,
+  panelTitle,
+  panelBody,
+  panelItems = [],
+  frameClass = 'section-frame section-frame-panel section-tone-editorial',
+  kickerClass = 'editorial-kicker',
+  animationPreset = 'hero-rise',
+} = Astro.props;
+---
+
+<section class="page-hero">
+  <div class="container mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+    <div class="grid gap-10 lg:grid-cols-[minmax(0,1fr)_22rem] lg:items-end">
+      <AnimatedSection preset={animationPreset} class="section-head section-head-hero max-w-4xl">
+        {eyebrow && <span class="section-eyebrow">{eyebrow}</span>}
+        <h1 class="section-heading mt-6">{title}</h1>
+        {subtitle && <p class="section-copy mt-6 max-w-2xl">{subtitle}</p>}
+        {body && <p class="mt-6 max-w-2xl text-base leading-8 text-secondary-300">{body}</p>}
+      </AnimatedSection>
+
+      <AnimatedSection preset={animationPreset} index={1}>
+        <div class:list={[frameClass, 'p-6']}>
+          {panelKicker && <p class:list={[kickerClass, 'mb-3']}>{panelKicker}</p>}
+          {panelTitle && <h2 class="font-serif text-2xl text-secondary-50">{panelTitle}</h2>}
+          {panelBody && <p class="mt-4 text-sm leading-7 text-secondary-300">{panelBody}</p>}
+          {panelItems.length > 0 && (
+            <div class="mt-4 grid gap-3">
+              {panelItems.map((item) => (
+                <p class="editorial-metric text-sm leading-7 text-secondary-300">{item}</p>
+              ))}
+            </div>
+          )}
+        </div>
+      </AnimatedSection>
+    </div>
+  </div>
+</section>

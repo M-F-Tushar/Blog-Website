@@ -15,10 +15,13 @@ export {
   isPageVisible,
   getRecommendations,
   getProjects,
+  getProjectBySlug,
   getFeaturedProjects,
   getPublications,
   getPageContent,
   getPageSection,
+  getPageSections,
+  getPageSectionRecord,
   getCVEducation,
   getCVExperience,
   getCVCertifications,
@@ -26,6 +29,12 @@ export {
   getCustomPageBySlug,
   getCustomPageSections,
   getNavigationCustomPages,
+  getNavigationItems,
+  getStoryChapters,
+  getStoryMilestones,
+  getBookshelfEntries,
+  getBookshelfEntryBySlug,
+  getContactLinks,
 } from '../supabase/queries';
 
 // Build-time types used by Astro components

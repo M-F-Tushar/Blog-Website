@@ -10,6 +10,12 @@ import {
   projectFromDatabase,
   publicationFromDatabase,
   pageContentFromDatabase,
+  pageSectionRecordFromDatabase,
+  storyChapterFromDatabase,
+  storyMilestoneFromDatabase,
+  bookshelfEntryFromDatabase,
+  navigationItemFromDatabase,
+  contactLinkFromDatabase,
 } from '../types/converters';
 import type {
   Post,
@@ -20,8 +26,15 @@ import type {
   CVEducation,
   CVExperience,
   CVCertification,
+  PageSectionRecord,
+  StoryChapter,
+  StoryMilestone,
+  BookshelfEntry,
+  NavigationItem,
+  ContactLink,
 } from '../types/types';
 import type { PostStatus, RecommendationType, SiteSettings } from '../types/types';
+import type { DatabaseRecommendation } from '../types/database';
 import {
   FALLBACK_POSTS,
   FALLBACK_RECOMMENDATIONS,
@@ -32,6 +45,12 @@ import {
   FALLBACK_CV_EDUCATION,
   FALLBACK_CV_EXPERIENCE,
   FALLBACK_CV_CERTIFICATIONS,
+  FALLBACK_PAGE_SECTIONS,
+  FALLBACK_STORY_CHAPTERS,
+  FALLBACK_STORY_MILESTONES,
+  FALLBACK_BOOKSHELF,
+  FALLBACK_NAVIGATION_ITEMS,
+  FALLBACK_CONTACT_LINKS,
 } from '../data/fallback';
 
 export { slugify };
@@ -97,7 +116,8 @@ export async function getRecommendations(): Promise<Recommendation[]> {
     console.error('Error fetching recommendations:', error);
     return FALLBACK_RECOMMENDATIONS;
   }
-  return data.map((r) => ({
+  const recommendations = data as DatabaseRecommendation[];
+  return recommendations.map((r) => ({
     id: r.id,
     title: r.title,
     url: r.url,
@@ -131,6 +151,11 @@ export async function getProjects(): Promise<Project[]> {
 export async function getFeaturedProjects(): Promise<Project[]> {
   const projects = await getProjects();
   return projects.filter((p) => p.isFeatured);
+}
+
+export async function getProjectBySlug(slug: string): Promise<Project | undefined> {
+  const projects = await getProjects();
+  return projects.find((project) => project.slug === slug);
 }
 
 // ─── Publications ───────────────────────────────────────────────────
@@ -283,4 +308,88 @@ export async function getNavigationCustomPages(): Promise<CustomPageData[]> {
     .order('sort_order', { ascending: true });
   if (error || !data) return [];
   return data as CustomPageData[];
+}
+
+export async function getNavigationItems(): Promise<NavigationItem[]> {
+  if (!isSupabaseConfigured() || !supabase) return FALLBACK_NAVIGATION_ITEMS;
+  const { data, error } = await supabase
+    .from('navigation_items')
+    .select('*')
+    .eq('visible', true)
+    .order('sort_order', { ascending: true });
+  if (error || !data) return FALLBACK_NAVIGATION_ITEMS;
+  return data.map(navigationItemFromDatabase);
+}
+
+export async function getPageSections(pageKey: string): Promise<PageSectionRecord[]> {
+  const fallback = FALLBACK_PAGE_SECTIONS.filter((section) => section.pageKey === pageKey).sort(
+    (a, b) => a.sortOrder - b.sortOrder
+  );
+  if (!isSupabaseConfigured() || !supabase) return fallback;
+  const { data, error } = await supabase
+    .from('page_sections')
+    .select('*')
+    .eq('page_key', pageKey)
+    .eq('visible', true)
+    .order('sort_order', { ascending: true });
+  if (error || !data) return fallback;
+  return data.map(pageSectionRecordFromDatabase);
+}
+
+export async function getPageSectionRecord(
+  pageKey: string,
+  sectionKey: string
+): Promise<PageSectionRecord | undefined> {
+  const sections = await getPageSections(pageKey);
+  return sections.find((section) => section.sectionKey === sectionKey);
+}
+
+export async function getStoryChapters(): Promise<StoryChapter[]> {
+  if (!isSupabaseConfigured() || !supabase) return FALLBACK_STORY_CHAPTERS;
+  const { data, error } = await supabase
+    .from('story_chapters')
+    .select('*')
+    .eq('visible', true)
+    .order('sort_order', { ascending: true });
+  if (error || !data) return FALLBACK_STORY_CHAPTERS;
+  return data.map(storyChapterFromDatabase);
+}
+
+export async function getStoryMilestones(): Promise<StoryMilestone[]> {
+  if (!isSupabaseConfigured() || !supabase) return FALLBACK_STORY_MILESTONES;
+  const { data, error } = await supabase
+    .from('story_milestones')
+    .select('*')
+    .order('sort_order', { ascending: true });
+  if (error || !data) return FALLBACK_STORY_MILESTONES;
+  return data.map(storyMilestoneFromDatabase);
+}
+
+export async function getBookshelfEntries(): Promise<BookshelfEntry[]> {
+  if (!isSupabaseConfigured() || !supabase) return FALLBACK_BOOKSHELF;
+  const { data, error } = await supabase
+    .from('bookshelf_entries')
+    .select('*')
+    .eq('status', 'published')
+    .order('is_pinned', { ascending: false })
+    .order('sort_order', { ascending: true })
+    .order('published_at', { ascending: false });
+  if (error || !data) return FALLBACK_BOOKSHELF;
+  return data.map(bookshelfEntryFromDatabase);
+}
+
+export async function getBookshelfEntryBySlug(slug: string): Promise<BookshelfEntry | undefined> {
+  const entries = await getBookshelfEntries();
+  return entries.find((entry) => entry.slug === slug);
+}
+
+export async function getContactLinks(): Promise<ContactLink[]> {
+  if (!isSupabaseConfigured() || !supabase) return FALLBACK_CONTACT_LINKS;
+  const { data, error } = await supabase
+    .from('contact_links')
+    .select('*')
+    .eq('visible', true)
+    .order('sort_order', { ascending: true });
+  if (error || !data) return FALLBACK_CONTACT_LINKS;
+  return data.map(contactLinkFromDatabase);
 }

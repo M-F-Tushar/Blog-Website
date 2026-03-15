@@ -1,16 +1,16 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
+import AnimatedSection from '../../components/astro/AnimatedSection.astro';
 import BlogCard from '../../components/astro/BlogCard.astro';
+import CosmicDivider from '../../components/astro/CosmicDivider.astro';
 import Pagination from '../../components/astro/Pagination.astro';
-import Reveal from '@/components/astro/Reveal.astro';
-import NebulaGradient from '@/components/astro/NebulaGradient.astro';
 import { getPublishedPosts, slugify, getSiteSettings, isPageVisible } from '@/lib/supabase';
 
 const POSTS_PER_PAGE = 9;
 
 export async function getStaticPaths() {
-  const postsPerPage = 9;
   const allPosts = await getPublishedPosts();
+  const postsPerPage = 9;
   const totalPages = Math.max(1, Math.ceil(allPosts.length / postsPerPage));
 
   return Array.from({ length: totalPages }, (_, i) => ({
@@ -26,113 +26,191 @@ const pageVisible = isPageVisible(settings, '/blog');
 const allPosts = await getPublishedPosts();
 const totalPages = Math.ceil(allPosts.length / POSTS_PER_PAGE);
 const posts = allPosts.slice((currentPage - 1) * POSTS_PER_PAGE, currentPage * POSTS_PER_PAGE);
+const featuredPost = currentPage === 1 ? posts[0] : null;
+const gridPosts = currentPage === 1 ? posts.slice(1) : posts;
 
-// Get all categories and tags for filtering
 const categories = [...new Set(allPosts.map((p) => p.category))].sort();
+const categoryCounts = categories.map((category) => ({
+  category,
+  count: allPosts.filter((post) => post.category === category).length,
+}));
 const tagCounts: Record<string, number> = {};
-allPosts.forEach((p) => p.tags?.forEach((tag) => { tagCounts[tag] = (tagCounts[tag] || 0) + 1; }));
-const allTags = Object.entries(tagCounts).sort((a, b) => b[1] - a[1]).slice(0, 20);
+allPosts.forEach((post) => {
+  post.tags?.forEach((tag) => {
+    tagCounts[tag] = (tagCounts[tag] || 0) + 1;
+  });
+});
+const topTags = Object.entries(tagCounts)
+  .sort((a, b) => b[1] - a[1])
+  .slice(0, 8);
 ---
 
 {pageVisible ? (
-<BaseLayout
-  title={currentPage === 1 ? 'Blog' : `Blog - Page ${currentPage}`}
-  description="Articles about AI, machine learning, deep learning, MLOps, and technology."
->
-  <div class="pb-12">
-    <!-- Header -->
-    <section class="relative py-12 md:py-16 bg-abyss/80 -mt-20 pt-32 px-4 text-center">
-      <NebulaGradient variant="subtle" />
-      <div class="max-w-3xl mx-auto relative z-10">
-        <Reveal>
-          <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-surface border border-white/10 mb-6">
-            <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-primary-500"><path d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
-            <span class="text-sm font-medium text-secondary-300">Blog</span>
+  <BaseLayout
+    title={currentPage === 1 ? 'Writing' : `Writing - Page ${currentPage}`}
+    description="Research essays, machine learning notes, and technical writing on AI systems."
+  >
+    <div class="pb-16">
+      <section class="page-hero">
+        <div class="container mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+          <div class="max-w-3xl space-y-6">
+            <span class="section-eyebrow">Writing</span>
+            <h1 class="section-heading">
+              Essays, field notes, and practical thinking on modern AI systems.
+            </h1>
+            <p class="section-copy max-w-2xl">
+              This archive is organized like a publication, not a feed. Start with a lead essay,
+              browse by topic, or jump into the latest notes.
+            </p>
           </div>
-        </Reveal>
-        <Reveal>
-          <h1 class="text-4xl md:text-5xl font-bold font-serif text-secondary-50 mb-6">
-            Latest <span class="text-gradient-cyan">Articles</span>
-          </h1>
-        </Reveal>
-        <Reveal>
-          <p class="text-lg md:text-xl text-secondary-300 max-w-2xl mx-auto leading-relaxed">
-            Thoughts on AI, machine learning, research, and the technology that powers them.
-          </p>
-        </Reveal>
-      </div>
 
-      <div class="absolute inset-0 overflow-hidden pointer-events-none">
-        <div class="absolute top-10 left-10 w-64 h-64 bg-primary-500/5 rounded-full blur-3xl"></div>
-        <div class="absolute bottom-10 right-10 w-64 h-64 bg-accent-500/5 rounded-full blur-3xl"></div>
-      </div>
-    </section>
-
-    <div class="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl mt-12">
-      <div class="grid lg:grid-cols-4 gap-12">
-        <!-- Main Content -->
-        <div class="lg:col-span-3">
-          {posts.length > 0 ? (
-            <>
-              <div class="grid gap-8 md:grid-cols-2">
-                {posts.map((post) => (
-                  <BlogCard post={post} />
-                ))}
-              </div>
-              <Pagination currentPage={currentPage} totalPages={totalPages} basePath="/blog" />
-            </>
-          ) : (
-            <div class="text-center py-20">
-              <div class="text-6xl mb-6">📝</div>
-              <h2 class="text-2xl font-bold text-secondary-50 mb-4">No posts yet</h2>
-              <p class="text-secondary-400">Check back soon for new articles!</p>
+          <div class="mt-10 grid gap-4 md:grid-cols-3">
+            <div class="editorial-metric">
+              <span class="text-xs uppercase tracking-[0.2em] text-secondary-500">Articles</span>
+              <strong class="mt-2 block text-3xl font-semibold text-secondary-50">{allPosts.length}</strong>
             </div>
-          )}
+            <div class="editorial-metric">
+              <span class="text-xs uppercase tracking-[0.2em] text-secondary-500">Topics</span>
+              <strong class="mt-2 block text-3xl font-semibold text-secondary-50">{categories.length}</strong>
+            </div>
+            <div class="editorial-metric">
+              <span class="text-xs uppercase tracking-[0.2em] text-secondary-500">Most active lane</span>
+              <strong class="mt-2 block text-xl font-semibold text-secondary-50">
+                {categoryCounts[0]?.category || 'Research notes'}
+              </strong>
+            </div>
+          </div>
         </div>
+      </section>
 
-        <!-- Sidebar -->
-        <aside class="lg:col-span-1 space-y-8">
-          <!-- Categories -->
-          {categories.length > 0 && (
-            <div class="relative before:content-[''] before:absolute before:top-0 before:left-0 before:right-0 before:h-px before:bg-gradient-to-r before:from-transparent before:via-primary-500/30 before:to-transparent glass-cosmic rounded-2xl p-6 border border-white/[0.06]">
-              <h3 class="font-bold text-secondary-50 mb-4">Categories</h3>
-              <div class="space-y-2">
-                {categories.map((cat) => (
-                  <a
-                    href={`/blog/categories/${slugify(cat)}`}
-                    class="block px-3 py-2 text-sm text-secondary-300 hover:text-primary-400 hover:bg-white/5 rounded-lg transition-colors"
-                  >
-                    {cat}
-                    <span class="text-secondary-500 ml-1">
-                      ({allPosts.filter((p) => p.category === cat).length})
-                    </span>
-                  </a>
-                ))}
+      <section class="section-shell section-break-sm">
+        <div class="container mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+          <div class="surface-panel-strong p-5 md:p-6">
+            <div class="flex flex-col gap-5 lg:flex-row lg:items-center lg:justify-between">
+              <div>
+                <p class="editorial-kicker">Browse by topic</p>
+                <h2 class="mt-2 font-serif text-2xl text-secondary-50">Editorial lanes</h2>
               </div>
-            </div>
-          )}
-
-          <!-- Tags -->
-          {allTags.length > 0 && (
-            <div class="relative before:content-[''] before:absolute before:top-0 before:left-0 before:right-0 before:h-px before:bg-gradient-to-r before:from-transparent before:via-primary-500/30 before:to-transparent glass-cosmic rounded-2xl p-6 border border-white/[0.06]">
-              <h3 class="font-bold text-secondary-50 mb-4">Popular Tags</h3>
               <div class="flex flex-wrap gap-2">
-                {allTags.map(([tag, count]) => (
+                {categoryCounts.map(({ category, count }) => (
                   <a
-                    href={`/blog/tags/${tag}`}
-                    class="text-xs bg-white/5 text-secondary-300 border border-white/10 px-3 py-1.5 rounded-full hover:border-primary-500/30 hover:text-primary-300 transition-colors"
+                    href={`/blog/categories/${slugify(category)}`}
+                    class="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-secondary-300 transition-colors hover:border-primary-500/30 hover:text-primary-100"
                   >
-                    #{tag} <span class="text-secondary-500">({count})</span>
+                    <span>{category}</span>
+                    <span class="text-secondary-500">{count}</span>
                   </a>
                 ))}
               </div>
             </div>
-          )}
-        </aside>
+          </div>
+        </div>
+      </section>
+
+      {featuredPost && (
+        <div class="section-shell">
+          <CosmicDivider variant="star" />
+        </div>
+      )}
+
+      {featuredPost && (
+        <section class="section-shell section-break-sm">
+          <div class="container mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+            <div class="mb-6 flex items-end justify-between gap-4">
+              <div>
+                <p class="editorial-kicker">Lead story</p>
+                <h2 class="mt-2 font-serif text-3xl text-secondary-50">Start here</h2>
+              </div>
+              <a href="/search" class="link-subtle hidden md:inline-flex">Search the archive</a>
+            </div>
+            <BlogCard post={featuredPost} featured={true} />
+          </div>
+        </section>
+      )}
+
+      <div class="section-shell">
+        <CosmicDivider variant="line" />
       </div>
+
+      <section class="section-shell section-break-sm">
+        <div class="container mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+          <div class="grid gap-12 xl:grid-cols-[minmax(0,1fr)_19rem]">
+            <div class="space-y-8">
+              <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+                <div>
+                  <p class="editorial-kicker">Latest writing</p>
+                  <h2 class="mt-2 font-serif text-3xl text-secondary-50">
+                    {currentPage === 1 ? 'Recent essays' : `Page ${currentPage}`}
+                  </h2>
+                </div>
+                <p class="max-w-xl text-sm leading-7 text-secondary-400">
+                  Each piece is written as a durable note: enough context to be useful now,
+                  enough structure to remain useful later.
+                </p>
+              </div>
+
+              {gridPosts.length > 0 ? (
+                <>
+                  <div class="grid gap-6 md:grid-cols-2">
+                    {gridPosts.map((post, index) => (
+                      <AnimatedSection preset="stagger-cards" index={index}>
+                        <div class="card-lift">
+                          <BlogCard post={post} compact={true} />
+                        </div>
+                      </AnimatedSection>
+                    ))}
+                  </div>
+                  <Pagination currentPage={currentPage} totalPages={totalPages} basePath="/blog" />
+                </>
+              ) : (
+                <div class="surface-panel px-8 py-16 text-center">
+                  <h2 class="font-serif text-3xl text-secondary-50">No essays yet</h2>
+                  <p class="mt-4 text-secondary-400">The archive is being prepared. Check back soon.</p>
+                </div>
+              )}
+            </div>
+
+            <aside class="space-y-6">
+              <div class="surface-panel p-6">
+                <p class="editorial-kicker">Discovery</p>
+                <h3 class="mt-2 font-serif text-2xl text-secondary-50">Popular topics</h3>
+                <div class="mt-5 flex flex-wrap gap-2">
+                  {topTags.map(([tag, count]) => (
+                    <a
+                      href={`/blog/tags/${tag}`}
+                      class="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-medium text-secondary-300 transition-colors hover:border-primary-500/30 hover:text-primary-100"
+                    >
+                      <span>#{tag}</span>
+                      <span class="text-secondary-500">{count}</span>
+                    </a>
+                  ))}
+                </div>
+              </div>
+
+              <div class="surface-panel p-6">
+                <p class="editorial-kicker">Reading paths</p>
+                <h3 class="mt-2 font-serif text-2xl text-secondary-50">Suggested routes</h3>
+                <div class="mt-5 space-y-3">
+                  <a href="/projects" class="topic-lane card-lift">
+                    <span class="font-semibold text-secondary-50">See what I’m building</span>
+                    <span class="text-sm leading-6 text-secondary-400">Projects that complement the ideas in the writing.</span>
+                  </a>
+                  <a href="/publications" class="topic-lane card-lift">
+                    <span class="font-semibold text-secondary-50">Research archive</span>
+                    <span class="text-sm leading-6 text-secondary-400">Papers, publications, and references behind the work.</span>
+                  </a>
+                  <a href="/recommendations" class="topic-lane card-lift">
+                    <span class="font-semibold text-secondary-50">Recommended resources</span>
+                    <span class="text-sm leading-6 text-secondary-400">Books, tools, and materials that shaped the thinking.</span>
+                  </a>
+                </div>
+              </div>
+            </aside>
+          </div>
+        </div>
+      </section>
     </div>
-  </div>
-</BaseLayout>
+  </BaseLayout>
 ) : (
-<html><head><meta http-equiv="refresh" content="0;url=/" /></head><body></body></html>
+  <html><head><meta http-equiv="refresh" content="0;url=/" /></head><body></body></html>
 )}

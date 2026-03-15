@@ -1,0 +1,72 @@
+---
+import AnimatedSection from './AnimatedSection.astro';
+import type { BookshelfEntry, Post, Project } from '@/types/types';
+
+interface ArchiveGroup<T> {
+  key: string;
+  label: string;
+  items: T[];
+}
+
+interface Props {
+  groups: Array<ArchiveGroup<Project | Post | BookshelfEntry>>;
+  type: 'project' | 'post' | 'bookshelf';
+}
+
+const { groups, type } = Astro.props;
+---
+
+<div class="space-y-10">
+  {groups.map((group, groupIndex) => (
+    <AnimatedSection preset={type === 'bookshelf' ? 'quiet-fade' : 'stagger-cards'} index={groupIndex}>
+      <section class="archive-group">
+        <div class="archive-group-head">
+          <p class="editorial-kicker editorial-kicker-soft">{group.label}</p>
+          <span class="archive-group-count">{group.items.length} items</span>
+        </div>
+
+        <div class="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+          {group.items.map((item) => {
+            if (type === 'project') {
+              const project = item as Project;
+              return (
+                <article class="archive-card archive-card-project">
+                  <span class="badge-pill">{project.status}</span>
+                  <h3 class="mt-4 font-serif text-2xl text-secondary-50">{project.title}</h3>
+                  <p class="mt-3 flex-1 text-sm leading-7 text-secondary-300">{project.description}</p>
+                  <a href={`/lab/${project.slug}`} class="link-subtle mt-6">Open case study</a>
+                </article>
+              );
+            }
+
+            if (type === 'bookshelf') {
+              const entry = item as BookshelfEntry;
+              return (
+                <article class="archive-card archive-card-bookshelf">
+                  <p class="editorial-kicker">{entry.entryType}</p>
+                  <h3 class="mt-4 font-serif text-2xl text-secondary-50">{entry.title}</h3>
+                  <p class="mt-2 text-sm text-secondary-400">
+                    {entry.bookTitle}
+                    {entry.author ? ` - ${entry.author}` : ''}
+                  </p>
+                  {entry.summary && <p class="mt-4 flex-1 text-sm leading-7 text-secondary-300">{entry.summary}</p>}
+                  <a href={`/bookshelf/${entry.slug}`} class="link-subtle mt-6">Open entry</a>
+                </article>
+              );
+            }
+
+            const post = item as Post;
+            return (
+              <article class="archive-card archive-card-post">
+                <p class="editorial-kicker">{post.category}</p>
+                <h3 class="mt-4 font-serif text-2xl text-secondary-50">{post.title}</h3>
+                <p class="mt-4 flex-1 text-sm leading-7 text-secondary-300">{post.excerpt}</p>
+                <a href={`/garden/${post.slug}`} class="link-subtle mt-6">Read note</a>
+              </article>
+            );
+          })}
+        </div>
+      </section>
+    </AnimatedSection>
+  ))}
+</div>

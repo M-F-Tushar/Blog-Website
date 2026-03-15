@@ -1,4 +1,4 @@
-import { supabase } from '../supabase/client';
+import { getSupabaseClient, supabase } from '../supabase/client';
 import { publicationToDatabase, publicationFromDatabase } from '../types/converters';
 import type { Publication } from '../types/types';
 
@@ -179,7 +179,8 @@ export const subscribeToPublicationsUpdates = (
     });
 
   // Subscribe to changes
-  const channel = supabase
+  const client = getSupabaseClient();
+  const channel = client
     .channel('publications-changes')
     .on(
       'postgres_changes',
@@ -204,6 +205,6 @@ export const subscribeToPublicationsUpdates = (
 
   // Return unsubscribe function
   return () => {
-    supabase.removeChannel(channel);
+    client.removeChannel(channel);
   };
 };

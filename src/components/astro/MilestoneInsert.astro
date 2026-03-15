@@ -1,0 +1,15 @@
+---
+import type { StoryMilestone } from '@/types/types';
+
+interface Props {
+  milestone: StoryMilestone;
+}
+
+const { milestone } = Astro.props;
+---
+
+<div class="milestone-insert">
+  {milestone.periodLabel && <p class="editorial-kicker mb-2">{milestone.periodLabel}</p>}
+  <h3 class="font-semibold text-secondary-50">{milestone.title}</h3>
+  {milestone.description && <p class="mt-2 text-sm leading-7 text-secondary-300">{milestone.description}</p>}
+</div>

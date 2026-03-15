@@ -1,0 +1,48 @@
+---
+import AnimatedSection from './AnimatedSection.astro';
+import type { PageSectionAnimationPreset } from '@/types/types';
+
+interface Props {
+  title: string;
+  body?: string;
+  eyebrow?: string;
+  items?: string[];
+  href?: string;
+  label?: string;
+  animationPreset?: PageSectionAnimationPreset;
+}
+
+const {
+  title,
+  body,
+  eyebrow = 'Start here',
+  items = [],
+  href,
+  label = 'Begin here',
+  animationPreset = 'quiet-fade',
+} = Astro.props;
+---
+
+<AnimatedSection preset={animationPreset}>
+  <section class="section-shell section-break-sm">
+    <div class="reader-start">
+      <div>
+        <p class="editorial-kicker editorial-kicker-strong mb-3">{eyebrow}</p>
+        <h2 class="font-serif text-2xl text-secondary-50 md:text-3xl">{title}</h2>
+        {body && <p class="mt-4 max-w-2xl text-secondary-300">{body}</p>}
+      </div>
+
+      <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        {items.map((item) => (
+          <p class="reader-start-note">{item}</p>
+        ))}
+      </div>
+
+      {href && (
+        <div class="mt-6">
+          <a href={href} class="btn-secondary rounded-2xl">{label}</a>
+        </div>
+      )}
+    </div>
+  </section>
+</AnimatedSection>

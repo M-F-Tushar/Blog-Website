@@ -6,6 +6,7 @@ import {
   subscribeToPageContentUpdates,
 } from '../services/supabasePageContentService';
 import { FALLBACK_PAGE_CONTENT } from '../data/fallback';
+import type { Json } from '../types/database';
 
 export interface PageSection {
   id: string;
@@ -39,13 +40,42 @@ const mapDbToSection = (db: any): PageSection => ({
   updated_at: db.updated_at,
 });
 
+const toJsonValue = (value: unknown): Json => {
+  if (
+    value === null ||
+    typeof value === 'string' ||
+    typeof value === 'number' ||
+    typeof value === 'boolean'
+  ) {
+    return value;
+  }
+
+  if (Array.isArray(value)) {
+    return value.map((item) => toJsonValue(item));
+  }
+
+  if (typeof value === 'object') {
+    const result: { [key: string]: Json | undefined } = {};
+
+    for (const [key, entry] of Object.entries(value)) {
+      if (entry !== undefined) {
+        result[key] = toJsonValue(entry);
+      }
+    }
+
+    return result;
+  }
+
+  return String(value);
+};
+
 // Map PageSection format back to DB format for Supabase upsert
 const mapSectionToDb = (section: Omit<PageSection, 'id' | 'created_at' | 'updated_at'>) => ({
   page_name: section.page,
   section_key: section.section_key,
   title: section.title || null,
   content: section.content || null,
-  metadata: section.metadata || null,
+  metadata: section.metadata ? toJsonValue(section.metadata) : null,
   sort_order: section.sort_order,
   is_initial: false,
 });

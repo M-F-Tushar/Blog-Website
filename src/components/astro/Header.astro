@@ -1,74 +1,99 @@
 ---
 import ThemeToggle from './ThemeToggle.astro';
-import { getSiteSettings, getNavigationCustomPages } from '@/lib/supabase';
+import { getNavigationItems, getSiteSettings } from '@/lib/supabase';
 
 const settings = await getSiteSettings();
-const navigation = (settings as any).navigation;
-const customPages = await getNavigationCustomPages();
-
-interface NavLink {
-  path: string;
-  label: string;
-}
-
-const defaultNavLinks: NavLink[] = [
-  { path: '/', label: 'Home' },
-  { path: '/about', label: 'About' },
-  { path: '/blog', label: 'Blog' },
-  { path: '/recommendations', label: 'Recommendations' },
-  { path: '/publications', label: 'Publications' },
-  { path: '/projects', label: 'Projects' },
-  { path: '/playground', label: 'Playground' },
-  { path: '/cv', label: 'CV' },
-  { path: '/contact', label: 'Contact' },
-];
-
-const menuItems = navigation?.menuItems;
-const navLinks: NavLink[] = menuItems && Array.isArray(menuItems) && menuItems.length > 0
-  ? menuItems
-      .filter((item: any) => item.visible !== false && item.path && item.label)
-      .sort((a: any, b: any) => (a.order || 0) - (b.order || 0))
-      .map((item: any) => ({ path: item.path, label: item.label }))
-  : defaultNavLinks;
-
-const customPageLinks: NavLink[] = customPages.map((p) => ({ path: `/p/${p.slug}`, label: p.title }));
-const allNavLinks = [...navLinks, ...customPageLinks];
-
+const navItems = await getNavigationItems();
 const currentPath = Astro.url.pathname;
-const maxPrimaryDesktopLinks = 7;
-const primaryNavLinks = allNavLinks.slice(0, maxPrimaryDesktopLinks);
-const overflowNavLinks = allNavLinks.slice(maxPrimaryDesktopLinks);
-const isOverflowActive = overflowNavLinks.some((link) =>
-  currentPath === link.path || (link.path !== '/' && currentPath.startsWith(link.path))
-);
+const followHref = '/rss.xml';
+
+const primaryNavLinks = navItems.filter((item) => item.visible);
 ---
 
-<header
-  id="site-header"
-  class="fixed top-0 left-0 right-0 z-50 transition-all duration-300 bg-transparent py-5"
->
-  <nav class="container mx-auto px-4 sm:px-6 lg:px-8" aria-label="Main navigation">
-    <div class="flex items-center justify-between">
+<header id="site-header" class="relative z-50 px-3 pt-3 transition-all duration-300 sm:px-4">
+  <nav class="section-shell" aria-label="Main navigation">
+    <div
+      id="site-header-shell"
+      class="mx-auto flex max-w-7xl items-center gap-3 rounded-[1.75rem] border border-white/[0.08] bg-[#07111f]/88 px-4 py-3 shadow-[0_18px_50px_rgba(0,0,0,0.35)] backdrop-blur-xl transition-all duration-300"
+    >
       <a
         href="/"
-        class="text-2xl font-bold font-serif tracking-tight text-gradient-cyan hover:drop-shadow-[0_0_8px_rgba(6,182,212,0.5)] transition-all duration-300"
-        aria-label="Mahir Faysal Tushar - Home"
+        class="shrink-0 font-serif text-[1.65rem] font-semibold tracking-[-0.04em] text-secondary-50 transition-opacity hover:opacity-90"
+        aria-label={`${(settings as any).site_name || 'MFT'} - Home`}
       >
-        {(settings as any).site_name || 'MFT Blog'}
+        <span class="text-gradient-cyan">{(settings as any).site_name || 'MFT'}</span>
       </a>
 
-      <div class="hidden lg:flex items-center gap-1" id="navigation">
+      <div class="hidden lg:flex lg:flex-1 lg:items-center lg:justify-center">
+        <div class="flex items-center gap-1 rounded-full border border-white/[0.06] bg-white/[0.03] p-1">
+          {primaryNavLinks.map((link) => {
+            const isActive =
+              currentPath === link.path || (link.path !== '/' && currentPath.startsWith(link.path));
+            return (
+              <a
+                href={link.path}
+                class:list={[
+                  'rounded-full px-4 py-2 text-sm font-semibold transition-all duration-200',
+                  isActive
+                    ? 'bg-white/[0.08] text-secondary-50 shadow-[inset_0_1px_0_rgba(255,255,255,0.05)]'
+                    : 'text-secondary-400 hover:text-secondary-100',
+                ]}
+                aria-current={isActive ? 'page' : undefined}
+              >
+                {link.label}
+              </a>
+            );
+          })}
+        </div>
+      </div>
+
+      <div class="ml-auto flex items-center gap-2">
+        <a
+          href="/search"
+          class="icon-btn text-secondary-300 hover:border-primary-400/30 hover:bg-white/[0.08] hover:text-secondary-50"
+          aria-label="Open search page"
+        >
+          <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
+        </a>
+
+        <a href={followHref} class="hidden sm:inline-flex btn-ghost rounded-full px-4 py-2 text-sm">
+          Follow
+        </a>
+
+        <ThemeToggle />
+
+        <button
+          id="mobile-menu-btn"
+          class="icon-btn lg:hidden text-secondary-300 hover:border-primary-400/30 hover:bg-white/[0.08] hover:text-secondary-50"
+          aria-label="Open menu"
+          aria-controls="mobile-menu"
+          aria-expanded="false"
+        >
+          <svg id="menu-icon-open" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" x2="20" y1="12" y2="12"></line><line x1="4" x2="20" y1="6" y2="6"></line><line x1="4" x2="20" y1="18" y2="18"></line></svg>
+          <svg id="menu-icon-close" aria-hidden="true" class="hidden" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <div
+    id="mobile-menu"
+    class="section-shell pointer-events-none invisible absolute inset-x-0 top-full opacity-0 transition-all duration-200 lg:hidden"
+    aria-hidden="true"
+  >
+    <div class="mx-auto mt-3 max-w-7xl rounded-[1.75rem] border border-white/[0.08] bg-[#091424]/96 p-4 shadow-[0_24px_80px_rgba(0,0,0,0.45)] backdrop-blur-xl">
+      <nav aria-label="Mobile navigation" class="space-y-1">
         {primaryNavLinks.map((link) => {
-          const isActive = currentPath === link.path || (link.path !== '/' && currentPath.startsWith(link.path));
+          const isActive =
+            currentPath === link.path || (link.path !== '/' && currentPath.startsWith(link.path));
           return (
             <a
               href={link.path}
               class:list={[
-                'px-3 py-2 text-sm font-medium transition-all duration-200 relative',
-                'before:absolute before:bottom-0 before:left-1/2 before:-translate-x-1/2 before:w-0 hover:before:w-full before:h-[2px] before:bg-primary-400/50 before:transition-all before:duration-300',
+                'mobile-nav-link block rounded-2xl px-4 py-3 text-base font-semibold transition-colors',
                 isActive
-                  ? 'text-primary-400 after:absolute after:bottom-0 after:left-1/2 after:-translate-x-1/2 after:w-1.5 after:h-1.5 after:rounded-full after:bg-primary-400 after:shadow-[0_0_6px_rgba(6,182,212,0.6)]'
-                  : 'text-secondary-400 hover:text-primary-300',
+                  ? 'bg-white/[0.08] text-secondary-50'
+                  : 'text-secondary-300 hover:bg-white/[0.05] hover:text-secondary-50',
               ]}
               aria-current={isActive ? 'page' : undefined}
             >
@@ -77,94 +102,9 @@ const isOverflowActive = overflowNavLinks.some((link) =>
           );
         })}
 
-        {overflowNavLinks.length > 0 && (
-          <details id="desktop-more" class="relative">
-            <summary
-              class:list={[
-                'list-none px-3 py-2 cursor-pointer text-sm font-medium rounded-lg transition-colors',
-                isOverflowActive ? 'text-primary-400 bg-primary-500/10' : 'text-secondary-400 hover:text-primary-300 hover:bg-white/5',
-              ]}
-              aria-haspopup="menu"
-            >
-              More
-            </summary>
-            <div class="absolute right-0 mt-2 w-56 rounded-xl bg-surface/95 backdrop-blur-xl border border-white/[0.08] shadow-xl shadow-black/30 p-2">
-              {overflowNavLinks.map((link) => {
-                const isActive = currentPath === link.path || (link.path !== '/' && currentPath.startsWith(link.path));
-                return (
-                  <a
-                    href={link.path}
-                    class:list={[
-                      'block rounded-lg px-3 py-2 text-sm transition-colors',
-                      isActive ? 'text-primary-300 bg-primary-500/10' : 'text-secondary-300 hover:text-primary-300 hover:bg-white/5',
-                    ]}
-                    aria-current={isActive ? 'page' : undefined}
-                  >
-                    {link.label}
-                  </a>
-                );
-              })}
-            </div>
-          </details>
-        )}
-      </div>
-
-      <div class="flex items-center gap-2">
-        <a
-          href="/search"
-          class="icon-btn text-secondary-400 hover:text-primary-300 hover:bg-white/5 hover:shadow-glow-cyan"
-          aria-label="Open search page"
-        >
-          <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
-        </a>
-
-        <ThemeToggle />
-
-        <button
-          id="mobile-menu-btn"
-          class="icon-btn lg:hidden text-secondary-400 hover:text-primary-300 hover:bg-white/5 hover:shadow-glow-cyan"
-          aria-label="Open menu"
-          aria-controls="mobile-menu"
-          aria-expanded="false"
-        >
-          <svg id="menu-icon-open" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" x2="20" y1="12" y2="12"></line><line x1="4" x2="20" y1="6" y2="6"></line><line x1="4" x2="20" y1="18" y2="18"></line></svg>
-          <svg id="menu-icon-close" aria-hidden="true" class="hidden" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg>
-        </button>
-      </div>
-    </div>
-  </nav>
-
-  <div
-    id="header-border"
-    class="absolute bottom-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-primary-500/20 to-transparent opacity-0 transition-opacity"
-  ></div>
-
-  <div
-    id="mobile-menu"
-    class="lg:hidden fixed inset-x-0 bottom-0 z-40 bg-abyss/95 backdrop-blur-2xl star-pattern transition-transform duration-300 ease-in-out translate-x-full"
-    aria-hidden="true"
-  >
-    <div class="p-4 space-y-4 h-full overflow-y-auto">
-      <nav aria-label="Mobile navigation">
-        <div class="space-y-1">
-          {allNavLinks.map((link, index) => {
-            const isActive = currentPath === link.path || (link.path !== '/' && currentPath.startsWith(link.path));
-            return (
-              <a
-                href={link.path}
-                class:list={[
-                  'mobile-nav-link block px-4 py-3 rounded-lg text-base font-medium transition-all duration-300 opacity-0',
-                  isActive
-                    ? 'bg-primary-500/10 text-primary-400 border-l-2 border-primary-400'
-                    : 'text-secondary-300 hover:text-primary-300 hover:bg-white/5',
-                ]}
-                style={`transition-delay: ${index * 40}ms`}
-                aria-current={isActive ? 'page' : undefined}
-              >
-                {link.label}
-              </a>
-            );
-          })}
+        <div class="mt-5 grid grid-cols-2 gap-3 border-t border-white/[0.06] pt-5">
+          <a href="/search" class="btn-ghost justify-center rounded-2xl">Search</a>
+          <a href={followHref} class="btn-primary justify-center rounded-2xl">Follow</a>
         </div>
       </nav>
     </div>
@@ -174,133 +114,70 @@ const isOverflowActive = overflowNavLinks.some((link) =>
 <script>
   function initHeader() {
     const header = document.getElementById('site-header');
-    const headerBorder = document.getElementById('header-border');
+    const shell = document.getElementById('site-header-shell');
     const menuBtn = document.getElementById('mobile-menu-btn');
     const mobileMenu = document.getElementById('mobile-menu');
     const iconOpen = document.getElementById('menu-icon-open');
     const iconClose = document.getElementById('menu-icon-close');
-    const moreMenu = document.getElementById('desktop-more');
-    if (!header || !mobileMenu || !menuBtn || !iconOpen || !iconClose) return;
+    if (!header || !shell || !menuBtn || !mobileMenu || !iconOpen || !iconClose) return;
 
     if (header.dataset.initialized === 'true') return;
     header.dataset.initialized = 'true';
 
-    const win = window as any;
-    if (typeof win.__headerCleanup === 'function') {
-      win.__headerCleanup();
-    }
     const controller = new AbortController();
     const { signal } = controller;
-
-    const mobileNavLinks = Array.from(mobileMenu.querySelectorAll('.mobile-nav-link'));
     let isMenuOpen = false;
 
-    function updateHeaderStyles() {
-      if (window.scrollY > 10) {
-        header.classList.add('glass-dark', 'shadow-lg', 'shadow-black/20', 'py-3');
-        header.style.boxShadow = '0 4px 30px rgba(6,182,212,0.05), 0 10px 30px rgba(0,0,0,0.2)';
-        header.classList.remove('bg-transparent', 'py-5');
-        headerBorder?.classList.remove('opacity-0');
-        headerBorder?.classList.add('opacity-100');
-      } else {
-        header.classList.remove('glass-dark', 'shadow-lg', 'shadow-black/20', 'py-3');
-        header.style.boxShadow = '';
-        header.classList.add('bg-transparent', 'py-5');
-        headerBorder?.classList.add('opacity-0');
-        headerBorder?.classList.remove('opacity-100');
-      }
+    function updateShellState() {
+      if (window.scrollY > 10) shell.classList.add('border-white/[0.12]', 'bg-[#07101d]/94');
+      else shell.classList.remove('border-white/[0.12]', 'bg-[#07101d]/94');
     }
 
-    function updateMobileMenuTop() {
-      const headerHeight = Math.round(header.getBoundingClientRect().height);
-      mobileMenu.style.top = `${headerHeight}px`;
-    }
-
-    function setFocusableTrap(e) {
-      if (!isMenuOpen || e.key !== 'Tab') return;
-      const focusables = mobileMenu.querySelectorAll(
-        'a[href], button:not([disabled]), [tabindex]:not([tabindex="-1"])'
-      );
-      if (!focusables.length) return;
-
-      const first = focusables[0];
-      const last = focusables[focusables.length - 1];
-      const active = document.activeElement;
-
-      if (e.shiftKey && active === first) {
-        e.preventDefault();
-        last.focus();
-      } else if (!e.shiftKey && active === last) {
-        e.preventDefault();
-        first.focus();
-      }
-    }
-
-    function closeMenu({ returnFocus = true } = {}) {
+    function closeMenu() {
       if (!isMenuOpen) return;
       isMenuOpen = false;
-      mobileNavLinks.forEach((link) => link.classList.add('opacity-0'));
-      mobileMenu.classList.add('translate-x-full');
+      mobileMenu.classList.add('pointer-events-none', 'invisible', 'opacity-0');
       mobileMenu.setAttribute('aria-hidden', 'true');
+      menuBtn.setAttribute('aria-expanded', 'false');
       iconOpen.classList.remove('hidden');
       iconClose.classList.add('hidden');
-      menuBtn.setAttribute('aria-expanded', 'false');
-      menuBtn.setAttribute('aria-label', 'Open menu');
       document.body.style.overflow = '';
-      if (returnFocus) menuBtn.focus();
     }
 
     function openMenu() {
       if (isMenuOpen) return;
       isMenuOpen = true;
-      updateMobileMenuTop();
-      mobileMenu.classList.remove('translate-x-full');
+      mobileMenu.classList.remove('pointer-events-none', 'invisible', 'opacity-0');
       mobileMenu.setAttribute('aria-hidden', 'false');
+      menuBtn.setAttribute('aria-expanded', 'true');
       iconOpen.classList.add('hidden');
       iconClose.classList.remove('hidden');
-      menuBtn.setAttribute('aria-expanded', 'true');
-      menuBtn.setAttribute('aria-label', 'Close menu');
       document.body.style.overflow = 'hidden';
-      requestAnimationFrame(() => {
-        mobileNavLinks.forEach((link) => link.classList.remove('opacity-0'));
-        const firstLink = mobileMenu.querySelector('.mobile-nav-link');
-        if (firstLink instanceof HTMLElement) firstLink.focus();
-      });
     }
 
-    window.addEventListener('scroll', updateHeaderStyles, { passive: true, signal });
-    window.addEventListener('resize', updateMobileMenuTop, { passive: true, signal });
-    updateHeaderStyles();
-    updateMobileMenuTop();
+    window.addEventListener('scroll', updateShellState, { passive: true, signal });
+    updateShellState();
 
-    menuBtn.addEventListener('click', () => {
-      if (isMenuOpen) closeMenu({ returnFocus: false });
-      else openMenu();
-    }, { signal });
+    menuBtn.addEventListener(
+      'click',
+      () => {
+        if (isMenuOpen) closeMenu();
+        else openMenu();
+      },
+      { signal }
+    );
 
-    mobileNavLinks.forEach((link) => {
-      link.addEventListener('click', () => closeMenu({ returnFocus: false }), { signal });
+    mobileMenu.querySelectorAll('.mobile-nav-link').forEach((link) => {
+      link.addEventListener('click', closeMenu, { signal });
     });
 
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') {
-        if (isMenuOpen) closeMenu();
-        if (moreMenu instanceof HTMLDetailsElement) moreMenu.removeAttribute('open');
-      }
-      setFocusableTrap(e);
-    }, { signal });
-
-    document.addEventListener('click', (e) => {
-      if (
-        moreMenu instanceof HTMLDetailsElement &&
-        moreMenu.hasAttribute('open') &&
-        !moreMenu.contains(e.target)
-      ) {
-        moreMenu.removeAttribute('open');
-      }
-    }, { signal });
-
-    win.__headerCleanup = () => controller.abort();
+    document.addEventListener(
+      'keydown',
+      (e) => {
+        if (e.key === 'Escape') closeMenu();
+      },
+      { signal }
+    );
   }
 
   initHeader();

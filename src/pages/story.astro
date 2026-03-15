@@ -1,0 +1,113 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import AnimatedSection from '@/components/astro/AnimatedSection.astro';
+import ChapterStream from '@/components/astro/ChapterStream.astro';
+import LeadStoryCard from '@/components/astro/LeadStoryCard.astro';
+import PageIntro from '@/components/astro/PageIntro.astro';
+import ReaderStartHere from '@/components/astro/ReaderStartHere.astro';
+import SectionRail from '@/components/astro/SectionRail.astro';
+import BlogCard from '@/components/astro/BlogCard.astro';
+import {
+  getPageSections,
+  getProjects,
+  getPublishedPosts,
+  getSiteSettings,
+  getStoryChapters,
+  getStoryMilestones,
+} from '@/lib/supabase';
+import { getMetadataItems, getMetadataText } from '@/lib/pageSections';
+
+const settings = await getSiteSettings();
+const chapters = await getStoryChapters();
+const milestones = await getStoryMilestones();
+const pageSections = await getPageSections('story');
+const projects = await getProjects();
+const posts = await getPublishedPosts();
+const heroSection = pageSections.find((section) => section.sectionKey === 'hero');
+const chaptersSection = pageSections.find((section) => section.sectionKey === 'chapters');
+const featuredProject = projects.find((project) => project.isFeatured) || projects[0];
+const connectedPosts = posts.slice(0, 2);
+---
+
+<BaseLayout title={`My Story | ${settings.author_name}`} description="A narrative page about curiosity, choosing CSE, discovering AI, and growing as an engineer.">
+  <div class="pb-16">
+    {heroSection && (
+      <PageIntro
+        eyebrow={heroSection.eyebrow}
+        title={heroSection.title || 'My Story'}
+        subtitle={heroSection.subtitle}
+        body={heroSection.body}
+        panelKicker={getMetadataText(heroSection, 'panelKicker') || 'Current ambition'}
+        panelTitle={getMetadataText(heroSection, 'panelTitle')}
+        panelBody={getMetadataText(heroSection, 'panelBody')}
+        panelItems={getMetadataItems(heroSection, 'panelItems')}
+        frameClass="section-frame section-frame-gradient section-tone-editorial"
+        kickerClass="editorial-kicker editorial-kicker-strong"
+        animationPreset={heroSection.animationPreset || 'hero-rise'}
+      />
+    )}
+
+    <ReaderStartHere
+      title="Read this page like a short narrative, not a resume."
+      body="Start with the opening chapter, use the milestones as turning points, and end with the current direction to understand what kind of engineer I am trying to become."
+      eyebrow="If you are new"
+      items={[
+        'The chapters show progression, not credentials.',
+        'The milestones mark the pivots that changed direction.',
+        'The connected work below shows how the story turns into projects and notes.',
+      ]}
+      href="/lab"
+      label="See the work in motion"
+      animationPreset="quiet-fade"
+    />
+
+    <SectionRail
+      eyebrow={chaptersSection?.eyebrow || 'Chapters'}
+      title={chaptersSection?.title || 'The journey in chapters'}
+      body={chaptersSection?.body || 'The story unfolds through chapters first, then a clearer sense of direction.'}
+      weight="framed"
+      frame="gradient"
+      tone="editorial"
+      dividerBefore="star"
+      role="guide"
+    >
+      <ChapterStream chapters={chapters} milestones={milestones} />
+    </SectionRail>
+
+    <SectionRail
+      eyebrow="Connected work"
+      title="Where the story touches what I build and learn."
+      body="These are the quickest ways to see how the narrative turns into visible work."
+      dividerBefore="line"
+      role="archive"
+    >
+      <div class="grid gap-6 xl:grid-cols-[1.05fr_0.95fr]">
+        {featuredProject && (
+          <LeadStoryCard
+            eyebrow="Case study"
+            title={featuredProject.title}
+            summary={featuredProject.description}
+            href={`/lab/${featuredProject.slug}`}
+            ctaLabel="Open project"
+            meta={[featuredProject.status]}
+            tags={(featuredProject.tags || featuredProject.techStack).slice(0, 3)}
+            panelKicker="Build thread"
+            panelBody="The Lab shows how the same curiosity in the story becomes systems, implementation choices, and lessons learned."
+            accent="technical"
+            animationPreset="rail-slide"
+          />
+        )}
+
+        {connectedPosts.length > 0 && (
+          <div class="grid gap-5">
+            {connectedPosts.map((post, index) => (
+              <AnimatedSection preset="stagger-cards" index={index}>
+                <BlogCard post={post} hrefBase="/garden" compact />
+              </AnimatedSection>
+            ))}
+          </div>
+        )}
+      </div>
+    </SectionRail>
+  </div>
+</BaseLayout>

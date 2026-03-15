@@ -1,0 +1,70 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { getProjectBySlug, getProjects } from '@/lib/supabase';
+
+export async function getStaticPaths() {
+  const projects = await getProjects();
+  return projects.map((project) => ({ params: { slug: project.slug } }));
+}
+
+const { slug } = Astro.params;
+const project = await getProjectBySlug(slug!);
+
+if (!project) {
+  return Astro.redirect('/lab');
+}
+
+const sections = [
+  { title: 'Problem', body: project.problem },
+  { title: 'Motivation', body: project.motivation },
+  { title: 'Approach', body: project.approach },
+  { title: 'Architecture', body: project.architecture },
+  { title: 'Implementation', body: project.implementation },
+  { title: 'Challenges', body: project.challenges },
+  { title: 'Lessons Learned', body: project.lessonsLearned },
+  { title: 'Future Improvements', body: project.futureImprovements },
+].filter((section) => Boolean(section.body));
+---
+
+<BaseLayout title={`${project.title} | The Lab`} description={project.description}>
+  <div class="pb-16">
+    <section class="page-hero">
+      <div class="container mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+        <div class="max-w-4xl">
+          <span class="section-eyebrow">The Lab</span>
+          <h1 class="section-heading mt-6">{project.title}</h1>
+          <p class="section-copy mt-6 max-w-3xl">{project.description}</p>
+          <div class="mt-6 flex flex-wrap gap-2">
+            <span class="badge-pill">{project.status}</span>
+            {(project.tags || project.techStack).map((tag) => <span class="badge-pill">{tag}</span>)}
+          </div>
+          <div class="mt-8 flex flex-wrap gap-3">
+            {project.githubUrl && <a href={project.githubUrl} target="_blank" rel="noopener noreferrer" class="btn-secondary rounded-2xl">GitHub</a>}
+            {project.liveUrl && <a href={project.liveUrl} target="_blank" rel="noopener noreferrer" class="btn-primary rounded-2xl">Live demo</a>}
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section-shell">
+      <div class="container mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+        {project.techStack.length > 0 && (
+          <div class="surface-panel mb-6 p-6">
+            <p class="editorial-kicker mb-3">Tech stack</p>
+            <div class="flex flex-wrap gap-2">
+              {project.techStack.map((item) => <span class="badge-pill">{item}</span>)}
+            </div>
+          </div>
+        )}
+        <div class="grid gap-6">
+          {sections.map((section) => (
+            <article class="surface-panel p-7 sm:p-9">
+              <h2 class="font-serif text-3xl text-secondary-50">{section.title}</h2>
+              <p class="mt-4 text-base leading-8 text-secondary-200">{section.body}</p>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+  </div>
+</BaseLayout>

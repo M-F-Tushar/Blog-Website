@@ -1,4 +1,4 @@
-import { supabase } from '../supabase/client';
+import { getSupabaseClient, supabase } from '../supabase/client';
 import { projectToDatabase, projectFromDatabase } from '../types/converters';
 import type { Project } from '../types/types';
 
@@ -97,11 +97,26 @@ export const updateProject = async (id: string, project: Partial<Project>): Prom
     const updateData: any = {};
 
     if (project.title !== undefined) updateData.title = project.title;
+    if (project.slug !== undefined) updateData.slug = project.slug;
     if (project.description !== undefined) updateData.description = project.description;
+    if (project.longDescription !== undefined)
+      updateData.long_description = project.longDescription || null;
+    if (project.tags !== undefined) updateData.tags = project.tags;
     if (project.techStack !== undefined) updateData.tech_stack = project.techStack;
     if (project.imageUrl !== undefined) updateData.image_url = project.imageUrl || null;
     if (project.liveUrl !== undefined) updateData.live_url = project.liveUrl || null;
     if (project.githubUrl !== undefined) updateData.github_url = project.githubUrl || null;
+    if (project.problem !== undefined) updateData.problem = project.problem || null;
+    if (project.motivation !== undefined) updateData.motivation = project.motivation || null;
+    if (project.approach !== undefined) updateData.approach = project.approach || null;
+    if (project.architecture !== undefined) updateData.architecture = project.architecture || null;
+    if (project.implementation !== undefined)
+      updateData.implementation = project.implementation || null;
+    if (project.challenges !== undefined) updateData.challenges = project.challenges || null;
+    if (project.lessonsLearned !== undefined)
+      updateData.lessons_learned = project.lessonsLearned || null;
+    if (project.futureImprovements !== undefined)
+      updateData.future_improvements = project.futureImprovements || null;
     if (project.sortOrder !== undefined) updateData.sort_order = project.sortOrder;
     if (project.isFeatured !== undefined) updateData.is_featured = project.isFeatured;
     if (project.status !== undefined) updateData.status = project.status;
@@ -169,7 +184,8 @@ export const subscribeToProjectsUpdates = (
     });
 
   // Subscribe to changes
-  const channel = supabase
+  const client = getSupabaseClient();
+  const channel = client
     .channel('projects-changes')
     .on(
       'postgres_changes',
@@ -194,6 +210,6 @@ export const subscribeToProjectsUpdates = (
 
   // Return unsubscribe function
   return () => {
-    supabase.removeChannel(channel);
+    client.removeChannel(channel);
   };
 };

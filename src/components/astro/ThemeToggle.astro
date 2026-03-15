@@ -8,7 +8,7 @@
 <button
   id="theme-toggle"
   data-theme-toggle
-  class="icon-btn theme-toggle bg-secondary-800 text-gold-400 hover:bg-secondary-700"
+  class="icon-btn theme-toggle text-secondary-100 hover:border-primary-400/30 hover:bg-white/[0.08]"
   aria-label="Toggle theme (currently dark)"
   aria-pressed="true"
 >
@@ -64,13 +64,13 @@
       if (isDark) {
         sunIcon.style.display = '';
         moonIcon.style.display = 'none';
-        btn.className = 'icon-btn theme-toggle bg-secondary-800 text-gold-400 hover:bg-secondary-700';
+        btn.className = 'icon-btn theme-toggle text-secondary-100 hover:border-primary-400/30 hover:bg-white/[0.08]';
         btn.setAttribute('aria-label', 'Toggle theme (currently dark)');
         btn.setAttribute('aria-pressed', 'true');
       } else {
         sunIcon.style.display = 'none';
         moonIcon.style.display = '';
-        btn.className = 'icon-btn theme-toggle bg-secondary-100 text-secondary-800 hover:bg-secondary-200';
+        btn.className = 'icon-btn theme-toggle text-secondary-700 hover:border-primary-300/40 hover:bg-white';
         btn.setAttribute('aria-label', 'Toggle theme (currently light)');
         btn.setAttribute('aria-pressed', 'false');
       }

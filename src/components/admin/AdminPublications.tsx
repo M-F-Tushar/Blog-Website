@@ -64,7 +64,7 @@ const AdminPublications: React.FC = () => {
 
   const handleToggleFeatured = async (pub: Publication) => {
     try {
-      await updatePublication(pub.id, { featured: !pub.featured });
+      await updatePublication(pub.id, { isFeatured: !pub.isFeatured });
     } catch (err) {
       console.error('Failed to toggle featured status:', err);
       alert('Failed to update publication. Please try again.');
@@ -215,10 +215,10 @@ const AdminPublications: React.FC = () => {
                       <button
                         onClick={() => handleToggleFeatured(pub)}
                         className="focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-500/50 rounded transition-colors"
-                        title={pub.featured ? 'Remove from featured' : 'Mark as featured'}
-                        aria-label={pub.featured ? 'Remove from featured' : 'Mark as featured'}
+                        title={pub.isFeatured ? 'Remove from featured' : 'Mark as featured'}
+                        aria-label={pub.isFeatured ? 'Remove from featured' : 'Mark as featured'}
                       >
-                        {pub.featured ? (
+                        {pub.isFeatured ? (
                           <svg
                             className={`h-5 w-5 ${cosmic.starActive}`}
                             xmlns="http://www.w3.org/2000/svg"

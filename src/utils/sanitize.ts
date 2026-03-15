@@ -36,6 +36,15 @@ export const sanitizeText = (dirty: string): string => {
 };
 
 /**
+ * Sanitize markdown source that may include embedded HTML.
+ * We intentionally keep markdown control characters untouched so downstream
+ * renderers can still interpret formatting, while stripping unsafe HTML.
+ */
+export const sanitizeMarkdown = (dirty: string): string => {
+    return sanitizeHtml(dirty);
+};
+
+/**
  * Check if a string contains potentially dangerous content
  * @param content - The content to check
  * @returns true if content appears safe, false otherwise

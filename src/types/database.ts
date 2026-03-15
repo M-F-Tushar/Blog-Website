@@ -49,6 +49,7 @@ export interface DatabaseSettings {
   author_name: string;
   author_tagline: string;
   author_bio: string;
+  author_image?: string | null;
   social_github: string;
   social_linkedin: string;
   social_email: string;
@@ -130,12 +131,22 @@ export interface DatabaseSettings {
 export interface DatabaseProject {
   id: string;
   title: string;
+  slug: string | null;
   description: string;
   long_description: string | null;
+  tags: string[] | null;
   tech_stack: string[];
   image_url: string | null;
   live_url: string | null;
   github_url: string | null;
+  problem: string | null;
+  motivation: string | null;
+  approach: string | null;
+  architecture: string | null;
+  implementation: string | null;
+  challenges: string | null;
+  lessons_learned: string | null;
+  future_improvements: string | null;
   sort_order: number;
   is_featured: boolean;
   status: string;
@@ -173,6 +184,8 @@ export interface DatabaseCVEducation {
   start_date: string;
   end_date: string | null;
   description: string | null;
+  gpa: string | null;
+  location: string | null;
   sort_order: number;
   is_initial: boolean;
   created_at: string;
@@ -186,6 +199,7 @@ export interface DatabaseCVExperience {
   start_date: string;
   end_date: string | null;
   description: string;
+  location: string | null;
   responsibilities: string[];
   sort_order: number;
   is_initial: boolean;
@@ -199,7 +213,9 @@ export interface DatabaseCVCertification {
   issuer: string;
   issue_date: string;
   expiry_date: string | null;
+  credential_id: string | null;
   credential_url: string | null;
+  description: string | null;
   sort_order: number;
   is_initial: boolean;
   created_at: string;
@@ -248,6 +264,123 @@ export interface DatabaseCustomPageSection {
   visible: boolean;
   created_at: string;
   updated_at: string;
+}
+
+export interface DatabaseNavigationItem {
+  id: string;
+  label: string;
+  path: string;
+  is_external: boolean;
+  visible: boolean;
+  sort_order: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface DatabasePageSection {
+  id: string;
+  page_key: string;
+  section_key: string;
+  section_type: string;
+  preset_key: string | null;
+  eyebrow: string | null;
+  title: string | null;
+  subtitle: string | null;
+  body: string | null;
+  primary_cta_label: string | null;
+  primary_cta_url: string | null;
+  secondary_cta_label: string | null;
+  secondary_cta_url: string | null;
+  layout_variant: string | null;
+  visual_tone: string | null;
+  density: string | null;
+  background_treatment: string | null;
+  content_alignment: string | null;
+  media_mode: string | null;
+  content_collection: string | null;
+  content_source: string | null;
+  kicker_style: string | null;
+  section_role: string | null;
+  animation_preset: string | null;
+  content_grouping: string | null;
+  content_emphasis: string | null;
+  max_items: number | null;
+  show_divider: boolean | null;
+  featured_project_id: string | null;
+  featured_post_id: string | null;
+  featured_bookshelf_entry_id: string | null;
+  manual_item_ids: string[] | null;
+  metadata: Json | null;
+  visible: boolean;
+  sort_order: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface DatabaseStoryChapter {
+  id: string;
+  title: string;
+  subtitle: string | null;
+  body: string;
+  period_label: string | null;
+  featured_media: string | null;
+  visible: boolean;
+  sort_order: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface DatabaseStoryMilestone {
+  id: string;
+  chapter_id: string | null;
+  title: string;
+  description: string | null;
+  period_label: string | null;
+  sort_order: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface DatabaseBookshelfEntry {
+  id: string;
+  title: string;
+  slug: string;
+  entry_type: string;
+  book_title: string;
+  author: string | null;
+  cover_image: string | null;
+  summary: string | null;
+  body: string;
+  tags: string[] | null;
+  rating: number | null;
+  status: string;
+  is_featured: boolean;
+  is_pinned: boolean;
+  sort_order: number;
+  seo_title: string | null;
+  seo_description: string | null;
+  published_at: string | null;
+  updated_at: string;
+  created_at: string;
+}
+
+export interface DatabaseContactLink {
+  id: string;
+  label: string;
+  url: string;
+  link_type: string;
+  description: string | null;
+  visible: boolean;
+  sort_order: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface DatabaseAdminUser {
+  user_id: string;
+  email: string | null;
+  is_active: boolean;
+  created_at: string;
 }
 
 // ─── Supabase Database schema generic ───────────────────────────────
@@ -319,6 +452,48 @@ export interface Database {
         Row: DatabaseCustomPageSection;
         Insert: Omit<DatabaseCustomPageSection, 'id' | 'created_at' | 'updated_at'>;
         Update: Partial<Omit<DatabaseCustomPageSection, 'id' | 'created_at' | 'updated_at'>>;
+        Relationships: [];
+      };
+      navigation_items: {
+        Row: DatabaseNavigationItem;
+        Insert: Omit<DatabaseNavigationItem, 'id' | 'created_at' | 'updated_at'>;
+        Update: Partial<Omit<DatabaseNavigationItem, 'id' | 'created_at' | 'updated_at'>>;
+        Relationships: [];
+      };
+      page_sections: {
+        Row: DatabasePageSection;
+        Insert: Omit<DatabasePageSection, 'id' | 'created_at' | 'updated_at'>;
+        Update: Partial<Omit<DatabasePageSection, 'id' | 'created_at' | 'updated_at'>>;
+        Relationships: [];
+      };
+      story_chapters: {
+        Row: DatabaseStoryChapter;
+        Insert: Omit<DatabaseStoryChapter, 'id' | 'created_at' | 'updated_at'>;
+        Update: Partial<Omit<DatabaseStoryChapter, 'id' | 'created_at' | 'updated_at'>>;
+        Relationships: [];
+      };
+      story_milestones: {
+        Row: DatabaseStoryMilestone;
+        Insert: Omit<DatabaseStoryMilestone, 'id' | 'created_at' | 'updated_at'>;
+        Update: Partial<Omit<DatabaseStoryMilestone, 'id' | 'created_at' | 'updated_at'>>;
+        Relationships: [];
+      };
+      bookshelf_entries: {
+        Row: DatabaseBookshelfEntry;
+        Insert: Omit<DatabaseBookshelfEntry, 'id' | 'created_at' | 'updated_at'>;
+        Update: Partial<Omit<DatabaseBookshelfEntry, 'id' | 'created_at' | 'updated_at'>>;
+        Relationships: [];
+      };
+      contact_links: {
+        Row: DatabaseContactLink;
+        Insert: Omit<DatabaseContactLink, 'id' | 'created_at' | 'updated_at'>;
+        Update: Partial<Omit<DatabaseContactLink, 'id' | 'created_at' | 'updated_at'>>;
+        Relationships: [];
+      };
+      admin_users: {
+        Row: DatabaseAdminUser;
+        Insert: Omit<DatabaseAdminUser, 'created_at'>;
+        Update: Partial<Omit<DatabaseAdminUser, 'created_at'>>;
         Relationships: [];
       };
       bookmarks: {
@@ -396,9 +571,17 @@ export interface Database {
           post_id: string;
           viewer_ip: string | null;
           user_agent: string | null;
+          referrer: string | null;
+          session_id: string | null;
           viewed_at: string;
         };
-        Insert: { post_id: string; viewer_ip?: string | null; user_agent?: string | null };
+        Insert: {
+          post_id: string;
+          viewer_ip?: string | null;
+          user_agent?: string | null;
+          referrer?: string | null;
+          session_id?: string | null;
+        };
         Update: never;
         Relationships: [];
       };

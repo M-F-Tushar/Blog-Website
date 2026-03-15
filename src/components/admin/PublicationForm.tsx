@@ -44,13 +44,13 @@ const PublicationForm: React.FC = () => {
         setYear(pubToEdit.year);
         setType(pubToEdit.type);
         setAbstract(pubToEdit.abstract || '');
-        setDoi(pubToEdit.doi || '');
-        setArxivUrl(pubToEdit.arxiv_url || '');
-        setPdfUrl(pubToEdit.pdf_url || '');
-        setCodeUrl(pubToEdit.code_url || '');
-        setSlidesUrl(pubToEdit.slides_url || '');
+        setDoi(pubToEdit.doiUrl || '');
+        setArxivUrl(pubToEdit.arxivUrl || '');
+        setPdfUrl(pubToEdit.pdfUrl || '');
+        setCodeUrl(pubToEdit.codeUrl || '');
+        setSlidesUrl(pubToEdit.slidesUrl || '');
         setBibtex(pubToEdit.bibtex || '');
-        setFeatured(pubToEdit.featured);
+        setFeatured(pubToEdit.isFeatured || false);
       }
     }
   }, [pubId, isEditMode, publications]);
@@ -78,14 +78,14 @@ const PublicationForm: React.FC = () => {
       year,
       type,
       abstract: abstract || undefined,
-      doi: doi || undefined,
-      arxiv_url: arxivUrl || undefined,
-      pdf_url: pdfUrl || undefined,
-      code_url: codeUrl || undefined,
-      slides_url: slidesUrl || undefined,
+      doiUrl: doi || undefined,
+      arxivUrl: arxivUrl || undefined,
+      pdfUrl: pdfUrl || undefined,
+      codeUrl: codeUrl || undefined,
+      slidesUrl: slidesUrl || undefined,
       bibtex: bibtex || undefined,
-      featured,
-      sort_order: 0,
+      isFeatured: featured,
+      sortOrder: 0,
     };
 
     try {
